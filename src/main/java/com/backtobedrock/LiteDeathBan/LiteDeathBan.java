@@ -19,16 +19,16 @@ public class LiteDeathBan extends JavaPlugin implements Listener {
         super.onEnable(); //To change body of generated methods, choose Tools | Templates.
         getServer().getPluginManager().registerEvents(new LiteDeathBanEventHandlers(this), this);
         this.saveDefaultConfig();
-//        try {
-//            File file = new File(System.getProperty("user.dir") + "/plugins/DynmapMarkers/markers.json");
-//            if (!file.createNewFile()) {
-//                System.out.println("Initialising death bans...");
-//            } else {
-//                System.out.println("Creating new player file...");
-//            }
-//        } catch (IOException ex) {
-//            System.out.println(ex);
-//        }
+        try {
+            File file = new File(System.getProperty("user.dir") + "/plugins/LiteDeathBan/PlayerData.json");
+            if (!file.createNewFile()) {
+                System.out.println("Initialising Player Data...");
+            } else {
+                System.out.println("Creating New Player Data file...");
+            }
+        } catch (IOException ex) {
+            System.out.println(ex);
+        }
     }
 
     @Override
