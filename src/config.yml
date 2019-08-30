@@ -1,0 +1,19 @@
+#In Minutes -1 is disable, 0 is unlimited
+PlayerKillBantime: 7200
+MonsterKillBantime: 2880
+EnvironmentKillBantime: 2880
+
+#If true, above times are used as max ban time
+BantimeByPlaytime: false
+#In Percent, minimum is 1
+BantimeByPlaytimePercent: 10
+#In Minutes, minimum is 1
+BantimeByPlaytimeInterval: 60
+#In Minutes, minimum is 1
+BantimeByPlaytimeMinimumTime: 60
+
+#If true, players in combat with other players will receive PlayerKillBantime if killed by monster or environment before this time runs out
+CombatDeath: true
+#In Seconds, 0 disables this function
+CombatDeathTime: 60
+

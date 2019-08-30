@@ -1,0 +1,18 @@
+main: com.backtobedrock.LiteDeathBan.LiteDeathBan
+name: LiteDeathBan
+version: 1.0.0
+author: Nathan
+website: www.backtobedrock.com
+#depend: [dynmap]
+prefix: LDB
+description: A very customizable and light weighted plugin that bans players on death
+api-version: 1.14
+commands:
+    test:
+        description: test command
+        permission: ldb.test
+        usage: /<command> test
+    
+permissions:
+    ldb.test:
+        default: op

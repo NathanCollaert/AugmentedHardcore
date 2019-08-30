@@ -1,8 +1,10 @@
 package com.backtobedrock.LiteDeathBan;
 
-import com.backtobedrock.LiteDeathBan.eventHandlers.LiteDeathBanEventHandlers;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Logger;
+import com.backtobedrock.LiteDeathBan.eventHandlers.LiteDeathBanEventHandlers;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
@@ -10,24 +12,31 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class LiteDeathBan extends JavaPlugin implements Listener {
 
-    private final LiteDeathBanConfig config = new LiteDeathBanConfig(getConfig());
+    private LiteDeathBanConfig config;
     private final LiteDeathBanEventHandlers eventHandlers = new LiteDeathBanEventHandlers(this);
     private final LiteDeathBanCommands commands = new LiteDeathBanCommands(this);
+    public Logger log = Bukkit.getLogger();
+
+    @Override
+    public void onLoad() {
+        super.onLoad(); //To change body of generated methods, choose Tools | Templates.
+        this.saveDefaultConfig();
+        this.config = new LiteDeathBanConfig(getConfig());
+    }
 
     @Override
     public void onEnable() {
         super.onEnable(); //To change body of generated methods, choose Tools | Templates.
         getServer().getPluginManager().registerEvents(new LiteDeathBanEventHandlers(this), this);
-        this.saveDefaultConfig();
         try {
             File file = new File(System.getProperty("user.dir") + "/plugins/LiteDeathBan/PlayerData.json");
             if (!file.createNewFile()) {
-                System.out.println("Initialising Player Data...");
+                log.info("Initialising Player Data...");
             } else {
-                System.out.println("Creating New Player Data file...");
+                log.info("Creating New Player Data file...");
             }
         } catch (IOException ex) {
-            System.out.println(ex);
+            log.warning(ex.getMessage());
         }
     }
 
