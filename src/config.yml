@@ -1,7 +1,10 @@
+#If true, Player will be shown their amount of lives on respawn
+AnnounceLivesOnRespawn: true
+
 #In Minutes -1 is disable, 0 is unlimited
 PlayerKillBantime: 7200
 MonsterKillBantime: 2880
-EnvironmentKillBantime: 2880
+EnvironmentKillBantime: 4320
 
 #If true, above times are used as max ban time
 BantimeByPlaytime: false
@@ -10,7 +13,9 @@ BantimeByPlaytimePercent: 10
 #In Minutes, minimum is 1
 BantimeByPlaytimeInterval: 60
 #In Minutes, minimum is 1
-BantimeByPlaytimeMinimumTime: 60
+BantimeByPlaytimeMinimumPlayerKillBantime: 72
+BantimeByPlaytimeMinimumMonsterKillBantime: 28
+BantimeByPlaytimeMinimumEnvironmentKillBantime: 43
 
 #If true, players in combat with other players will receive PlayerKillBantime if killed by monster or environment before this time runs out
 CombatDeath: true

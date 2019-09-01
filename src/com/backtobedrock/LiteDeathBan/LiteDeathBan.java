@@ -22,22 +22,24 @@ public class LiteDeathBan extends JavaPlugin implements Listener {
         super.onLoad(); //To change body of generated methods, choose Tools | Templates.
         this.saveDefaultConfig();
         this.config = new LiteDeathBanConfig(getConfig());
+        try {
+            File file = new File(System.getProperty("user.dir") + "/plugins/LiteDeathBan/PlayerData.json");
+            if (!file.createNewFile()) {
+                log.info("[LDB] Initialising Player Data...");
+                LiteDeathBanCRUD.getInstance().readAllPlayerDataFromFile();
+                log.info("[LDB] Initialising Player Data Finished.");
+            } else {
+                log.info("[LDB] Creating New Player Data file...");
+            }
+        } catch (IOException ex) {
+            log.warning(ex.getMessage());
+        }
     }
 
     @Override
     public void onEnable() {
         super.onEnable(); //To change body of generated methods, choose Tools | Templates.
         getServer().getPluginManager().registerEvents(new LiteDeathBanEventHandlers(this), this);
-        try {
-            File file = new File(System.getProperty("user.dir") + "/plugins/LiteDeathBan/PlayerData.json");
-            if (!file.createNewFile()) {
-                log.info("Initialising Player Data...");
-            } else {
-                log.info("Creating New Player Data file...");
-            }
-        } catch (IOException ex) {
-            log.warning(ex.getMessage());
-        }
     }
 
     @Override
@@ -48,6 +50,10 @@ public class LiteDeathBan extends JavaPlugin implements Listener {
     @Override
     public boolean onCommand(CommandSender cs, Command cmnd, String alias, String[] args) {
         return this.commands.onCommand(cs, cmnd, alias, args);
+    }
+
+    public LiteDeathBanConfig getLDBConfig() {
+        return config;
     }
 
 }
