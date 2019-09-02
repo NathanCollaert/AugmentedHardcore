@@ -14,18 +14,19 @@ public class LiteDeathBanConfig {
     private final FileConfiguration config;
     private Logger log = Bukkit.getLogger();
 
-    private int PlayerKillBantime;
-    private int MonsterKillBantime;
-    private int EnvironmentKillBantime;
+    private int PlayerDeathBantime;
+    private int MonsterDeathBantime;
+    private int EnvironmentDeathBantime;
     private int BantimeByPlaytimePercent;
     private int BantimeByPlaytimeInterval;
-    private int BantimeByPlaytimeMinimumPlayerKillBantime;
-    private int BantimeByPlaytimeMinimumMonsterKillBantime;
-    private int BantimeByPlaytimeMinimumEnvironmentKillBantime;
-    private int CombatDeathTime;
-    private boolean AnnounceLivesOnRespawn;
+    private int BantimeByPlaytimeMinimumPlayerDeath;
+    private int BantimeByPlaytimeMinimumMonsterDeath;
+    private int BantimeByPlaytimeMinimumEnvironmentDeath;
+    private int CombatLogTime;
+    private boolean NotifyLivesLeftOnRespawn;
     private boolean BantimeByPlaytime;
-    private boolean CombatDeath;
+    private boolean CombatLog;
+    private String BantimeByPlaytimeGrowth;
 
     public LiteDeathBanConfig(FileConfiguration fc) {
         this.config = fc;
@@ -33,44 +34,35 @@ public class LiteDeathBanConfig {
     }
 
     private void initialize() {
-        this.BantimeByPlaytime = this.checkBoolean(this.config.get("BantimeByPlaytime"), false);
-        this.CombatDeath = this.checkBoolean(this.config.get("CombatDeath"), true);
+        this.BantimeByPlaytime = this.checkBoolean(this.config.get("BantimeByPlaytime"), false, "BantimeByPlaytime");
+        this.CombatLog = this.checkBoolean(this.config.get("CombatLog"), true, "CombatLog");
         for (Map.Entry<String, Object> e : this.config.getValues(true).entrySet()) {
             switch (e.getKey()) {
-                case "PlayerKillBantime":
-                    if (this.BantimeByPlaytime) {
-                        this.PlayerKillBantime = this.checkMin(0, e.getKey(), e.getValue(), 7200);
+                case "PlayerDeathBantime":
+                    if (!e.getValue().equals(0)) {
+                        this.PlayerDeathBantime = this.checkMin(-1, e.getKey(), e.getValue(), 7200);
                     } else {
-                        if (!e.getValue().equals(0)) {
-                            this.PlayerKillBantime = this.checkMin(-1, e.getKey(), e.getValue(), 7200);
-                        } else {
-                            this.PlayerKillBantime = 0;
-                            log.warning(String.format("[LDB] %s has been changed to its default value (%d) due it being 0.", e.getKey(), 7200));
-                        }
+                        this.PlayerDeathBantime = 7200;
+                        this.config.set("PlayerKillBantime", 7200);
+                        log.warning(String.format("[LDB] %s has been changed to its default value (%d) due it being 0.", e.getKey(), 7200));
                     }
                     break;
-                case "MonsterKillBantime":
-                    if (this.BantimeByPlaytime) {
-                        this.MonsterKillBantime = this.checkMin(0, e.getKey(), e.getValue(), 7200);
+                case "MonsterDeathBantime":
+                    if (!e.getValue().equals(0)) {
+                        this.MonsterDeathBantime = this.checkMin(-1, e.getKey(), e.getValue(), 2880);
                     } else {
-                        if (!e.getValue().equals(0)) {
-                            this.MonsterKillBantime = this.checkMin(-1, e.getKey(), e.getValue(), 7200);
-                        } else {
-                            this.MonsterKillBantime = 0;
-                            log.warning(String.format("[LDB] %s has been changed to its default value (%d) due it being 0.", e.getKey(), 7200));
-                        }
+                        this.MonsterDeathBantime = 2880;
+                        this.config.set("MonsterKillBantime", 2880);
+                        log.warning(String.format("[LDB] %s has been changed to its default value (%d) due it being 0.", e.getKey(), 2880));
                     }
                     break;
-                case "EnvironmentKillBantime":
-                    if (this.BantimeByPlaytime) {
-                        this.EnvironmentKillBantime = this.checkMin(0, e.getKey(), e.getValue(), 7200);
+                case "EnvironmentDeathBantime":
+                    if (!e.getValue().equals(0)) {
+                        this.EnvironmentDeathBantime = this.checkMin(-1, e.getKey(), e.getValue(), 7200);
                     } else {
-                        if (!e.getValue().equals(0)) {
-                            this.EnvironmentKillBantime = this.checkMin(-1, e.getKey(), e.getValue(), 7200);
-                        } else {
-                            this.EnvironmentKillBantime = 0;
-                            log.warning(String.format("[LDB] %s has been changed to its default value (%d) due it being 0.", e.getKey(), 7200));
-                        }
+                        this.EnvironmentDeathBantime = 4320;
+                        this.config.set("MonsterKillBantime", 4320);
+                        log.warning(String.format("[LDB] %s has been changed to its default value (%d) due it being 0.", e.getKey(), 4320));
                     }
                     break;
                 case "BantimeByPlaytimePercent":
@@ -79,24 +71,33 @@ public class LiteDeathBanConfig {
                 case "BantimeByPlaytimeInterval":
                     this.BantimeByPlaytimeInterval = this.checkMin(1, e.getKey(), e.getValue(), 60);
                     break;
-                case "BantimeByPlaytimeMinimumPlayerKillBantime":
-                    this.BantimeByPlaytimeMinimumPlayerKillBantime = this.checkMin(1, e.getKey(), e.getValue(), 60);
+                case "BantimeByPlaytimeMinimumPlayerDeath":
+                    this.BantimeByPlaytimeMinimumPlayerDeath = this.checkMin(1, e.getKey(), e.getValue(), 72);
                     break;
-                case "BantimeByPlaytimeMinimumMonsterKillBantime":
-                    this.BantimeByPlaytimeMinimumMonsterKillBantime = this.checkMin(1, e.getKey(), e.getValue(), 20);
+                case "BantimeByPlaytimeMinimumMonsterDeath":
+                    this.BantimeByPlaytimeMinimumMonsterDeath = this.checkMin(1, e.getKey(), e.getValue(), 28);
                     break;
-                case "BantimeByPlaytimeMinimumEnvironmentKillBantime":
-                    this.BantimeByPlaytimeMinimumEnvironmentKillBantime = this.checkMin(1, e.getKey(), e.getValue(), 40);
+                case "BantimeByPlaytimeMinimumEnvironmentDeath":
+                    this.BantimeByPlaytimeMinimumEnvironmentDeath = this.checkMin(1, e.getKey(), e.getValue(), 43);
                     break;
-                case "CombatDeathTime":
-                    this.CombatDeathTime = this.checkMin(0, e.getKey(), e.getValue(), 60);
-                    if (this.CombatDeathTime == 0) {
-                        this.CombatDeath = false;
+                case "CombatLogTime":
+                    this.CombatLogTime = this.checkMin(0, e.getKey(), e.getValue(), 60);
+                    if (this.CombatLogTime == 0 && this.CombatLog) {
+                        this.CombatLog = false;
                         log.warning(String.format("CombatDeath has been disabled due to %s being 0.", e.getKey()));
                     }
                     break;
-                case "AnnounceLivesOnRespawn":
-                    this.AnnounceLivesOnRespawn = this.checkBoolean(e.getValue(), true);
+                case "NotifyLivesLeftOnRespawn":
+                    this.NotifyLivesLeftOnRespawn = this.checkBoolean(e.getValue(), true, e.getKey());
+                    break;
+                case "BantimeByPlaytimeGrowth":
+                    if (e.getValue().toString().equalsIgnoreCase("linear") || e.getValue().toString().equalsIgnoreCase("exponential")) {
+                        this.BantimeByPlaytimeGrowth = e.getValue().toString().toLowerCase();
+                    } else {
+                        this.BantimeByPlaytimeGrowth = "exponential";
+                        this.config.set("BantimeByPlaytimeGrowth", "exponential");
+                        log.warning(String.format("[LDB] %s has been changed to its default value (%s) due it not being configured as Linear or Exponential.", e.getKey(), "exponential"));
+                    }
                     break;
                 default:
                     break;
@@ -110,35 +111,26 @@ public class LiteDeathBanConfig {
             number = (int) value;
         } else {
             number = defaultValue;
+            this.config.set(key, defaultValue);
             log.warning(String.format("[LDB] %s has been changed to its default value (%d) due it not being configured as a number.", key, defaultValue));
         }
         if (number >= MIN) {
             return number;
         } else {
+            this.config.set(key, defaultValue);
             log.warning(String.format("[LDB] %s has been changed to its default value (%d) due it being below the minimum value.", key, defaultValue));
             return defaultValue;
         }
     }
 
-    private boolean checkBoolean(Object value, boolean defaultValue) {
+    private boolean checkBoolean(Object value, boolean defaultValue, String key) {
         if (value instanceof Boolean) {
             return (boolean) value;
         } else {
-            System.out.println();
+            this.config.set(key, defaultValue);
+            log.warning(String.format("[LDB] %s has been changed to its default value (%s) due it being true or false.", key, defaultValue));
             return defaultValue;
         }
-    }
-
-    public int getPlayerKillBantime() {
-        return PlayerKillBantime;
-    }
-
-    public int getMonsterKillBantime() {
-        return MonsterKillBantime;
-    }
-
-    public int getEnvironmentKillBantime() {
-        return EnvironmentKillBantime;
     }
 
     public boolean isBantimeByPlaytime() {
@@ -153,27 +145,44 @@ public class LiteDeathBanConfig {
         return BantimeByPlaytimeInterval;
     }
 
-    public boolean isCombatDeath() {
-        return CombatDeath;
+    public boolean isCombatLog() {
+        return CombatLog;
     }
 
-    public int getCombatDeathTime() {
-        return CombatDeathTime;
+    public int getCombatLogTime() {
+        return CombatLogTime;
     }
 
-    public boolean isAnnounceLivesOnRespawn() {
-        return AnnounceLivesOnRespawn;
+    public boolean isNotifyLivesLeftOnRespawn() {
+        return NotifyLivesLeftOnRespawn;
     }
 
-    public int getBantimeByPlaytimeMinimumPlayerKillBantime() {
-        return BantimeByPlaytimeMinimumPlayerKillBantime;
+    public String getBantimeByPlaytimeGrowth() {
+        return BantimeByPlaytimeGrowth;
     }
 
-    public int getBantimeByPlaytimeMinimumMonsterKillBantime() {
-        return BantimeByPlaytimeMinimumMonsterKillBantime;
+    public int getPlayerDeathBantime() {
+        return PlayerDeathBantime;
     }
 
-    public int getBantimeByPlaytimeMinimumEnvironmentKillBantime() {
-        return BantimeByPlaytimeMinimumEnvironmentKillBantime;
+    public int getMonsterDeathBantime() {
+        return MonsterDeathBantime;
     }
+
+    public int getEnvironmentDeathBantime() {
+        return EnvironmentDeathBantime;
+    }
+
+    public int getBantimeByPlaytimeMinimumPlayerDeath() {
+        return BantimeByPlaytimeMinimumPlayerDeath;
+    }
+
+    public int getBantimeByPlaytimeMinimumMonsterDeath() {
+        return BantimeByPlaytimeMinimumMonsterDeath;
+    }
+
+    public int getBantimeByPlaytimeMinimumEnvironmentDeath() {
+        return BantimeByPlaytimeMinimumEnvironmentDeath;
+    }
+
 }

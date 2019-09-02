@@ -1,10 +1,10 @@
-#If true, Player will be shown their amount of lives on respawn
-AnnounceLivesOnRespawn: true
+#If true, Player will be shown their amount of lives left on respawn
+NotifyLivesLeftOnRespawn: true
 
-#In Minutes -1 is disable, 0 is unlimited
-PlayerKillBantime: 7200
-MonsterKillBantime: 2880
-EnvironmentKillBantime: 4320
+#In Minutes -1 is disable (0 is unlimited but can only be used if BantimeByPlaytime: true)
+PlayerDeathBantime: 7200
+MonsterDeathBantime: 2880
+EnvironmentDeathBantime: 4320
 
 #If true, above times are used as max ban time
 BantimeByPlaytime: false
@@ -12,13 +12,15 @@ BantimeByPlaytime: false
 BantimeByPlaytimePercent: 10
 #In Minutes, minimum is 1
 BantimeByPlaytimeInterval: 60
+#Linear or Exponential
+BantimeByPlaytimeGrowth: Exponential
 #In Minutes, minimum is 1
-BantimeByPlaytimeMinimumPlayerKillBantime: 72
-BantimeByPlaytimeMinimumMonsterKillBantime: 28
-BantimeByPlaytimeMinimumEnvironmentKillBantime: 43
+BantimeByPlaytimeMinimumPlayerDeath: 72
+BantimeByPlaytimeMinimumMonsterDeath: 28
+BantimeByPlaytimeMinimumEnvironmentDeath: 43
 
-#If true, players in combat with other players will receive PlayerKillBantime if killed by monster or environment before this time runs out
-CombatDeath: true
-#In Seconds, 0 disables this function
-CombatDeathTime: 60
-
+#If true, players will die and receive PlayerDeathBantime if they log out while in combat with another player,
+#they will also receive PlayerDeathBantime if killed by a monster or environment during this time
+CombatLog: true
+#In Seconds
+CombatLogTime: 10

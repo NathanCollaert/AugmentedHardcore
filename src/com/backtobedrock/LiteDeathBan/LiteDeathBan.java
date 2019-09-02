@@ -13,7 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class LiteDeathBan extends JavaPlugin implements Listener {
 
     private LiteDeathBanConfig config;
-    private final LiteDeathBanEventHandlers eventHandlers = new LiteDeathBanEventHandlers(this);
+    private LiteDeathBanEventHandlers eventHandlers;
     private final LiteDeathBanCommands commands = new LiteDeathBanCommands(this);
     public Logger log = Bukkit.getLogger();
 
@@ -22,6 +22,7 @@ public class LiteDeathBan extends JavaPlugin implements Listener {
         super.onLoad(); //To change body of generated methods, choose Tools | Templates.
         this.saveDefaultConfig();
         this.config = new LiteDeathBanConfig(getConfig());
+        eventHandlers = new LiteDeathBanEventHandlers(this);
         try {
             File file = new File(System.getProperty("user.dir") + "/plugins/LiteDeathBan/PlayerData.json");
             if (!file.createNewFile()) {

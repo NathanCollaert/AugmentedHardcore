@@ -8,11 +8,11 @@ prefix: LDB
 description: A very customizable and light weighted plugin that bans players on death
 api-version: 1.14
 commands:
-    test:
-        description: test command
-        permission: ldb.test
-        usage: /<command> test
+    setpt:
+        description: sets your current playtime [TESTING]
+        permission: ldb.setpt
+        usage: /<command> <timeInMinutes>
     
 permissions:
-    ldb.test:
+    ldb.setpt:
         default: op
