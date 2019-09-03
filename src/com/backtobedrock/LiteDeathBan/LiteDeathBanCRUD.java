@@ -1,18 +1,13 @@
 package com.backtobedrock.LiteDeathBan;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.util.Collection;
-import java.util.List;
-import java.util.TreeMap;
-import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
  *
@@ -20,96 +15,71 @@ import org.bukkit.Bukkit;
  */
 public class LiteDeathBanCRUD {
 
-    private final TreeMap<UUID, LiteDeathBanPlayerData> playerData = new TreeMap<>();
-    private static LiteDeathBanCRUD instance;
-    private static final Logger log = Bukkit.getLogger();
+    private final Logger log = Bukkit.getLogger();
 
-    private void writeAllPlayerDataToFile() {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        try (FileWriter file = new FileWriter(System.getProperty("user.dir") + "/plugins/LiteDeathban/PlayerData.json")) {
-            file.write(gson.toJson(this.playerData.values()));
-            file.flush();
-        } catch (IOException e) {
-            log.warning(e.getMessage());
-        }
+    File file = null;
+    FileConfiguration configuration = null;
+    OfflinePlayer player = null;
+
+    public LiteDeathBanCRUD(OfflinePlayer player) {
+        this.player = player;
     }
 
-    public void readAllPlayerDataFromFile() {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        List<LiteDeathBanPlayerData> myData;
-
-        try (FileReader reader = new FileReader(System.getProperty("user.dir") + "/plugins/LiteDeathBan/PlayerData.json")) {
-            //Read JSON file
-            java.lang.reflect.Type myDataType = new com.google.gson.reflect.TypeToken<Collection<LiteDeathBanPlayerData>>() {
-            }.getType();
-            myData = gson.fromJson(reader, myDataType);
-            if (myData != null) {
-                myData.stream().forEach(e -> {
-                    this.playerData.put(e.getID(), e);
-                });
-            }
-        } catch (FileNotFoundException ex) {
-            log.warning(ex.getMessage());
-        } catch (IOException e) {
-            log.warning(e.getMessage());
+    public FileConfiguration getConfig() {
+        if (configuration == null) {
+            configuration = YamlConfiguration.loadConfiguration(getFile());
+            return configuration;
         }
+        return configuration;
     }
 
-    public void addPlayerData(LiteDeathBanPlayerData p) {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        try (RandomAccessFile randomAccessFile = new RandomAccessFile(System.getProperty("user.dir") + "/plugins/LiteDeathBan/PlayerData.json", "rw")) {
+    public void saveConfig() {
+        try {
+            configuration.save(this.getFile());
+        } catch (IOException e) {
+            this.log.log(Level.SEVERE, "Cannot save to {0}", file.getName());
+        }
+        this.reloadConfig();
+    }
 
-            long pos = randomAccessFile.length();
-            while (randomAccessFile.length() > 0) {
-                pos--;
-                randomAccessFile.seek(pos);
-                if (randomAccessFile.readByte() == ']') {
-                    randomAccessFile.seek(pos);
-                    break;
+    public void setNewStart() {
+        FileConfiguration conf = this.getConfig();
+        conf.set("uuid", player.getUniqueId().toString());
+        conf.set("playername", player.getName());
+        conf.set("lives", 1);
+        saveConfig();
+    }
+
+    public void setLives(int amount) {
+        FileConfiguration conf = this.getConfig();
+        conf.set("uuid", player.getUniqueId().toString());
+        conf.set("playername", player.getName());
+        conf.set("lives", amount);
+    }
+
+    private File getFile() {
+        if (file == null) {
+            this.file = new File(System.getProperty("user.dir") + "/plugins/LiteDeathBan/userdata/" + player.getUniqueId().toString() + ".yml");
+            if (!this.file.exists()) {
+                try {
+                    if (this.file.createNewFile()) {
+                        this.log.log(Level.INFO, "[LiteDeathBan] File for player {0} has been created", player.getName());
+                    }
+                } catch (IOException e) {
+                    this.log.log(Level.SEVERE, "[LiteDeathBan] Cannot create data for {0}", player.getName());
                 }
             }
-
-            String jsonElement = gson.toJson(p);
-            switch ((int) pos) {
-                case 0:
-                    randomAccessFile.writeBytes("[" + jsonElement + "]");
-                    break;
-                case 1:
-                    randomAccessFile.writeBytes(jsonElement + "]");
-                    break;
-                default:
-                    randomAccessFile.writeBytes("," + jsonElement + "]");
-                    break;
-            }
-            this.playerData.put(p.getID(), p);
-        } catch (FileNotFoundException e) {
-            log.warning(e.getMessage());
-        } catch (IOException e) {
-            log.warning(e.getMessage());
+            return file;
         }
+        return file;
     }
 
-    public void updatePlayerData(LiteDeathBanPlayerData p) {
-        if (this.playerData.replace(p.getID(), p) != null) {
-            this.writeAllPlayerDataToFile();
-        }
+    public static boolean doesPlayerDataExists(String id) {
+        File file = new File(System.getProperty("user.dir") + "/plugins/LiteDeathBan/userdata/" + id + ".yml");
+        return file.exists();
     }
 
-    public void deletePlayerData(UUID id) {
-        if (this.playerData.get(id) != null) {
-            this.playerData.remove(id);
-            this.writeAllPlayerDataToFile();
-        }
-    }
-
-    public LiteDeathBanPlayerData getPlayerDataWithID(UUID id) {
-        return this.playerData.get(id);
-    }
-
-    public static LiteDeathBanCRUD getInstance() {
-        if (instance == null) {
-            instance = new LiteDeathBanCRUD();
-        }
-        return instance;
+    public void reloadConfig() {
+        YamlConfiguration.loadConfiguration(file);
     }
 }

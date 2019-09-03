@@ -27,6 +27,7 @@ public class LiteDeathBanConfig {
     private boolean BantimeByPlaytime;
     private boolean CombatLog;
     private String BantimeByPlaytimeGrowth;
+    private String CombatLogWarningStyle;
 
     public LiteDeathBanConfig(FileConfiguration fc) {
         this.config = fc;
@@ -44,7 +45,7 @@ public class LiteDeathBanConfig {
                     } else {
                         this.PlayerDeathBantime = 7200;
                         this.config.set("PlayerKillBantime", 7200);
-                        log.warning(String.format("[LDB] %s has been changed to its default value (%d) due it being 0.", e.getKey(), 7200));
+                        log.warning(String.format("[LiteDeathBan] %s has been changed to its default value (%d) due it being 0.", e.getKey(), 7200));
                     }
                     break;
                 case "MonsterDeathBantime":
@@ -53,7 +54,7 @@ public class LiteDeathBanConfig {
                     } else {
                         this.MonsterDeathBantime = 2880;
                         this.config.set("MonsterKillBantime", 2880);
-                        log.warning(String.format("[LDB] %s has been changed to its default value (%d) due it being 0.", e.getKey(), 2880));
+                        log.warning(String.format("[LiteDeathBan] %s has been changed to its default value (%d) due it being 0.", e.getKey(), 2880));
                     }
                     break;
                 case "EnvironmentDeathBantime":
@@ -62,7 +63,7 @@ public class LiteDeathBanConfig {
                     } else {
                         this.EnvironmentDeathBantime = 4320;
                         this.config.set("MonsterKillBantime", 4320);
-                        log.warning(String.format("[LDB] %s has been changed to its default value (%d) due it being 0.", e.getKey(), 4320));
+                        log.warning(String.format("[LiteDeathBan] %s has been changed to its default value (%d) due it being 0.", e.getKey(), 4320));
                     }
                     break;
                 case "BantimeByPlaytimePercent":
@@ -84,7 +85,7 @@ public class LiteDeathBanConfig {
                     this.CombatLogTime = this.checkMin(0, e.getKey(), e.getValue(), 60);
                     if (this.CombatLogTime == 0 && this.CombatLog) {
                         this.CombatLog = false;
-                        log.warning(String.format("CombatDeath has been disabled due to %s being 0.", e.getKey()));
+                        log.warning(String.format("[LiteDeathBan] CombatDeath has been disabled due to %s being 0.", e.getKey()));
                     }
                     break;
                 case "NotifyLivesLeftOnRespawn":
@@ -96,8 +97,19 @@ public class LiteDeathBanConfig {
                     } else {
                         this.BantimeByPlaytimeGrowth = "exponential";
                         this.config.set("BantimeByPlaytimeGrowth", "exponential");
-                        log.warning(String.format("[LDB] %s has been changed to its default value (%s) due it not being configured as Linear or Exponential.", e.getKey(), "exponential"));
+                        log.warning(String.format("[LiteDeathBan] %s has been changed to its default value (%s) due it not being configured as Linear or Exponential.", e.getKey(), "exponential"));
                     }
+                    break;
+                case "CombatLogWarningStyle":
+                    String style = e.getValue().toString();
+                    if (style.equalsIgnoreCase("chat") || style.equalsIgnoreCase("none") || style.equalsIgnoreCase("bossbar")) {
+                        this.CombatLogWarningStyle = style;
+                    } else {
+                        this.CombatLogWarningStyle = "bossbar";
+                        this.config.set("CombatLogWarningStyle", "bossbar");
+                        log.warning(String.format("[LiteDeathBan] %s has been changed to its default value (%s) due it not being configured as Linear or Exponential.", e.getKey(), "bossbar"));
+                    }
+
                     break;
                 default:
                     break;
@@ -112,13 +124,13 @@ public class LiteDeathBanConfig {
         } else {
             number = defaultValue;
             this.config.set(key, defaultValue);
-            log.warning(String.format("[LDB] %s has been changed to its default value (%d) due it not being configured as a number.", key, defaultValue));
+            log.warning(String.format("[LiteDeathBan] %s has been changed to its default value (%d) due it not being configured as a number.", key, defaultValue));
         }
         if (number >= MIN) {
             return number;
         } else {
             this.config.set(key, defaultValue);
-            log.warning(String.format("[LDB] %s has been changed to its default value (%d) due it being below the minimum value.", key, defaultValue));
+            log.warning(String.format("[LiteDeathBan] %s has been changed to its default value (%d) due it being below the minimum value.", key, defaultValue));
             return defaultValue;
         }
     }
@@ -128,7 +140,7 @@ public class LiteDeathBanConfig {
             return (boolean) value;
         } else {
             this.config.set(key, defaultValue);
-            log.warning(String.format("[LDB] %s has been changed to its default value (%s) due it being true or false.", key, defaultValue));
+            log.warning(String.format("[LiteDeathBan] %s has been changed to its default value (%s) due it being true or false.", key, defaultValue));
             return defaultValue;
         }
     }
@@ -183,6 +195,10 @@ public class LiteDeathBanConfig {
 
     public int getBantimeByPlaytimeMinimumEnvironmentDeath() {
         return BantimeByPlaytimeMinimumEnvironmentDeath;
+    }
+
+    public String getCombatLogWarningStyle() {
+        return CombatLogWarningStyle;
     }
 
 }

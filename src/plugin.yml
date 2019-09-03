@@ -1,7 +1,7 @@
 main: com.backtobedrock.LiteDeathBan.LiteDeathBan
 name: LiteDeathBan
 version: 1.0.0
-author: Nathan
+author: Nathanisme
 website: www.backtobedrock.com
 #depend: [dynmap]
 prefix: LDB
@@ -15,4 +15,8 @@ commands:
     
 permissions:
     ldb.setpt:
+        default: op
+    ldb.bypass.ban:
+        default: op
+    ldb.bypass.combatlog:
         default: op

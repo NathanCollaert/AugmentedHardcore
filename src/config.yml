@@ -24,3 +24,5 @@ BantimeByPlaytimeMinimumEnvironmentDeath: 43
 CombatLog: true
 #In Seconds
 CombatLogTime: 10
+#chat or bossbar or none
+CombatLogWarningStyle: Bossbar
