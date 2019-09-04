@@ -5,18 +5,10 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-/**
- *
- * @author PC_Nathan
- */
 class LiteDeathBanCommands {
 
     private LiteDeathBan plugin = null;
-
-    /**
-     *
-     * @param plugin
-     */
+    
     public LiteDeathBanCommands(LiteDeathBan plugin) {
         this.plugin = plugin;
     }

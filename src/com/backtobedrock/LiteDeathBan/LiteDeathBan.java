@@ -1,11 +1,9 @@
 package com.backtobedrock.LiteDeathBan;
 
 import java.io.File;
-import java.util.logging.Logger;
 import com.backtobedrock.LiteDeathBan.eventHandlers.LiteDeathBanEventHandlers;
 import java.util.TreeMap;
 import java.util.UUID;
-import org.bukkit.Bukkit;
 import org.bukkit.boss.BossBar;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -15,15 +13,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class LiteDeathBan extends JavaPlugin implements Listener {
 
     private LiteDeathBanConfig config;
+    private LiteDeathBanMessages messages;
     private final LiteDeathBanCommands commands = new LiteDeathBanCommands(this);
-    public static final Logger log = Bukkit.getLogger();
     private final TreeMap<UUID, Integer> tagList = new TreeMap<>();
     private final TreeMap<UUID, BossBar> bars = new TreeMap<>();
-
-    @Override
-    public void onLoad() {
-        super.onLoad(); //To change body of generated methods, choose Tools | Templates.
-    }
 
     @Override
     public void onEnable() {
@@ -38,6 +31,8 @@ public class LiteDeathBan extends JavaPlugin implements Listener {
         dir.mkdirs();
 
         this.config = new LiteDeathBanConfig(getConfig());
+        this.messages = new LiteDeathBanMessages(this);
+
         getServer().getPluginManager().registerEvents(new LiteDeathBanEventHandlers(this), this);
         super.onEnable(); //To change body of generated methods, choose Tools | Templates.
     }
@@ -56,6 +51,10 @@ public class LiteDeathBan extends JavaPlugin implements Listener {
         return config;
     }
 
+    public LiteDeathBanMessages getMessages() {
+        return this.messages;
+    }
+
     public void addToTagList(UUID plyrID, int id) {
         this.tagList.put(plyrID, id);
 
@@ -63,7 +62,7 @@ public class LiteDeathBan extends JavaPlugin implements Listener {
 
     public void removeFromTagList(UUID plyrID) {
         this.tagList.remove(plyrID);
-        if (this.config.getCombatLogWarningStyle().equalsIgnoreCase("bossbar")) {
+        if (this.config.getCombatTagWarningStyle().equalsIgnoreCase("bossbar")) {
             BossBar bar = this.bars.remove(plyrID);
             bar.setVisible(false);
         }

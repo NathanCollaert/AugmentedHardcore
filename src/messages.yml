@@ -1,2 +1,16 @@
-OnCombatTagged: "You have been combat tagged!"
-RespawnAnnouncement: "You have 0 lives left, use the wisely!"
+#Color codes can be used on all messages: https://wiki.ess3.net/mc/ as well as \n for a new line
+
+#%tagged_by%/%playername%/%tag_time%
+OnCombatTaggedChat: "You have been combat tagged by &c&l%tagged_by%&r."
+
+#%tagged_by%/%playername%/%tag_time%
+OnCombatTaggedChatEnd: "Your combat tag with &c&l%tagged_by%&r ran out..."
+
+#%tagged_by%/%playername%/%tag_time%
+OnCombatTaggedBossBar: "You have been combat tagged by &c&l%tagged_by%&r, do &c&lnot&r log out!"
+
+#%playername%/%lives_left%
+OnPlayerRespawn: "You have &b&l%lives_left%&r live(s) left, use them wisely!"
+
+#%bantime_in_minutes%/%bantime_in_hours%/%bantime_in_days%/%ban_expire_date%/%playername%/%date_of_last_ban%/%total_bans%
+OnPlayerDeathBan: "&c&lYou have died!\n&rYou have been banned for &b&l%bantime_in_hours% hours (%ban_expire_date%)&r.\nYour total ban count is now &b&l%total_bans%&r!\nYour last ban was &b&l%date_of_last_ban%&r."
