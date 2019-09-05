@@ -27,7 +27,7 @@ public class LiteDeathBan extends JavaPlugin implements Listener {
             this.saveResource("messages.yml", false);
         }
 
-        File dir = new File(System.getProperty("user.dir") + "/plugins/LiteDeathBan/userdata");
+        File dir = new File(this.getDataFolder() + "/userdata");
         dir.mkdirs();
 
         this.config = new LiteDeathBanConfig(getConfig());

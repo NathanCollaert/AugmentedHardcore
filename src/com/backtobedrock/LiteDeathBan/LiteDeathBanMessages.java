@@ -1,7 +1,6 @@
 package com.backtobedrock.LiteDeathBan;
 
 import java.io.File;
-import java.util.Date;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,7 +22,7 @@ public class LiteDeathBanMessages {
         });
     }
 
-    public String getOnPlayerDeathBan(String playername, int banTimeInMinutes, Date banExpireDate, String dateOfLastBan, int totalBans) {
+    public String getOnPlayerDeathBan(String playername, int banTimeInMinutes, String banExpireDate, String dateOfLastBan, int totalBans) {
         String message = this.messages.get("OnPlayerDeathBan");
         return this.playernamePH(
                 this.banTimePH(
@@ -88,14 +87,14 @@ public class LiteDeathBanMessages {
         Matcher m = pattern.matcher(convertedMessage);
         while (m.find()) {
             convertedMessage = convertedMessage.replaceAll("%bantime_in_minutes%", Integer.toString(banTimeInMinutes));
-            convertedMessage = convertedMessage.replaceAll("%bantime_in_hours%", Integer.toString(banTimeInMinutes / 60));
-            convertedMessage = convertedMessage.replaceAll("%bantime_in_days%", Integer.toString(banTimeInMinutes / 60 / 24));
+            convertedMessage = convertedMessage.replaceAll("%bantime_in_hours%", Double.toString((double) banTimeInMinutes / 60));
+            convertedMessage = convertedMessage.replaceAll("%bantime_in_days%", Double.toString((double) banTimeInMinutes / 60 / 24));
         }
         return convertedMessage;
     }
 
-    private String banExpireDatePH(String message, Date banExpireDate) {
-        return message.replace("%ban_expire_date%", banExpireDate.toString());
+    private String banExpireDatePH(String message, String banExpireDate) {
+        return message.replace("%ban_expire_date%", banExpireDate);
     }
 
     private String dateOfLastBanPH(String message, String dateOfLastBan) {

@@ -10,7 +10,7 @@ OnCombatTaggedChatEnd: "Your combat tag with &c&l%tagged_by%&r ran out..."
 OnCombatTaggedBossBar: "You have been combat tagged by &c&l%tagged_by%&r, do &c&lnot&r log out!"
 
 #%playername%/%lives_left%
-OnPlayerRespawn: "You have &b&l%lives_left%&r live(s) left, use them wisely!"
+OnPlayerRespawn: "You have &6&l%lives_left%&r live(s) left, use them wisely!"
 
 #%bantime_in_minutes%/%bantime_in_hours%/%bantime_in_days%/%ban_expire_date%/%playername%/%date_of_last_ban%/%total_bans%
-OnPlayerDeathBan: "&c&lYou have died!\n&rYou have been banned for &b&l%bantime_in_hours% hours (%ban_expire_date%)&r.\nYour total ban count is now &b&l%total_bans%&r!\nYour last ban was &b&l%date_of_last_ban%&r."
+OnPlayerDeathBan: "&c&lYou have died\n\n&rYou have been banned until &b%ban_expire_date%&r (%bantime_in_hours% hours).\nYou have been banned &6%total_bans%&r time(s) in total!\nYour last ban was &b%date_of_last_ban%&r."

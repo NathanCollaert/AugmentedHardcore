@@ -1,20 +1,34 @@
 #If true, Player will be shown their amount of lives left on respawn
 NotifyOnRespawn: true
+#How should dates be saved in the plugin? Only shows on ban screen if implemented in message
+#'short': (6/15/15, 9:03 CEST)
+#'medium': (Jun 15, 2015, 9:03 CEST)
+#'long': (Saturday Jun 15, 2015 at 9:03:01 CEST)
+SaveDateFormat: medium
 
-#In Minutes -1 is disable (0 is unlimited but can only be used if BantimeByPlaytime: true)
+#What bantime should players get if killed by player/monster/environment 
+#in Minutes, -1 is disable (0 is unlimited but can only be used if BantimeByPlaytime: true)
 PlayerDeathBantime: 7200
 MonsterDeathBantime: 2880
 EnvironmentDeathBantime: 4320
 
+#Should the ban time be calculated by playtime instead
 #If true, above times are used as max ban time
 BantimeByPlaytime: false
-#In Percent, minimum is 1
+#If true, time since last death will be used for calculating bantime instead of total playtime
+BantimeByPlaytimeSinceLastDeath: false
+#How much % of the BantimeByPlaytimeMinimum will be added to the bantime each BantimeByPlaytimeInterval
+#in Percent, minimum is 1
 BantimeByPlaytimePercent: 10
-#In Minutes, minimum is 1
+#At what rate of playtime/time since last death should the bantime increase
+#in Minutes, minimum is 1
 BantimeByPlaytimeInterval: 60
-#Linear or exponential
+#At what rate should the bantime by playtime grow
+#linear is slow overall, exponential is slow at start but quickly rises
+#linear or exponential
 BantimeByPlaytimeGrowth: exponential
-#In Minutes, minimum is 1
+#What should be the minimum amount of bantime
+#in minutes, minimum is 1
 BantimeByPlaytimeMinimumPlayerDeath: 72
 BantimeByPlaytimeMinimumMonsterDeath: 28
 BantimeByPlaytimeMinimumEnvironmentDeath: 43

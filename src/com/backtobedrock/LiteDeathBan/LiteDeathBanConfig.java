@@ -1,5 +1,7 @@
 package com.backtobedrock.LiteDeathBan;
 
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
@@ -22,8 +24,10 @@ public class LiteDeathBanConfig {
     private boolean NotifyOnRespawn;
     private boolean BantimeByPlaytime;
     private boolean CombatTag;
+    private boolean bantimeByPlaytimeSinceLastDeath;
     private String BantimeByPlaytimeGrowth;
     private String CombatTagWarningStyle;
+    private DateTimeFormatter saveDateFormat;
 
     public LiteDeathBanConfig(FileConfiguration fc) {
         this.config = fc;
@@ -113,6 +117,29 @@ public class LiteDeathBanConfig {
                         log.warning(String.format("[LiteDeathBan] %s has been changed to its default value (%s) due it not being configured as linear or exponential.", e.getKey(), "bossbar"));
                     }
                     break;
+                case "SaveDateFormat":
+                    switch (e.getValue().toString()) {
+                        case "short":
+                            this.saveDateFormat = DateTimeFormatter.ofPattern("MM/dd/yy',' HH:mm z").withZone(ZoneId.systemDefault());
+                            break;
+                        case "medium":
+                            this.saveDateFormat = DateTimeFormatter.ofPattern("MMM dd yyyy',' HH:mm z").withZone(ZoneId.systemDefault());
+                            break;
+                        case "long":
+                            this.saveDateFormat = DateTimeFormatter.ofPattern("EEEE MMM dd yyyy 'at' HH:mm:ss z").withZone(ZoneId.systemDefault());
+                            break;
+                        default:
+                            this.saveDateFormat = DateTimeFormatter.ofPattern("MMM dd yyyy',' HH:mm:ss z").withZone(ZoneId.systemDefault());
+                            log.warning(String.format("[LiteDeathBan] %s has been changed to its default value (%s) due it not being configured as short, medium or long.", e.getKey(), "medium"));
+                            break;
+                    }
+                    break;
+                case "BantimeByPlaytimeSinceLastDeath":
+                    if (this.BantimeByPlaytime) {
+                        this.bantimeByPlaytimeSinceLastDeath = this.checkBoolean(e.getValue(), false, e.getKey());
+                    } else {
+                        this.bantimeByPlaytimeSinceLastDeath = false;
+                    }
                 default:
                     break;
             }
@@ -199,4 +226,13 @@ public class LiteDeathBanConfig {
     public String getCombatTagWarningStyle() {
         return CombatTagWarningStyle;
     }
+
+    public boolean isBantimeByPlaytimeSinceLastDeath() {
+        return bantimeByPlaytimeSinceLastDeath;
+    }
+
+    public DateTimeFormatter getSaveDateFormat() {
+        return saveDateFormat;
+    }
+
 }

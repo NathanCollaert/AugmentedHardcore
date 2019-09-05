@@ -2,6 +2,7 @@ package com.backtobedrock.LiteDeathBan;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -86,12 +87,12 @@ public class LiteDeathBanCRUD {
         return this.totalDeathBans;
     }
 
-    public void setLastBanDate(Date date, boolean save) {
+    public void setLastBanDate(LocalDateTime date, boolean save) {
         FileConfiguration conf = this.getConfig();
         conf.set("uuid", player.getUniqueId().toString());
         conf.set("playername", player.getName());
-        conf.set("lastBanDate", date.toString());
-        this.lastBanDate = date.toString();
+        conf.set("lastBanDate", this.plugin.getLDBConfig().getSaveDateFormat().format(date));
+        this.lastBanDate = this.plugin.getLDBConfig().getSaveDateFormat().format(date);
         if (save) {
             this.saveConfig();
         }

@@ -4,19 +4,19 @@ version: 1.0.0
 author: Nathanisme
 website: www.backtobedrock.com
 #depend: [dynmap]
-prefix: LDB
+prefix: LiteDeathBan
 description: A very customizable and light weighted plugin that bans players on death
 api-version: 1.14
 commands:
     setpt:
         description: sets your current playtime [TESTING]
-        permission: ldb.setpt
+        permission: litedeathban.setpt
         usage: /<command> <timeInMinutes>
     
 permissions:
-    ldb.setpt:
+    litedeathban.setpt:
         default: op
-    ldb.bypass.ban:
+    litedeathban.bypass.ban:
         default: op
-    ldb.bypass.combatlog:
+    litedeathban.bypass.combatlog:
         default: op

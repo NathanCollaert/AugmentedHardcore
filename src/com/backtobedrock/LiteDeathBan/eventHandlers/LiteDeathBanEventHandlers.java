@@ -4,8 +4,9 @@ import com.backtobedrock.LiteDeathBan.LiteDeathBan;
 import com.backtobedrock.LiteDeathBan.LiteDeathBanCRUD;
 import com.backtobedrock.LiteDeathBan.helperClasses.CombatLogBossBarWarning;
 import com.backtobedrock.LiteDeathBan.helperClasses.CombatLogChatWarning;
-import java.util.Calendar;
-import java.util.Date;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 import java.util.logging.Logger;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -33,10 +34,12 @@ public class LiteDeathBanEventHandlers implements Listener {
     private final LiteDeathBan plugin;
     private static final Logger log = Bukkit.getLogger();
 
+    private final DateTimeFormatter saveDateFormat;
     private final String bantimeByPlaytimeGrowth;
     private final String combatLogWarningStyle;
     private final boolean combatLog;
     private final boolean bantimeByPlaytime;
+    private final boolean bantimeByPlaytimeSinceLastDeath;
     private final int playerDeathBantime;
     private final int monsterDeathBantime;
     private final int environmentDeathBantime;
@@ -62,6 +65,8 @@ public class LiteDeathBanEventHandlers implements Listener {
         this.bantimeByPlaytimePercent = this.plugin.getLDBConfig().getBantimeByPlaytimePercent();
         this.bantimeByPlaytime = this.plugin.getLDBConfig().isBantimeByPlaytime();
         this.combatLogWarningStyle = this.plugin.getLDBConfig().getCombatTagWarningStyle();
+        this.bantimeByPlaytimeSinceLastDeath = this.plugin.getLDBConfig().isBantimeByPlaytimeSinceLastDeath();
+        this.saveDateFormat = this.plugin.getLDBConfig().getSaveDateFormat();
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -124,7 +129,6 @@ public class LiteDeathBanEventHandlers implements Listener {
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent e) {
         LiteDeathBanCRUD crud = new LiteDeathBanCRUD(e.getPlayer(), this.plugin);
-        System.out.println(crud.getLives());
         if (crud.getLives() == 0) {
             crud.setLives(1, true);
         }
@@ -163,8 +167,7 @@ public class LiteDeathBanEventHandlers implements Listener {
     }
 
     private void deathBan(Player plyr) {
-        Calendar now = Calendar.getInstance();
-        now.setTime(new Date());
+        LocalDateTime now = LocalDateTime.now();
         if (this.plugin.doesTagListContain(plyr.getUniqueId())) {
             Bukkit.getScheduler().cancelTask(this.plugin.getFromTagList(plyr.getUniqueId()));
         }
@@ -177,12 +180,11 @@ public class LiteDeathBanEventHandlers implements Listener {
                     case -1:
                         break;
                     default:
-                        now.add(Calendar.MINUTE, bantime);
                         crud.setTotalDeathBans(crud.getTotalDeathBans() + 1, false);
-                        String banMessage = this.plugin.getMessages().getOnPlayerDeathBan(plyr.getName(), bantime, now.getTime(), crud.getLastBanDate(), crud.getTotalDeathBans());
-                        Bukkit.getBanList(BanList.Type.NAME).addBan(plyr.getName(), banMessage, now.getTime(), "LiteDeathBan");
+                        String banMessage = this.plugin.getMessages().getOnPlayerDeathBan(plyr.getName(), bantime, this.saveDateFormat.format(now.plusMinutes(bantime)), crud.getLastBanDate(), crud.getTotalDeathBans());
+                        Bukkit.getBanList(BanList.Type.NAME).addBan(plyr.getName(), banMessage, Timestamp.valueOf(now.plusMinutes(bantime)), "LiteDeathBan");
                         plyr.kickPlayer(banMessage);
-                        crud.setLastBanDate(new Date(), true);
+                        crud.setLastBanDate(now, true);
                         break;
                 }
             } else {
@@ -192,7 +194,21 @@ public class LiteDeathBanEventHandlers implements Listener {
     }
 
     private int getBanTime(Player plyr) {
-        if (this.bantimeByPlaytime) {
+        if (!this.bantimeByPlaytime && this.playerDeathBantime == this.monsterDeathBantime && this.monsterDeathBantime == this.environmentDeathBantime) {
+            return this.playerDeathBantime;
+        } else if (this.bantimeByPlaytimeSinceLastDeath) {
+            int amountOfIntervalsPassed = (plyr.getStatistic(Statistic.TIME_SINCE_DEATH) / 20 / 60) / this.bantimeByPlaytimeInterval;
+            switch (this.getDeathCause(plyr)) {
+                case "PLAYER":
+                    return this.linearVsExponentialBantime(this.bantimeByPlaytimeMinimumPlayerDeath, amountOfIntervalsPassed, this.playerDeathBantime);
+                case "MONSTER":
+                    return this.linearVsExponentialBantime(this.bantimeByPlaytimeMinimumMonsterDeath, amountOfIntervalsPassed, this.monsterDeathBantime);
+                case "ENVIRONMENT":
+                    return this.linearVsExponentialBantime(this.bantimeByPlaytimeMinimumEnvironmentDeath, amountOfIntervalsPassed, this.environmentDeathBantime);
+                default:
+                    return -1;
+            }
+        } else if (this.bantimeByPlaytime) {
             int amountOfIntervalsPassed = (plyr.getStatistic(Statistic.PLAY_ONE_MINUTE) / 20 / 60) / this.bantimeByPlaytimeInterval;
             switch (this.getDeathCause(plyr)) {
                 case "PLAYER":
