@@ -3,7 +3,6 @@ package com.backtobedrock.LiteDeathBan;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
@@ -21,14 +20,16 @@ public class LiteDeathBanCRUD {
     private OfflinePlayer player = null;
     private int lives;
     private int totalDeathBans;
-    private String lastBanDate;
+    private String lastBan;
+    private LocalDateTime lastRevive;
 
     public LiteDeathBanCRUD(OfflinePlayer player, LiteDeathBan plugin) {
         this.plugin = plugin;
         this.player = player;
         this.lives = this.getConfig().getInt("lives", 1);
         this.totalDeathBans = this.getConfig().getInt("totalDeathBans", 0);
-        this.lastBanDate = this.getConfig().getString("lastBanDate", "never");
+        this.lastBan = this.getConfig().getString("lastBan", "never");
+        this.lastRevive = LocalDateTime.parse(this.getConfig().getString("lastRevive", this.plugin.getLDBConfig().isReviveOptionOnFirstJoin() ? LocalDateTime.MIN.toString() : LocalDateTime.now().toString()));
     }
 
     public FileConfiguration getConfig() {
@@ -53,7 +54,8 @@ public class LiteDeathBanCRUD {
         conf.set("playername", player.getName());
         conf.set("lives", this.lives);
         conf.set("totalDeathBans", this.totalDeathBans);
-        conf.set("lastBanDate", this.lastBanDate);
+        conf.set("lastBan", this.lastBan);
+        conf.set("lastRevive", this.plugin.getLDBConfig().isReviveOptionOnFirstJoin() ? LocalDateTime.MIN.toString() : LocalDateTime.now().toString());
         this.saveConfig();
     }
 
@@ -92,14 +94,29 @@ public class LiteDeathBanCRUD {
         conf.set("uuid", player.getUniqueId().toString());
         conf.set("playername", player.getName());
         conf.set("lastBanDate", this.plugin.getLDBConfig().getSaveDateFormat().format(date));
-        this.lastBanDate = this.plugin.getLDBConfig().getSaveDateFormat().format(date);
+        this.lastBan = this.plugin.getLDBConfig().getSaveDateFormat().format(date);
         if (save) {
             this.saveConfig();
         }
     }
 
     public String getLastBanDate() {
-        return this.lastBanDate;
+        return this.lastBan;
+    }
+
+    public void setLastRevive(LocalDateTime date, boolean save) {
+        FileConfiguration conf = this.getConfig();
+        conf.set("uuid", player.getUniqueId().toString());
+        conf.set("playername", player.getName());
+        conf.set("lastRevive", date.toString());
+        this.lastRevive = date;
+        if (save) {
+            this.saveConfig();
+        }
+    }
+
+    public LocalDateTime getLastRevive() {
+        return this.lastRevive;
     }
 
     private File getFile() {

@@ -36,7 +36,6 @@ public class CombatLogBossBarWarning extends BukkitRunnable {
 
     @Override
     public void run() {
-        // What you want to schedule goes here
         if (this.counter > 0) {
             this.bar.setProgress((double) 1 / this.total * this.counter);
             this.counter--;

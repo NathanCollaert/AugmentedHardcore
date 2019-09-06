@@ -21,10 +21,15 @@ public class LiteDeathBanConfig {
     private int BantimeByPlaytimeMinimumMonsterDeath;
     private int BantimeByPlaytimeMinimumEnvironmentDeath;
     private int CombatTagTime;
+    private int BantimeOnReviveDeath;
+    private int TimeBetweenRevives;
+    private int MaxLives;
     private boolean NotifyOnRespawn;
     private boolean BantimeByPlaytime;
     private boolean CombatTag;
     private boolean bantimeByPlaytimeSinceLastDeath;
+    private boolean Revive;
+    private boolean ReviveOptionOnFirstJoin;
     private String BantimeByPlaytimeGrowth;
     private String CombatTagWarningStyle;
     private DateTimeFormatter saveDateFormat;
@@ -98,7 +103,7 @@ public class LiteDeathBanConfig {
                     }
                     break;
                 case "NotifyOnRespawn":
-                    this.NotifyOnRespawn = this.checkBoolean(e.getValue(), true, e.getKey());
+                    this.NotifyOnRespawn = this.checkBoolean(e.getKey(), e.getValue(), true);
                     break;
                 case "BantimeByPlaytimeGrowth":
                     if (e.getValue().toString().equalsIgnoreCase("linear") || e.getValue().toString().equalsIgnoreCase("exponential")) {
@@ -136,10 +141,26 @@ public class LiteDeathBanConfig {
                     break;
                 case "BantimeByPlaytimeSinceLastDeath":
                     if (this.BantimeByPlaytime) {
-                        this.bantimeByPlaytimeSinceLastDeath = this.checkBoolean(e.getValue(), false, e.getKey());
+                        this.bantimeByPlaytimeSinceLastDeath = this.checkBoolean(e.getKey(), e.getValue(), false);
                     } else {
                         this.bantimeByPlaytimeSinceLastDeath = false;
                     }
+                    break;
+                case "Revive":
+                    this.Revive = this.checkBoolean(e.getKey(), e.getValue(), true);
+                    break;
+                case "BantimeOnReviveDeath":
+                    this.BantimeOnReviveDeath = this.checkMin(e.getKey(), e.getValue(), 1, 4320);
+                    break;
+                case "TimeBetweenRevives":
+                    this.TimeBetweenRevives = this.checkMin(e.getKey(), e.getValue(), 0, 1440);
+                    break;
+                case "ReviveOptionOnFirstJoin":
+                    this.ReviveOptionOnFirstJoin = this.checkBoolean(e.getKey(), e.getValue(), false);
+                    break;
+                case "":
+                    this.MaxLives = this.checkMin(e.getKey(), e.getValue(), 1, 5);
+                    break;
                 default:
                     break;
             }
@@ -162,7 +183,7 @@ public class LiteDeathBanConfig {
         }
     }
 
-    private boolean checkBoolean(Object value, boolean defaultValue, String key) {
+    private boolean checkBoolean(String key, Object value, boolean defaultValue) {
         if (value instanceof Boolean) {
             return (boolean) value;
         } else {
@@ -235,4 +256,23 @@ public class LiteDeathBanConfig {
         return saveDateFormat;
     }
 
+    public int getBantimeOnReviveDeath() {
+        return BantimeOnReviveDeath;
+    }
+
+    public boolean isRevive() {
+        return Revive;
+    }
+
+    public int getTimeBetweenRevives() {
+        return TimeBetweenRevives;
+    }
+
+    public boolean isReviveOptionOnFirstJoin() {
+        return ReviveOptionOnFirstJoin;
+    }
+
+    public int getMaxLives() {
+        return MaxLives;
+    }
 }

@@ -3,20 +3,39 @@ name: LiteDeathBan
 version: 1.0.0
 author: Nathanisme
 website: www.backtobedrock.com
-#depend: [dynmap]
 prefix: LiteDeathBan
 description: A very customizable and light weighted plugin that bans players on death
 api-version: 1.14
 commands:
     setpt:
-        description: sets your current playtime [TESTING]
+        description: sets your current playtime [TESTING].
         permission: litedeathban.setpt
         usage: /<command> <timeInMinutes>
+    revive:
+        description: Transfer one of your lives to another player.
+        permission: litedeathban.revive
+        usage: /<command> <player>
+    setlives:
+        description: Give a player lives.
+        permission: litedeathban.setlives
+        usage: /<command> <player> <amount>
+    lives:
+        description: Check your current amount of lives.
+        permission: litedeathban.lives
+        usage: /<command> [playername]
     
 permissions:
     litedeathban.setpt:
-        default: op
+        default: true
     litedeathban.bypass.ban:
-        default: op
+        default: false
     litedeathban.bypass.combatlog:
+        default: false
+    litedeathban.revive:
+        default: false
+    litedeathban.setlives:
+        default: op
+    litedeathban.lives:
+        default: false
+    litedeathban.lives.other:
         default: op

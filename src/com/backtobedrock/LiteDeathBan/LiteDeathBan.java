@@ -2,6 +2,8 @@ package com.backtobedrock.LiteDeathBan;
 
 import java.io.File;
 import com.backtobedrock.LiteDeathBan.eventHandlers.LiteDeathBanEventHandlers;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeMap;
 import java.util.UUID;
 import org.bukkit.boss.BossBar;
@@ -14,9 +16,12 @@ public class LiteDeathBan extends JavaPlugin implements Listener {
 
     private LiteDeathBanConfig config;
     private LiteDeathBanMessages messages;
-    private final LiteDeathBanCommands commands = new LiteDeathBanCommands(this);
+    private LiteDeathBanCommands commands;
     private final TreeMap<UUID, Integer> tagList = new TreeMap<>();
     private final TreeMap<UUID, BossBar> bars = new TreeMap<>();
+    private final TreeMap<UUID, String> confirmationList = new TreeMap<>();
+    private final TreeMap<UUID, Integer> confirmationRunners = new TreeMap<>();
+    private final List<UUID> usedRevive = new ArrayList<>();
 
     @Override
     public void onEnable() {
@@ -32,6 +37,7 @@ public class LiteDeathBan extends JavaPlugin implements Listener {
 
         this.config = new LiteDeathBanConfig(getConfig());
         this.messages = new LiteDeathBanMessages(this);
+        this.commands = new LiteDeathBanCommands(this);
 
         getServer().getPluginManager().registerEvents(new LiteDeathBanEventHandlers(this), this);
         super.onEnable(); //To change body of generated methods, choose Tools | Templates.
@@ -78,5 +84,36 @@ public class LiteDeathBan extends JavaPlugin implements Listener {
 
     public void addBar(UUID id, BossBar bar) {
         this.bars.put(id, bar);
+    }
+
+    public void addToConfirmation(UUID plyrID, String name, int id) {
+        this.confirmationList.put(plyrID, name);
+        this.confirmationRunners.put(plyrID, id);
+
+    }
+
+    public void removeFromConfirmation(UUID plyrID) {
+        this.confirmationList.remove(plyrID);
+        this.confirmationRunners.remove(plyrID);
+    }
+
+    public String getFromConfirmation(UUID plyrID) {
+        return this.confirmationList.get(plyrID);
+    }
+
+    public boolean doesConfirmationContain(UUID plyrID) {
+        return this.confirmationList.containsKey(plyrID);
+    }
+
+    public void addToUsedRevive(UUID plyrID) {
+        this.usedRevive.add(plyrID);
+    }
+
+    public void removeFromUsedRevive(UUID plyrID) {
+        this.usedRevive.remove(plyrID);
+    }
+
+    public boolean doesUsedReviveContain(UUID plyrID) {
+        return this.usedRevive.contains(plyrID);
     }
 }
