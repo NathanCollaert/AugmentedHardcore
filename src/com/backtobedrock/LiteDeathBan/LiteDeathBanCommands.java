@@ -86,8 +86,7 @@ public class LiteDeathBanCommands {
                                     if (!containsConfirmation) {
                                         BukkitTask chatTask = new ReviveChatWarning(this.plugin, sender).runTaskLater(this.plugin, 7 * 20);
                                         this.plugin.addToConfirmation(sender.getUniqueId(), arg, chatTask.getTaskId());
-                                        sender.spigot().sendMessage(
-                                                new ComponentBuilder("Would you really like to give a life to " + arg + "?\n").color(ChatColor.GOLD).append("[Confirm]").color(ChatColor.GREEN).event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/revive " + arg + " confirm")).event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to confirm revive").create())).append(" / or execute the following command ").color(ChatColor.GOLD).append("/revive " + arg + " confirm").color(ChatColor.AQUA).event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/revive " + arg + " confirm")).event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to use command").create())).create());
+                                        sender.spigot().sendMessage(new ComponentBuilder("Would you really like to give a life to " + arg + "?\n").color(ChatColor.GOLD).append("[Confirm]").color(ChatColor.GREEN).event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/revive " + arg + " confirm")).event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to confirm revive").create())).append(" / or execute the following command ").color(ChatColor.GOLD).append("/revive " + arg + " confirm").color(ChatColor.AQUA).event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/revive " + arg + " confirm")).event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to use command").create())).create());
                                     } else {
                                         if (this.plugin.getFromConfirmation(sender.getUniqueId()).equalsIgnoreCase(arg)) {
                                             sender.spigot().sendMessage(new ComponentBuilder("already reviving this player").create());
@@ -96,7 +95,7 @@ public class LiteDeathBanCommands {
                                             this.plugin.removeFromConfirmation(sender.getUniqueId());
                                             BukkitTask chatTask = new ReviveChatWarning(this.plugin, sender).runTaskLater(this.plugin, 7 * 20);
                                             this.plugin.addToConfirmation(sender.getUniqueId(), arg, chatTask.getTaskId());
-                                            sender.spigot().sendMessage(new ComponentBuilder("please do /revive %player% confirm").create());
+                                            sender.spigot().sendMessage(new ComponentBuilder("Would you really like to give a life to " + arg + "?\n").color(ChatColor.GOLD).append("[Confirm]").color(ChatColor.GREEN).event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/revive " + arg + " confirm")).event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to confirm revive").create())).append(" / or execute the following command ").color(ChatColor.GOLD).append("/revive " + arg + " confirm").color(ChatColor.AQUA).event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/revive " + arg + " confirm")).event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to use command").create())).create());
                                         }
                                     }
                                 } else {
@@ -104,10 +103,10 @@ public class LiteDeathBanCommands {
                                             .color(ChatColor.RED).create());
                                 }
                             } else {
-                                sender.spigot().sendMessage(new ComponentBuilder(playerToRevive.getName() + " has never played on this server before.").color(ChatColor.RED).create());
+                                sender.spigot().sendMessage(new ComponentBuilder(playerToRevive.getName() + " already has the maximum amount of lives.").color(ChatColor.RED).create());
                             }
                         } else {
-                            sender.spigot().sendMessage(new ComponentBuilder(playerToRevive.getName() + " already has the maximum amount of lives.").color(ChatColor.RED).create());
+                            sender.spigot().sendMessage(new ComponentBuilder(playerToRevive.getName() + " has never played on this server before.").color(ChatColor.RED).create());
                         }
                     } else {
                         sender.spigot().sendMessage(new ComponentBuilder("You cannot revive yourself.").color(ChatColor.RED).create());
@@ -124,6 +123,7 @@ public class LiteDeathBanCommands {
                         cs.spigot().sendMessage(new ComponentBuilder(arg + " has never played on this server before.").color(ChatColor.RED).create());
                     }
                 }
+                return true;
             default:
                 return false;
         }
@@ -157,7 +157,7 @@ public class LiteDeathBanCommands {
                             ((Player) plyr).setHealth(0.0D);
                             cs.spigot().sendMessage(new ComponentBuilder(args[0] + " has been killed.").color(ChatColor.GOLD).create());
                         } else if (amount > 0) {
-                            if (amount < this.maxLives) {
+                            if (amount <= this.maxLives) {
                                 crud.setLives(amount, true);
                                 cs.spigot().sendMessage(new ComponentBuilder(args[0] + "'s lives has been set to " + amount + ".").color(ChatColor.GOLD).create());
                             } else {

@@ -30,6 +30,7 @@ public class LiteDeathBanConfig {
     private boolean bantimeByPlaytimeSinceLastDeath;
     private boolean Revive;
     private boolean ReviveOptionOnFirstJoin;
+    private boolean CombatTagPlayerKickDeath;
     private String BantimeByPlaytimeGrowth;
     private String CombatTagWarningStyle;
     private DateTimeFormatter saveDateFormat;
@@ -150,7 +151,7 @@ public class LiteDeathBanConfig {
                     this.Revive = this.checkBoolean(e.getKey(), e.getValue(), true);
                     break;
                 case "BantimeOnReviveDeath":
-                    this.BantimeOnReviveDeath = this.checkMin(e.getKey(), e.getValue(), 1, 4320);
+                    this.BantimeOnReviveDeath = this.checkMin(e.getKey(), e.getValue(), 1, 7200);
                     break;
                 case "TimeBetweenRevives":
                     this.TimeBetweenRevives = this.checkMin(e.getKey(), e.getValue(), 0, 1440);
@@ -158,9 +159,11 @@ public class LiteDeathBanConfig {
                 case "ReviveOptionOnFirstJoin":
                     this.ReviveOptionOnFirstJoin = this.checkBoolean(e.getKey(), e.getValue(), false);
                     break;
-                case "":
+                case "MaxLives":
                     this.MaxLives = this.checkMin(e.getKey(), e.getValue(), 1, 5);
                     break;
+                case "CombatTagPlayerKickDeath":
+                    this.CombatTagPlayerKickDeath = this.checkBoolean(e.getKey(), e.getValue(), false);
                 default:
                     break;
             }
@@ -274,5 +277,9 @@ public class LiteDeathBanConfig {
 
     public int getMaxLives() {
         return MaxLives;
+    }
+
+    public boolean isCombatTagPlayerKickDeath() {
+        return CombatTagPlayerKickDeath;
     }
 }

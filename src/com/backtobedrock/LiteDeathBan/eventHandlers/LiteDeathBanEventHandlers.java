@@ -7,6 +7,7 @@ import com.backtobedrock.LiteDeathBan.helperClasses.CombatLogChatWarning;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.UUID;
 import java.util.logging.Logger;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -24,22 +25,25 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.scheduler.BukkitTask;
 
 public class LiteDeathBanEventHandlers implements Listener {
-
+    
     private final LiteDeathBan plugin;
     private static final Logger log = Bukkit.getLogger();
-
+    private final ArrayList<UUID> kickList = new ArrayList<>();
+    
     private final DateTimeFormatter saveDateFormat;
     private final String bantimeByPlaytimeGrowth;
     private final String combatLogWarningStyle;
     private final boolean combatLog;
     private final boolean bantimeByPlaytime;
     private final boolean bantimeByPlaytimeSinceLastDeath;
+    private final boolean combatTagPlayerKickDeath;
     private final int playerDeathBantime;
     private final int monsterDeathBantime;
     private final int environmentDeathBantime;
@@ -50,7 +54,7 @@ public class LiteDeathBanEventHandlers implements Listener {
     private final int combatLogTime;
     private final int bantimeByPlaytimePercent;
     private final int bantimeOnReviveDeath;
-
+    
     public LiteDeathBanEventHandlers(LiteDeathBan plugin) {
         this.plugin = plugin;
         this.combatLog = this.plugin.getLDBConfig().isCombatTag();
@@ -69,22 +73,23 @@ public class LiteDeathBanEventHandlers implements Listener {
         this.bantimeByPlaytimeSinceLastDeath = this.plugin.getLDBConfig().isBantimeByPlaytimeSinceLastDeath();
         this.saveDateFormat = this.plugin.getLDBConfig().getSaveDateFormat();
         this.bantimeOnReviveDeath = this.plugin.getLDBConfig().getBantimeOnReviveDeath();
+        this.combatTagPlayerKickDeath = this.plugin.getLDBConfig().isCombatTagPlayerKickDeath();
     }
-
+    
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerLogin(PlayerLoginEvent e) {
         if (e.getResult() == PlayerLoginEvent.Result.KICK_BANNED) {
             e.setKickMessage(Bukkit.getBanList(BanList.Type.NAME).getBanEntry(e.getPlayer().getName()).getReason());
         }
     }
-
+    
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
         if (!LiteDeathBanCRUD.doesPlayerDataExists(e.getPlayer().getUniqueId().toString(), this.plugin)) {
             new LiteDeathBanCRUD(e.getPlayer(), this.plugin).setNewStart();
         }
     }
-
+    
     @EventHandler
     public void onPlayerDamageEvent(EntityDamageEvent e) {
         if (e.getEntity() instanceof Player) {
@@ -114,34 +119,41 @@ public class LiteDeathBanEventHandlers implements Listener {
             }
         }
     }
-
+    
+    @EventHandler
+    public void onPlayerKick(PlayerKickEvent e) {
+        if (!this.combatTagPlayerKickDeath) {
+            this.kickList.add(e.getPlayer().getUniqueId());
+        }
+    }
+    
     @EventHandler
     public void onPlayerQuitEvent(PlayerQuitEvent e) {
         Player plyr = e.getPlayer();
-        if (!e.getPlayer().hasPermission("ldb.bypass.combatlog") && this.combatLog && this.plugin.doesTagListContain(plyr.getUniqueId())) {
+        if (this.combatLog && this.plugin.doesTagListContain(plyr.getUniqueId()) && !e.getPlayer().hasPermission("litedeathban.bypass.combatlog") && !plyr.isBanned() && !this.kickList.contains(plyr.getUniqueId())) {
             plyr.setHealth(0.0D);
         }
     }
-
+    
     @EventHandler
     public void onPlayerDeathEvent(PlayerDeathEvent e) {
         this.deathBan(e.getEntity());
     }
-
+    
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent e) {
         LiteDeathBanCRUD crud = new LiteDeathBanCRUD(e.getPlayer(), this.plugin);
         if (crud.getLives() == 0) {
             crud.setLives(1, true);
         }
-        if (this.plugin.getLDBConfig().isNotifyOnRespawn() && !e.getPlayer().hasPermission("ldb.bypass.ban")) {
+        if (this.plugin.getLDBConfig().isNotifyOnRespawn() && !e.getPlayer().hasPermission("litedeathban.bypass.ban")) {
             e.getPlayer().spigot().sendMessage(new ComponentBuilder(this.plugin.getMessages().getOnPlayerRespawn(e.getPlayer().getName(), crud.getLives())).create());
         }
     }
-
+    
     private void tagPlayer(Player plyr, String taggedBy) {
         UUID plyrID = plyr.getUniqueId();
-        if (plyr.getHealth() != 0D && !plyr.hasPermission("ldb.bypass.combatlog")) {
+        if (plyr.getHealth() != 0D && !plyr.hasPermission("litedeathban.bypass.combatlog")) {
             boolean containsTag = this.plugin.doesTagListContain(plyrID);
             switch (this.combatLogWarningStyle.toLowerCase()) {
                 case "none":
@@ -154,7 +166,7 @@ public class LiteDeathBanEventHandlers implements Listener {
                     BukkitTask bossBarTask = new CombatLogBossBarWarning(this.plugin, this.combatLogTime, plyr, taggedBy).runTaskTimer(this.plugin, 0, 20);
                     this.plugin.addToTagList(plyr.getUniqueId(), bossBarTask.getTaskId());
                     break;
-
+                
                 case "chat":
                     if (!containsTag) {
                         plyr.spigot().sendMessage(new ComponentBuilder(this.plugin.getMessages().getOnCombatTaggedChat(plyr.getName(), taggedBy, this.combatLogTime)).create());
@@ -168,13 +180,10 @@ public class LiteDeathBanEventHandlers implements Listener {
             }
         }
     }
-
+    
     private void deathBan(Player plyr) {
         LocalDateTime now = LocalDateTime.now();
-        if (this.plugin.doesTagListContain(plyr.getUniqueId())) {
-            Bukkit.getScheduler().cancelTask(this.plugin.getFromTagList(plyr.getUniqueId()));
-        }
-        if (!plyr.hasPermission("ldb.bypass.ban")) {
+        if (!plyr.hasPermission("litedeathban.bypass.ban")) {
             LiteDeathBanCRUD crud = new LiteDeathBanCRUD(plyr, this.plugin);
             crud.setLives(crud.getLives() - 1, false);
             if (crud.getLives() == 0) {
@@ -193,10 +202,13 @@ public class LiteDeathBanEventHandlers implements Listener {
             } else {
                 crud.saveConfig();
             }
-            this.plugin.removeFromTagList(plyr.getUniqueId());
+            if (this.plugin.doesTagListContain(plyr.getUniqueId())) {
+                Bukkit.getScheduler().cancelTask(this.plugin.getFromTagList(plyr.getUniqueId()));
+                this.plugin.removeFromTagList(plyr.getUniqueId());
+            }
         }
     }
-
+    
     private int getBanTime(Player plyr) {
         if (this.plugin.doesTagListContain(plyr.getUniqueId())) {
             int bantime;
@@ -247,7 +259,7 @@ public class LiteDeathBanEventHandlers implements Listener {
             }
         }
     }
-
+    
     private String getDeathCause(Player plyr) {
         EntityDamageEvent lastDamageCause = plyr.getLastDamageCause();
         if (lastDamageCause != null) {
@@ -279,11 +291,11 @@ public class LiteDeathBanEventHandlers implements Listener {
                 return "ENVIRONMENT";
             }
         } else {
-            log.warning("[LiteDeathBan] Something went wrong, please contact the plugin author with the following code: 404");
+//            log.severe("[LiteDeathBan] Something went wrong, please contact the plugin author with the following code: 404. And tell him what you did.");
             return "OTHER";
         }
     }
-
+    
     public static int linearVsExponentialBantime(int min, int intervalsPassed, int max, String growth, int percent) {
         switch (growth) {
             case "linear":
