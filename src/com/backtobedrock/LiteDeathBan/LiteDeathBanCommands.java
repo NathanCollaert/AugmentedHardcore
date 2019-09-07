@@ -141,6 +141,7 @@ public class LiteDeathBanCommands {
                     if (personInConfirmationList.equalsIgnoreCase(args[0])) {
                         this.plugin.removeFromConfirmation(sender.getUniqueId());
                         this.revivePlayer(sender, Bukkit.getOfflinePlayer(personInConfirmationList));
+                        sender.spigot().sendMessage(new ComponentBuilder("You've given a live to  " + args[0] + ".").color(ChatColor.GOLD).create());
                     } else {
                         sender.spigot().sendMessage(new ComponentBuilder("The player you wanted to revive was not " + args[0] + ".").color(ChatColor.RED).create());
                     }
@@ -193,7 +194,9 @@ public class LiteDeathBanCommands {
             LiteDeathBanCRUD crudPlayerBeingRevived = new LiteDeathBanCRUD(playerBeingRevived, this.plugin);
             crudPlayerBeingRevived.setLives(crudPlayerBeingRevived.getLives() + 1, true);
             if (crudPlayerBeingRevived.getLives() == this.maxLives && playerBeingRevived.isOnline()) {
-                ((Player) playerBeingRevived).spigot().sendMessage(new ComponentBuilder("You have reached the maximum amount of lives!").color(ChatColor.RED).create());
+                ((Player) playerBeingRevived).spigot().sendMessage(new ComponentBuilder("You have reached the maximum amount of lives!").color(ChatColor.GOLD).create());
+            } else {
+                ((Player) playerBeingRevived).spigot().sendMessage(new ComponentBuilder("You have received an extra live from " + sender.getName() + ". Your total live count is now " + crudPlayerBeingRevived.getLives()).color(ChatColor.GOLD).create());
             }
         }
     }
