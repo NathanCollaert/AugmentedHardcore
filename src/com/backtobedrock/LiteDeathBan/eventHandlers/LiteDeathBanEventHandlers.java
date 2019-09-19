@@ -44,6 +44,7 @@ public class LiteDeathBanEventHandlers implements Listener {
     private final boolean bantimeByPlaytime;
     private final boolean bantimeByPlaytimeSinceLastDeath;
     private final boolean combatTagPlayerKickDeath;
+    private final boolean combatTagSelf;
     private final int playerDeathBantime;
     private final int monsterDeathBantime;
     private final int environmentDeathBantime;
@@ -74,6 +75,7 @@ public class LiteDeathBanEventHandlers implements Listener {
         this.saveDateFormat = this.plugin.getLDBConfig().getSaveDateFormat();
         this.bantimeOnReviveDeath = this.plugin.getLDBConfig().getBantimeOnReviveDeath();
         this.combatTagPlayerKickDeath = this.plugin.getLDBConfig().isCombatTagPlayerKickDeath();
+        this.combatTagSelf = this.plugin.getLDBConfig().isCombatTagSelf();
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -153,7 +155,7 @@ public class LiteDeathBanEventHandlers implements Listener {
 
     private void tagPlayer(Player plyr, String taggedBy) {
         UUID plyrID = plyr.getUniqueId();
-        if (plyr.getHealth() != 0D && !plyr.hasPermission("litedeathban.bypass.combatlog")) {
+        if (!(!this.combatTagSelf && plyr.getName().equals(taggedBy)) && plyr.getHealth() != 0D && !plyr.hasPermission("litedeathban.bypass.combatlog")) {
             boolean containsTag = this.plugin.doesTagListContain(plyrID);
             switch (this.combatLogWarningStyle.toLowerCase()) {
                 case "none":

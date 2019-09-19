@@ -31,6 +31,7 @@ public class LiteDeathBanConfig {
     private boolean Revive;
     private boolean ReviveOptionOnFirstJoin;
     private boolean CombatTagPlayerKickDeath;
+    private boolean CombatTagSelf;
     private String BantimeByPlaytimeGrowth;
     private String CombatTagWarningStyle;
     private DateTimeFormatter saveDateFormat;
@@ -164,6 +165,8 @@ public class LiteDeathBanConfig {
                     break;
                 case "CombatTagPlayerKickDeath":
                     this.CombatTagPlayerKickDeath = this.checkBoolean(e.getKey(), e.getValue(), false);
+                case "CombatTagSelf":
+                    this.CombatTagSelf = this.checkBoolean(e.getKey(), e.getValue(), false);
                 default:
                     break;
             }
@@ -281,5 +284,9 @@ public class LiteDeathBanConfig {
 
     public boolean isCombatTagPlayerKickDeath() {
         return CombatTagPlayerKickDeath;
+    }
+
+    public boolean isCombatTagSelf() {
+        return CombatTagSelf;
     }
 }

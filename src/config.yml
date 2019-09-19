@@ -40,6 +40,8 @@ BantimeByPlaytimeMinimumEnvironmentDeath: 43
 #Should players die and receive PlayerDeathBantime if they log out while in combat with another player?
 #They will also receive PlayerDeathBantime if killed by a monster or environment during this time.
 CombatTag: true
+#Should players be able to combat tag themselves?
+CombatTagSelf: false
 #How long should a player be tagged for after combat?
 #In Seconds, minimum is 1.
 CombatTagTime: 10
