@@ -67,11 +67,6 @@ public class LiteDeathBanCommands {
             sender = (Player) cs;
         }
         switch (cmnd.getName().toLowerCase()) {
-            case "setpt":
-                if (sender != null) {
-                    sender.setStatistic(Statistic.PLAY_ONE_MINUTE, Integer.parseInt(arg) * 60 * 20);
-                    return true;
-                }
             case "revive":
                 OfflinePlayer playerToRevive = Bukkit.getOfflinePlayer(arg);
                 if (sender != null) {

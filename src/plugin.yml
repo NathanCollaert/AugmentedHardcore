@@ -7,16 +7,12 @@ prefix: LiteDeathBan
 description: A very customizable and light weighted plugin that bans players on death
 api-version: 1.14
 commands:
-    setpt:
-        description: sets your current playtime [TESTING].
-        permission: litedeathban.setpt
-        usage: /<command> <timeInMinutes>
     revive:
         description: Transfer one of your lives to another player.
         permission: litedeathban.revive
         usage: /<command> <player>
     setlives:
-        description: Give a player lives.
+        description: Set the amount of lives a player has.
         permission: litedeathban.setlives
         usage: /<command> <player> <amount>
     lives:
@@ -25,8 +21,6 @@ commands:
         usage: /<command> [playername]
     
 permissions:
-    litedeathban.setpt:
-        default: true
     litedeathban.bypass.ban:
         default: false
     litedeathban.bypass.combatlog:
