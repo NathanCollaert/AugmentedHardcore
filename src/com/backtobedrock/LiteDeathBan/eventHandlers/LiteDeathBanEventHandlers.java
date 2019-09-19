@@ -32,11 +32,11 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.scheduler.BukkitTask;
 
 public class LiteDeathBanEventHandlers implements Listener {
-    
+
     private final LiteDeathBan plugin;
     private static final Logger log = Bukkit.getLogger();
     private final ArrayList<UUID> kickList = new ArrayList<>();
-    
+
     private final DateTimeFormatter saveDateFormat;
     private final String bantimeByPlaytimeGrowth;
     private final String combatLogWarningStyle;
@@ -54,7 +54,7 @@ public class LiteDeathBanEventHandlers implements Listener {
     private final int combatLogTime;
     private final int bantimeByPlaytimePercent;
     private final int bantimeOnReviveDeath;
-    
+
     public LiteDeathBanEventHandlers(LiteDeathBan plugin) {
         this.plugin = plugin;
         this.combatLog = this.plugin.getLDBConfig().isCombatTag();
@@ -75,21 +75,21 @@ public class LiteDeathBanEventHandlers implements Listener {
         this.bantimeOnReviveDeath = this.plugin.getLDBConfig().getBantimeOnReviveDeath();
         this.combatTagPlayerKickDeath = this.plugin.getLDBConfig().isCombatTagPlayerKickDeath();
     }
-    
+
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerLogin(PlayerLoginEvent e) {
         if (e.getResult() == PlayerLoginEvent.Result.KICK_BANNED) {
             e.setKickMessage(Bukkit.getBanList(BanList.Type.NAME).getBanEntry(e.getPlayer().getName()).getReason());
         }
     }
-    
+
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
         if (!LiteDeathBanCRUD.doesPlayerDataExists(e.getPlayer().getUniqueId().toString(), this.plugin)) {
             new LiteDeathBanCRUD(e.getPlayer(), this.plugin).setNewStart();
         }
     }
-    
+
     @EventHandler
     public void onPlayerDamageEvent(EntityDamageEvent e) {
         if (e.getEntity() instanceof Player) {
@@ -119,14 +119,14 @@ public class LiteDeathBanEventHandlers implements Listener {
             }
         }
     }
-    
+
     @EventHandler
     public void onPlayerKick(PlayerKickEvent e) {
         if (!this.combatTagPlayerKickDeath) {
             this.kickList.add(e.getPlayer().getUniqueId());
         }
     }
-    
+
     @EventHandler
     public void onPlayerQuitEvent(PlayerQuitEvent e) {
         Player plyr = e.getPlayer();
@@ -134,12 +134,12 @@ public class LiteDeathBanEventHandlers implements Listener {
             plyr.setHealth(0.0D);
         }
     }
-    
+
     @EventHandler
     public void onPlayerDeathEvent(PlayerDeathEvent e) {
         this.deathBan(e.getEntity());
     }
-    
+
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent e) {
         LiteDeathBanCRUD crud = new LiteDeathBanCRUD(e.getPlayer(), this.plugin);
@@ -150,7 +150,7 @@ public class LiteDeathBanEventHandlers implements Listener {
             e.getPlayer().spigot().sendMessage(new ComponentBuilder(this.plugin.getMessages().getOnPlayerRespawn(e.getPlayer().getName(), crud.getLives())).create());
         }
     }
-    
+
     private void tagPlayer(Player plyr, String taggedBy) {
         UUID plyrID = plyr.getUniqueId();
         if (plyr.getHealth() != 0D && !plyr.hasPermission("litedeathban.bypass.combatlog")) {
@@ -166,7 +166,7 @@ public class LiteDeathBanEventHandlers implements Listener {
                     BukkitTask bossBarTask = new CombatLogBossBarWarning(this.plugin, this.combatLogTime, plyr, taggedBy).runTaskTimer(this.plugin, 0, 20);
                     this.plugin.addToTagList(plyr.getUniqueId(), bossBarTask.getTaskId());
                     break;
-                
+
                 case "chat":
                     if (!containsTag) {
                         plyr.spigot().sendMessage(new ComponentBuilder(this.plugin.getMessages().getOnCombatTaggedChat(plyr.getName(), taggedBy, this.combatLogTime)).create());
@@ -180,7 +180,7 @@ public class LiteDeathBanEventHandlers implements Listener {
             }
         }
     }
-    
+
     private void deathBan(Player plyr) {
         LocalDateTime now = LocalDateTime.now();
         if (!plyr.hasPermission("litedeathban.bypass.ban")) {
@@ -195,7 +195,9 @@ public class LiteDeathBanEventHandlers implements Listener {
                         crud.setTotalDeathBans(crud.getTotalDeathBans() + 1, false);
                         String banMessage = this.plugin.getMessages().getOnPlayerDeathBan(plyr.getName(), bantime, this.saveDateFormat.format(now.plusMinutes(bantime)), crud.getLastBanDate(), crud.getTotalDeathBans());
                         Bukkit.getBanList(BanList.Type.NAME).addBan(plyr.getName(), banMessage, Timestamp.valueOf(now.plusMinutes(bantime)), "LiteDeathBan");
-                        plyr.kickPlayer(banMessage);
+                        Bukkit.getScheduler().runTask(this.plugin, () -> {
+                            plyr.kickPlayer(banMessage);
+                        });
                         crud.setLastBanDate(now, true);
                         break;
                 }
@@ -208,16 +210,16 @@ public class LiteDeathBanEventHandlers implements Listener {
             }
         }
     }
-    
+
     private int getBanTime(Player plyr) {
         if (this.plugin.doesTagListContain(plyr.getUniqueId())) {
             int bantime;
             if (this.bantimeByPlaytime && this.bantimeByPlaytimeSinceLastDeath) {
                 int amountOfIntervalsPassed = (plyr.getStatistic(Statistic.TIME_SINCE_DEATH) / 20 / 60) / this.bantimeByPlaytimeInterval;
-                bantime = LiteDeathBanEventHandlers.linearVsExponentialBantime(this.bantimeByPlaytimeMinimumPlayerDeath, amountOfIntervalsPassed, this.playerDeathBantime, this.bantimeByPlaytimeGrowth, this.bantimeByPlaytimePercent);
+                bantime = this.linearVsExponentialBantime(this.bantimeByPlaytimeMinimumPlayerDeath, amountOfIntervalsPassed, this.playerDeathBantime, this.bantimeByPlaytimeGrowth, this.bantimeByPlaytimePercent);
             } else if (this.bantimeByPlaytime) {
                 int amountOfIntervalsPassed = (plyr.getStatistic(Statistic.PLAY_ONE_MINUTE) / 20 / 60) / this.bantimeByPlaytimeInterval;
-                bantime = LiteDeathBanEventHandlers.linearVsExponentialBantime(this.bantimeByPlaytimeMinimumPlayerDeath, amountOfIntervalsPassed, this.playerDeathBantime, this.bantimeByPlaytimeGrowth, this.bantimeByPlaytimePercent);
+                bantime = this.linearVsExponentialBantime(this.bantimeByPlaytimeMinimumPlayerDeath, amountOfIntervalsPassed, this.playerDeathBantime, this.bantimeByPlaytimeGrowth, this.bantimeByPlaytimePercent);
             } else {
                 bantime = this.playerDeathBantime;
             }
@@ -232,21 +234,21 @@ public class LiteDeathBanEventHandlers implements Listener {
             int amountOfIntervalsPassed = (plyr.getStatistic(Statistic.TIME_SINCE_DEATH) / 20 / 60) / this.bantimeByPlaytimeInterval;
             switch (this.getDeathCause(plyr)) {
                 case "MONSTER":
-                    return LiteDeathBanEventHandlers.linearVsExponentialBantime(this.bantimeByPlaytimeMinimumMonsterDeath, amountOfIntervalsPassed, this.monsterDeathBantime, this.bantimeByPlaytimeGrowth, this.bantimeByPlaytimePercent);
+                    return this.linearVsExponentialBantime(this.bantimeByPlaytimeMinimumMonsterDeath, amountOfIntervalsPassed, this.monsterDeathBantime, this.bantimeByPlaytimeGrowth, this.bantimeByPlaytimePercent);
                 case "ENVIRONMENT":
-                    return LiteDeathBanEventHandlers.linearVsExponentialBantime(this.bantimeByPlaytimeMinimumEnvironmentDeath, amountOfIntervalsPassed, this.environmentDeathBantime, this.bantimeByPlaytimeGrowth, this.bantimeByPlaytimePercent);
+                    return this.linearVsExponentialBantime(this.bantimeByPlaytimeMinimumEnvironmentDeath, amountOfIntervalsPassed, this.environmentDeathBantime, this.bantimeByPlaytimeGrowth, this.bantimeByPlaytimePercent);
                 default:
-                    return LiteDeathBanEventHandlers.linearVsExponentialBantime(this.bantimeByPlaytimeMinimumPlayerDeath, amountOfIntervalsPassed, this.playerDeathBantime, this.bantimeByPlaytimeGrowth, this.bantimeByPlaytimePercent);
+                    return this.linearVsExponentialBantime(this.bantimeByPlaytimeMinimumPlayerDeath, amountOfIntervalsPassed, this.playerDeathBantime, this.bantimeByPlaytimeGrowth, this.bantimeByPlaytimePercent);
             }
         } else if (this.bantimeByPlaytime) {
             int amountOfIntervalsPassed = (plyr.getStatistic(Statistic.PLAY_ONE_MINUTE) / 20 / 60) / this.bantimeByPlaytimeInterval;
             switch (this.getDeathCause(plyr)) {
                 case "MONSTER":
-                    return LiteDeathBanEventHandlers.linearVsExponentialBantime(this.bantimeByPlaytimeMinimumMonsterDeath, amountOfIntervalsPassed, this.monsterDeathBantime, this.bantimeByPlaytimeGrowth, this.bantimeByPlaytimePercent);
+                    return this.linearVsExponentialBantime(this.bantimeByPlaytimeMinimumMonsterDeath, amountOfIntervalsPassed, this.monsterDeathBantime, this.bantimeByPlaytimeGrowth, this.bantimeByPlaytimePercent);
                 case "ENVIRONMENT":
-                    return LiteDeathBanEventHandlers.linearVsExponentialBantime(this.bantimeByPlaytimeMinimumEnvironmentDeath, amountOfIntervalsPassed, this.environmentDeathBantime, this.bantimeByPlaytimeGrowth, this.bantimeByPlaytimePercent);
+                    return this.linearVsExponentialBantime(this.bantimeByPlaytimeMinimumEnvironmentDeath, amountOfIntervalsPassed, this.environmentDeathBantime, this.bantimeByPlaytimeGrowth, this.bantimeByPlaytimePercent);
                 default:
-                    return LiteDeathBanEventHandlers.linearVsExponentialBantime(this.bantimeByPlaytimeMinimumPlayerDeath, amountOfIntervalsPassed, this.playerDeathBantime, this.bantimeByPlaytimeGrowth, this.bantimeByPlaytimePercent);
+                    return this.linearVsExponentialBantime(this.bantimeByPlaytimeMinimumPlayerDeath, amountOfIntervalsPassed, this.playerDeathBantime, this.bantimeByPlaytimeGrowth, this.bantimeByPlaytimePercent);
             }
         } else {
             switch (this.getDeathCause(plyr)) {
@@ -259,7 +261,7 @@ public class LiteDeathBanEventHandlers implements Listener {
             }
         }
     }
-    
+
     private String getDeathCause(Player plyr) {
         EntityDamageEvent lastDamageCause = plyr.getLastDamageCause();
         if (lastDamageCause != null) {
@@ -295,8 +297,8 @@ public class LiteDeathBanEventHandlers implements Listener {
             return "OTHER";
         }
     }
-    
-    public static int linearVsExponentialBantime(int min, int intervalsPassed, int max, String growth, int percent) {
+
+    private int linearVsExponentialBantime(int min, int intervalsPassed, int max, String growth, int percent) {
         switch (growth) {
             case "linear":
                 int bantimeLinear = min * (percent * intervalsPassed / 100 + 1);
