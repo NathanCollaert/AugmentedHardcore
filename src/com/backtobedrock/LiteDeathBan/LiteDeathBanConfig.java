@@ -165,8 +165,10 @@ public class LiteDeathBanConfig {
                     break;
                 case "CombatTagPlayerKickDeath":
                     this.CombatTagPlayerKickDeath = this.checkBoolean(e.getKey(), e.getValue(), false);
+                    break;
                 case "CombatTagSelf":
                     this.CombatTagSelf = this.checkBoolean(e.getKey(), e.getValue(), false);
+                    break;
                 default:
                     break;
             }

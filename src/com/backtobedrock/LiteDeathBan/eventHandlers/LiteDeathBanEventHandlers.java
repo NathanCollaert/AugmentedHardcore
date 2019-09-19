@@ -132,7 +132,7 @@ public class LiteDeathBanEventHandlers implements Listener {
     @EventHandler
     public void onPlayerQuitEvent(PlayerQuitEvent e) {
         Player plyr = e.getPlayer();
-        if (this.combatLog && this.plugin.doesTagListContain(plyr.getUniqueId()) && !e.getPlayer().hasPermission("litedeathban.bypass.combatlog") && !plyr.isBanned() && !this.kickList.contains(plyr.getUniqueId())) {
+        if (this.combatLog && this.plugin.doesTagListContain(plyr.getUniqueId()) && !e.getPlayer().hasPermission("litedeathban.bypass.combattag") && !plyr.isBanned() && !this.kickList.contains(plyr.getUniqueId())) {
             plyr.setHealth(0.0D);
         }
     }
@@ -155,7 +155,7 @@ public class LiteDeathBanEventHandlers implements Listener {
 
     private void tagPlayer(Player plyr, String taggedBy) {
         UUID plyrID = plyr.getUniqueId();
-        if (!(!this.combatTagSelf && plyr.getName().equals(taggedBy)) && plyr.getHealth() != 0D && !plyr.hasPermission("litedeathban.bypass.combatlog")) {
+        if (!(!this.combatTagSelf && plyr.getName().equals(taggedBy)) && plyr.getHealth() != 0D && !plyr.hasPermission("litedeathban.bypass.combattag")) {
             boolean containsTag = this.plugin.doesTagListContain(plyrID);
             switch (this.combatLogWarningStyle.toLowerCase()) {
                 case "none":

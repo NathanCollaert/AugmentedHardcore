@@ -23,7 +23,7 @@ commands:
 permissions:
     litedeathban.bypass.ban:
         default: false
-    litedeathban.bypass.combatlog:
+    litedeathban.bypass.combattag:
         default: false
     litedeathban.revive:
         default: false
