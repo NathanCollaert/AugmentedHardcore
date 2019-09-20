@@ -15,11 +15,6 @@ public class ReviveChatWarning extends BukkitRunnable {
     }
 
     @Override
-    public synchronized void cancel() throws IllegalStateException {
-        super.cancel(); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public void run() {
         this.plugin.removeFromConfirmation(plyr.getUniqueId());
     }

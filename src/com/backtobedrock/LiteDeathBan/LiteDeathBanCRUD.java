@@ -11,10 +11,10 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 public class LiteDeathBanCRUD {
-
+    
     private final Logger log = Bukkit.getLogger();
     private final LiteDeathBan plugin;
-
+    
     private File file = null;
     private FileConfiguration configuration = null;
     private OfflinePlayer player = null;
@@ -22,7 +22,7 @@ public class LiteDeathBanCRUD {
     private int totalDeathBans;
     private String lastBan;
     private LocalDateTime lastRevive;
-
+    
     public LiteDeathBanCRUD(OfflinePlayer player, LiteDeathBan plugin) {
         this.plugin = plugin;
         this.player = player;
@@ -31,7 +31,7 @@ public class LiteDeathBanCRUD {
         this.lastBan = this.getConfig().getString("lastBan", "never");
         this.lastRevive = LocalDateTime.parse(this.getConfig().getString("lastRevive", this.plugin.getLDBConfig().isReviveOptionOnFirstJoin() ? LocalDateTime.MIN.toString() : LocalDateTime.now().toString()));
     }
-
+    
     public FileConfiguration getConfig() {
         if (configuration == null) {
             configuration = YamlConfiguration.loadConfiguration(getFile());
@@ -39,7 +39,7 @@ public class LiteDeathBanCRUD {
         }
         return configuration;
     }
-
+    
     public void saveConfig() {
         try {
             configuration.save(this.getFile());
@@ -47,7 +47,7 @@ public class LiteDeathBanCRUD {
             this.log.log(Level.SEVERE, "Cannot save to {0}", file.getName());
         }
     }
-
+    
     public void setNewStart() {
         FileConfiguration conf = this.getConfig();
         conf.set("uuid", player.getUniqueId().toString());
@@ -58,22 +58,25 @@ public class LiteDeathBanCRUD {
         conf.set("lastRevive", this.plugin.getLDBConfig().isReviveOptionOnFirstJoin() ? LocalDateTime.MIN.toString() : LocalDateTime.now().toString());
         this.saveConfig();
     }
-
+    
     public void setLives(int amount, boolean save) {
         FileConfiguration conf = this.getConfig();
         conf.set("uuid", player.getUniqueId().toString());
         conf.set("playername", player.getName());
         conf.set("lives", amount);
         this.lives = amount;
+        if (this.plugin.getLDBConfig().isShowLivesInTabMenu() && this.player.isOnline()) {
+            this.player.getPlayer().setPlayerListFooter(this.plugin.getMessages().getOnLivesLeftInTabMenu(this.player.getName(), this.lives));
+        }
         if (save) {
             this.saveConfig();
         }
     }
-
+    
     public int getLives() {
         return this.lives;
     }
-
+    
     public void setTotalDeathBans(int amount, boolean save) {
         FileConfiguration conf = this.getConfig();
         conf.set("uuid", player.getUniqueId().toString());
@@ -84,11 +87,11 @@ public class LiteDeathBanCRUD {
             this.saveConfig();
         }
     }
-
+    
     public int getTotalDeathBans() {
         return this.totalDeathBans;
     }
-
+    
     public void setLastBanDate(LocalDateTime date, boolean save) {
         FileConfiguration conf = this.getConfig();
         conf.set("uuid", player.getUniqueId().toString());
@@ -99,11 +102,11 @@ public class LiteDeathBanCRUD {
             this.saveConfig();
         }
     }
-
+    
     public String getLastBanDate() {
         return this.lastBan;
     }
-
+    
     public void setLastRevive(LocalDateTime date, boolean save) {
         FileConfiguration conf = this.getConfig();
         conf.set("uuid", player.getUniqueId().toString());
@@ -114,11 +117,11 @@ public class LiteDeathBanCRUD {
             this.saveConfig();
         }
     }
-
+    
     public LocalDateTime getLastRevive() {
         return this.lastRevive;
     }
-
+    
     private File getFile() {
         if (file == null) {
             this.file = new File(this.plugin.getDataFolder() + "/userdata/" + player.getUniqueId().toString() + ".yml");
@@ -135,12 +138,12 @@ public class LiteDeathBanCRUD {
         }
         return file;
     }
-
+    
     public static boolean doesPlayerDataExists(String id, LiteDeathBan plugin) {
         File file = new File(plugin.getDataFolder() + id + ".yml");
         return file.exists();
     }
-
+    
     public void reloadConfig() {
         YamlConfiguration.loadConfiguration(file);
     }

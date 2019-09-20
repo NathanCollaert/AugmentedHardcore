@@ -14,3 +14,6 @@ OnPlayerRespawn: "You have &6&l%lives_left%&r live(s) left, use them wisely!"
 
 #%bantime_in_minutes%/%bantime_in_hours%/%bantime_in_days%/%ban_expire_date%/%playername%/%date_of_last_ban%/%total_bans%
 OnPlayerDeathBan: "&c&lYou have died\n\n&rYou have been banned until &b%ban_expire_date%&r (%bantime_in_hours% hours).\nYou have been banned &6%total_bans%&r time(s) in total!\nYour last ban was &b%date_of_last_ban%&r."
+
+#%playername%/%lives_left%
+OnLivesLeftInTabMenu: "Lives remaining: &6%lives_left%"

@@ -4,6 +4,8 @@ import com.backtobedrock.LiteDeathBan.LiteDeathBan;
 import com.backtobedrock.LiteDeathBan.LiteDeathBanCRUD;
 import com.backtobedrock.LiteDeathBan.helperClasses.CombatLogBossBarWarning;
 import com.backtobedrock.LiteDeathBan.helperClasses.CombatLogChatWarning;
+import com.backtobedrock.LiteDeathBan.helperClasses.DeathBanLogData;
+import com.backtobedrock.LiteDeathBan.helperClasses.DeathLogData;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -87,8 +89,12 @@ public class LiteDeathBanEventHandlers implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
+        LiteDeathBanCRUD crud = new LiteDeathBanCRUD(e.getPlayer(), this.plugin);;
         if (!LiteDeathBanCRUD.doesPlayerDataExists(e.getPlayer().getUniqueId().toString(), this.plugin)) {
-            new LiteDeathBanCRUD(e.getPlayer(), this.plugin).setNewStart();
+            crud.setNewStart();
+        }
+        if (this.plugin.getLDBConfig().isShowLivesInTabMenu()) {
+            e.getPlayer().setPlayerListFooter(this.plugin.getMessages().getOnLivesLeftInTabMenu(e.getPlayer().getName(), crud.getLives()));
         }
     }
 
@@ -185,31 +191,41 @@ public class LiteDeathBanEventHandlers implements Listener {
 
     private void deathBan(Player plyr) {
         LocalDateTime now = LocalDateTime.now();
-        if (!plyr.hasPermission("litedeathban.bypass.ban")) {
-            LiteDeathBanCRUD crud = new LiteDeathBanCRUD(plyr, this.plugin);
-            crud.setLives(crud.getLives() - 1, false);
-            if (crud.getLives() == 0) {
-                int bantime = this.getBanTime(plyr);
-                switch (bantime) {
-                    case -1:
-                        break;
-                    default:
-                        crud.setTotalDeathBans(crud.getTotalDeathBans() + 1, false);
-                        String banMessage = this.plugin.getMessages().getOnPlayerDeathBan(plyr.getName(), bantime, this.saveDateFormat.format(now.plusMinutes(bantime)), crud.getLastBanDate(), crud.getTotalDeathBans());
-                        Bukkit.getBanList(BanList.Type.NAME).addBan(plyr.getName(), banMessage, Timestamp.valueOf(now.plusMinutes(bantime)), "LiteDeathBan");
-                        Bukkit.getScheduler().runTask(this.plugin, () -> {
-                            plyr.kickPlayer(banMessage);
-                        });
-                        crud.setLastBanDate(now, true);
-                        break;
-                }
-            } else {
-                crud.saveConfig();
+        LiteDeathBanCRUD crud = new LiteDeathBanCRUD(plyr, this.plugin);
+        crud.setLives(crud.getLives() - 1, false);
+        if (crud.getLives() == 0 && !plyr.hasPermission("litedeathban.bypass.ban")) {
+            int bantime = this.getBanTime(plyr);
+            switch (bantime) {
+                case -1:
+                    if (this.plugin.getLDBConfig().isLogDeaths()) {
+                        DeathLogData deathLogData = new DeathLogData(this.plugin, plyr, this.saveDateFormat.format(now), 1);
+                    }
+                    break;
+                default:
+                    crud.setTotalDeathBans(crud.getTotalDeathBans() + 1, false);
+                    String banMessage = this.plugin.getMessages().getOnPlayerDeathBan(plyr.getName(), bantime, this.saveDateFormat.format(now.plusMinutes(bantime)), crud.getLastBanDate(), crud.getTotalDeathBans());
+                    Bukkit.getBanList(BanList.Type.NAME).addBan(plyr.getName(), banMessage, Timestamp.valueOf(now.plusMinutes(bantime)), "LiteDeathBan");
+                    Bukkit.getScheduler().runTask(this.plugin, () -> {
+                        plyr.kickPlayer(banMessage);
+                    });
+                    crud.setLastBanDate(now, true);
+                    if (this.plugin.getLDBConfig().isLogDeathBans()) {
+                        DeathBanLogData deathBanLogData = new DeathBanLogData(this.plugin, plyr, this.saveDateFormat.format(now), this.saveDateFormat.format(now.plusMinutes(bantime)), bantime);
+                    } else if (this.plugin.getLDBConfig().isLogDeaths()) {
+                        DeathLogData deathLogData = new DeathLogData(this.plugin, plyr, this.saveDateFormat.format(now), 0);
+                    }
+                    break;
             }
-            if (this.plugin.doesTagListContain(plyr.getUniqueId())) {
-                Bukkit.getScheduler().cancelTask(this.plugin.getFromTagList(plyr.getUniqueId()));
-                this.plugin.removeFromTagList(plyr.getUniqueId());
+        } else {
+            crud.saveConfig();
+            if (this.plugin.getLDBConfig().isLogDeaths()) {
+                DeathLogData deathLogData = new DeathLogData(this.plugin, plyr, this.saveDateFormat.format(now), crud.getLives() == 0 ? 1 : crud.getLives());
             }
+        }
+
+        if (this.plugin.doesTagListContain(plyr.getUniqueId())) {
+            Bukkit.getScheduler().cancelTask(this.plugin.getFromTagList(plyr.getUniqueId()));
+            this.plugin.removeFromTagList(plyr.getUniqueId());
         }
     }
 

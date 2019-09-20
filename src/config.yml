@@ -5,9 +5,22 @@ NotifyOnRespawn: true
 #'medium': (Jun 15, 2015, 9:03 CEST)
 #'long': (Saturday Jun 15, 2015 at 9:03:01 CEST)
 SaveDateFormat: medium
+
+
 #What should the max amount of lives a player can have be?
-#minimum is 1
+#minimum is 1, 0 is unlimited.
 MaxLives: 5
+#Should the current amount of lives of a player be shown in the tab menu?
+#This is personal per player, player will only see his/her lives.
+ShowLivesInTabMenu: true
+
+
+#Should deathbans be logged into a file?
+LogDeathBans: false
+#Should all deaths, regardless if ban or not, be logged?
+LogDeaths: false
+
+
 #What bantime should players get if killed by player/monster/environment?
 #In Minutes, -1 is disable (0 is unlimited but can only be used if BantimeByPlaytime: true).
 PlayerDeathBantime: 7200

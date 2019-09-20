@@ -32,6 +32,9 @@ public class LiteDeathBanConfig {
     private boolean ReviveOptionOnFirstJoin;
     private boolean CombatTagPlayerKickDeath;
     private boolean CombatTagSelf;
+    private boolean ShowLivesInTabMenu;
+    private boolean LogDeathBans;
+    private boolean LogDeaths;
     private String BantimeByPlaytimeGrowth;
     private String CombatTagWarningStyle;
     private DateTimeFormatter saveDateFormat;
@@ -161,7 +164,11 @@ public class LiteDeathBanConfig {
                     this.ReviveOptionOnFirstJoin = this.checkBoolean(e.getKey(), e.getValue(), false);
                     break;
                 case "MaxLives":
-                    this.MaxLives = this.checkMin(e.getKey(), e.getValue(), 1, 5);
+                    if (e.getValue() instanceof Integer && (int) e.getValue() == 0) {
+                        this.MaxLives = Integer.MAX_VALUE;
+                    } else {
+                        this.MaxLives = this.checkMin(e.getKey(), e.getValue(), 1, 5);
+                    }
                     break;
                 case "CombatTagPlayerKickDeath":
                     this.CombatTagPlayerKickDeath = this.checkBoolean(e.getKey(), e.getValue(), false);
@@ -169,6 +176,12 @@ public class LiteDeathBanConfig {
                 case "CombatTagSelf":
                     this.CombatTagSelf = this.checkBoolean(e.getKey(), e.getValue(), false);
                     break;
+                case "ShowLivesInTabMenu":
+                    this.ShowLivesInTabMenu = this.checkBoolean(e.getKey(), e.getValue(), true);
+                case "LogDeathBans":
+                    this.LogDeathBans = this.checkBoolean(e.getKey(), e.getValue(), false);
+                case "LogDeaths":
+                    this.LogDeaths = this.checkBoolean(e.getKey(), e.getValue(), false);
                 default:
                     break;
             }
@@ -290,5 +303,17 @@ public class LiteDeathBanConfig {
 
     public boolean isCombatTagSelf() {
         return CombatTagSelf;
+    }
+
+    public boolean isShowLivesInTabMenu() {
+        return ShowLivesInTabMenu;
+    }
+
+    public boolean isLogDeathBans() {
+        return LogDeathBans;
+    }
+
+    public boolean isLogDeaths() {
+        return LogDeaths;
     }
 }

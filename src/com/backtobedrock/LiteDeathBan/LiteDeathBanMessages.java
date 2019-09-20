@@ -73,6 +73,14 @@ public class LiteDeathBanMessages {
                 playername);
     }
 
+    public String getOnLivesLeftInTabMenu(String playername, int livesLeft) {
+        String message = this.messages.get("OnLivesLeftInTabMenu");
+        return this.playernamePH(
+                this.livesLeftPH(message,
+                        livesLeft),
+                playername);
+    }
+
     private String playernamePH(String message, String playername) {
         return message.replace("%playername%", playername);
     }
@@ -86,9 +94,9 @@ public class LiteDeathBanMessages {
         Pattern pattern = Pattern.compile("\\%(\\S*?)\\%");
         Matcher m = pattern.matcher(convertedMessage);
         while (m.find()) {
-            convertedMessage = convertedMessage.replaceAll("%bantime_in_minutes%", Integer.toString(banTimeInMinutes));
-            convertedMessage = convertedMessage.replaceAll("%bantime_in_hours%", Double.toString((double) banTimeInMinutes / 60));
-            convertedMessage = convertedMessage.replaceAll("%bantime_in_days%", Double.toString((double) banTimeInMinutes / 60 / 24));
+            convertedMessage = convertedMessage.replaceAll("%bantime_in_minutes%", String.format("%d", banTimeInMinutes));
+            convertedMessage = convertedMessage.replaceAll("%bantime_in_hours%", String.format("%.2f", (double) banTimeInMinutes / 60));
+            convertedMessage = convertedMessage.replaceAll("%bantime_in_days%", String.format("%.2f", (double) banTimeInMinutes / 60 / 24));
         }
         return convertedMessage;
     }

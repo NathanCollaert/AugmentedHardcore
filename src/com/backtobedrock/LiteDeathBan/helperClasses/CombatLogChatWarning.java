@@ -18,12 +18,6 @@ public class CombatLogChatWarning extends BukkitRunnable {
     }
 
     @Override
-    public synchronized void cancel() throws IllegalStateException {
-        this.plugin.removeFromTagList(plyr.getUniqueId());
-        super.cancel(); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public void run() {
         this.plugin.removeFromTagList(plyr.getUniqueId());
         plyr.spigot().sendMessage(new ComponentBuilder(this.plugin.getMessages().getOnCombatTaggedChatEnd(this.plyr.getName(), this.taggedBy, this.plugin.getLDBConfig().getCombatTagTime())).create());
