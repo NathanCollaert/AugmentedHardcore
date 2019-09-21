@@ -2,6 +2,7 @@ package com.backtobedrock.LiteDeathBan;
 
 import java.io.File;
 import com.backtobedrock.LiteDeathBan.eventHandlers.LiteDeathBanEventHandlers;
+import com.backtobedrock.LiteDeathBan.runnables.PartsOnPlaytime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
@@ -22,6 +23,7 @@ public class LiteDeathBan extends JavaPlugin implements Listener {
     private final TreeMap<UUID, String> confirmationList = new TreeMap<>();
     private final TreeMap<UUID, Integer> confirmationRunners = new TreeMap<>();
     private final List<UUID> usedRevive = new ArrayList<>();
+    private final TreeMap<UUID, Long> PlaytimeLastLifeOnlinePlayers = new TreeMap<>();
 
     @Override
     public void onEnable() {
@@ -40,7 +42,12 @@ public class LiteDeathBan extends JavaPlugin implements Listener {
         this.commands = new LiteDeathBanCommands(this);
 
         getServer().getPluginManager().registerEvents(new LiteDeathBanEventHandlers(this), this);
+
         super.onEnable(); //To change body of generated methods, choose Tools | Templates.
+
+        if (this.getLDBConfig().isGetPartOfLifeOnPlaytime()) {
+            new PartsOnPlaytime(this).runTaskTimer(this, 0, this.getLDBConfig().getPlaytimeCheck() * 60 * 20);
+        }
     }
 
     @Override
@@ -115,5 +122,17 @@ public class LiteDeathBan extends JavaPlugin implements Listener {
 
     public boolean doesUsedReviveContain(UUID plyrID) {
         return this.usedRevive.contains(plyrID);
+    }
+
+    public void addToPlaytimeLastLifeOnlinePlayers(UUID plyrID, long playtime) {
+        this.PlaytimeLastLifeOnlinePlayers.put(plyrID, playtime);
+    }
+
+    public void removeFromPlaytimeLastLifeOnlinePlayers(UUID plyrID) {
+        this.PlaytimeLastLifeOnlinePlayers.remove(plyrID);
+    }
+
+    public long getFromPlaytimeLastLifeOnlinePlayers(UUID plyrID) {
+        return this.PlaytimeLastLifeOnlinePlayers.get(plyrID);
     }
 }

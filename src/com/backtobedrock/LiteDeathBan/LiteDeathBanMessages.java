@@ -65,19 +65,110 @@ public class LiteDeathBanMessages {
                 playername);
     }
 
-    public String getOnPlayerRespawn(String playername, int livesLeft) {
+    public String getOnPlayerRespawn(String playername, int livesLeft, int maxLives) {
         String message = this.messages.get("OnPlayerRespawn");
         return this.playernamePH(
-                this.livesLeftPH(message,
+                this.livesLeftPH(
+                        this.maxLivesPH(message, maxLives),
                         livesLeft),
                 playername);
     }
 
-    public String getOnLivesLeftInTabMenu(String playername, int livesLeft) {
+    public String getOnLivesLeftInTabMenu(String playername, int livesLeft, int maxLives) {
         String message = this.messages.get("OnLivesLeftInTabMenu");
         return this.playernamePH(
-                this.livesLeftPH(message,
+                this.livesLeftPH(
+                        this.maxLivesPH(message, maxLives),
                         livesLeft),
+                playername);
+    }
+
+    public String getOnExtraPartBroadcast(String playername, int totalParts, int partsReceived, int partsNeededForLife) {
+        String message = this.messages.get("OnExtraPartBroadcast");
+        return this.playernamePH(
+                this.totalPartsPH(
+                        this.partsReceivedPH(
+                                this.partsNeededForLifePH(message, partsNeededForLife),
+                                partsReceived),
+                        totalParts),
+                playername);
+    }
+
+    public String getOnExtraLifeBroadcast(String playername, int livesReceived, int totalLives, int maxLives, int partsReceived, int partsNeededForLife) {
+        String message = this.messages.get("OnExtraLifeBroadcast");
+        return this.playernamePH(
+                this.livesReceivedPH(
+                        this.totalLivesPH(
+                                this.maxLivesPH(
+                                        this.partsReceivedPH(
+                                                this.partsNeededForLifePH(message, partsNeededForLife),
+                                                partsReceived),
+                                        maxLives),
+                                totalLives),
+                        livesReceived),
+                playername);
+    }
+
+    public String getOnPartsLostCauseDeath(String playername, int partsNeededForLife) {
+        String message = this.messages.get("OnPartsLostCauseDeath");
+        return this.playernamePH(
+                this.partsNeededForLifePH(message, partsNeededForLife),
+                playername);
+    }
+
+    public String getOnMaxLivesBroadcast(String playername, int livesReceived, int totalLives, int maxLives, int partsReceived, int partsNeededForLife) {
+        String message = this.messages.get("OnMaxLivesBroadcast");
+        return this.playernamePH(
+                this.livesReceivedPH(
+                        this.totalLivesPH(
+                                this.maxLivesPH(
+                                        this.partsReceivedPH(
+                                                this.partsNeededForLifePH(message, partsNeededForLife),
+                                                partsReceived),
+                                        maxLives),
+                                totalLives),
+                        livesReceived),
+                playername);
+    }
+
+    public String getOnExtraLife(String playername, int livesReceived, int totalLives, int maxLives, int partsReceived, int partsNeededForLife) {
+        String message = this.messages.get("OnExtraLife");
+        return this.playernamePH(
+                this.livesReceivedPH(
+                        this.totalLivesPH(
+                                this.maxLivesPH(
+                                        this.partsReceivedPH(
+                                                this.partsNeededForLifePH(message, partsNeededForLife),
+                                                partsReceived),
+                                        maxLives),
+                                totalLives),
+                        livesReceived),
+                playername);
+    }
+
+    public String getOnMaxLives(String playername, int livesReceived, int totalLives, int maxLives, int partsReceived, int partsNeededForLife) {
+        String message = this.messages.get("OnMaxLives");
+        return this.playernamePH(
+                this.livesReceivedPH(
+                        this.totalLivesPH(
+                                this.maxLivesPH(
+                                        this.partsReceivedPH(
+                                                this.partsNeededForLifePH(message, partsNeededForLife),
+                                                partsReceived),
+                                        maxLives),
+                                totalLives),
+                        livesReceived),
+                playername);
+    }
+
+    public String getOnExtraPart(String playername, int totalParts, int partsReceived, int partsNeededForLife) {
+        String message = this.messages.get("OnExtraPart");
+        return this.playernamePH(
+                this.totalPartsPH(
+                        this.partsReceivedPH(
+                                this.partsNeededForLifePH(message, partsNeededForLife),
+                                partsReceived),
+                        totalParts),
                 playername);
     }
 
@@ -119,5 +210,29 @@ public class LiteDeathBanMessages {
 
     private String livesLeftPH(String message, int livesLeft) {
         return message.replace("%lives_left%", Integer.toString(livesLeft));
+    }
+
+    private String maxLivesPH(String message, int maxLives) {
+        return message.replace("%max_lives%", Integer.toString(maxLives));
+    }
+
+    private String partsReceivedPH(String message, int partsReceived) {
+        return message.replace("%parts_received%", Integer.toString(partsReceived));
+    }
+
+    private String livesReceivedPH(String message, int livesReceived) {
+        return message.replace("%lives_received%", Integer.toString(livesReceived));
+    }
+
+    private String totalLivesPH(String message, int totalLives) {
+        return message.replace("%total_lives%", Integer.toString(totalLives));
+    }
+
+    private String partsNeededForLifePH(String message, int partsNeededForLife) {
+        return message.replace("%parts_needed_for_life%", Integer.toString(partsNeededForLife));
+    }
+
+    private String totalPartsPH(String message, int totalParts) {
+        return message.replace("%total_parts%", Integer.toString(totalParts));
     }
 }

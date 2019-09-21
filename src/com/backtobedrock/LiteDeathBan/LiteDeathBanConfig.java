@@ -24,7 +24,10 @@ public class LiteDeathBanConfig {
     private int BantimeOnReviveDeath;
     private int TimeBetweenRevives;
     private int MaxLives;
-    private boolean NotifyOnRespawn;
+    private int PartsPerKill;
+    private int PlaytimePerPart;
+    private int PlaytimeCheck;
+    private int AmountOfPartsPerLife;
     private boolean BantimeByPlaytime;
     private boolean CombatTag;
     private boolean bantimeByPlaytimeSinceLastDeath;
@@ -35,6 +38,11 @@ public class LiteDeathBanConfig {
     private boolean ShowLivesInTabMenu;
     private boolean LogDeathBans;
     private boolean LogDeaths;
+    private boolean GetPartOfLifeOnKill;
+    private boolean PartsLostUponDeath;
+    private boolean GetPartOfLifeOnPlaytime;
+    private boolean CountPlaytimeFromStart;
+    private boolean UseMetrics;
     private String BantimeByPlaytimeGrowth;
     private String CombatTagWarningStyle;
     private DateTimeFormatter saveDateFormat;
@@ -46,7 +54,6 @@ public class LiteDeathBanConfig {
 
     private void initialize() {
         this.BantimeByPlaytime = this.config.getBoolean("BantimeByPlaytime", false);
-        this.CombatTag = this.config.getBoolean("CombatTag", true);
         for (Map.Entry<String, Object> e : this.config.getValues(true).entrySet()) {
             switch (e.getKey()) {
                 case "PlayerDeathBantime":
@@ -100,15 +107,11 @@ public class LiteDeathBanConfig {
                 case "BantimeByPlaytimeMinimumEnvironmentDeath":
                     this.BantimeByPlaytimeMinimumEnvironmentDeath = this.checkMin(e.getKey(), e.getValue(), 1, 43);
                     break;
-                case "CombatTagTime":
-                    this.CombatTagTime = this.checkMin(e.getKey(), e.getValue(), 0, 60);
-                    if (this.CombatTagTime == 0 && this.CombatTag) {
-                        this.CombatTag = false;
-                        log.warning(String.format("[LiteDeathBan] CombatDeath has been disabled due to %s being 0.", e.getKey()));
-                    }
+                case "CombatTag":
+                    this.CombatTag = this.checkBoolean(e.getKey(), e.getValue(), true);
                     break;
-                case "NotifyOnRespawn":
-                    this.NotifyOnRespawn = this.checkBoolean(e.getKey(), e.getValue(), true);
+                case "CombatTagTime":
+                    this.CombatTagTime = this.checkMin(e.getKey(), e.getValue(), 1, 10);
                     break;
                 case "BantimeByPlaytimeGrowth":
                     if (e.getValue().toString().equalsIgnoreCase("linear") || e.getValue().toString().equalsIgnoreCase("exponential")) {
@@ -178,10 +181,40 @@ public class LiteDeathBanConfig {
                     break;
                 case "ShowLivesInTabMenu":
                     this.ShowLivesInTabMenu = this.checkBoolean(e.getKey(), e.getValue(), true);
+                    break;
                 case "LogDeathBans":
                     this.LogDeathBans = this.checkBoolean(e.getKey(), e.getValue(), false);
+                    break;
                 case "LogDeaths":
                     this.LogDeaths = this.checkBoolean(e.getKey(), e.getValue(), false);
+                    break;
+                case "GetPartOfLifeOnKill":
+                    this.GetPartOfLifeOnKill = this.checkBoolean(e.getKey(), e.getValue(), true);
+                    break;
+                case "PartsPerKill":
+                    this.PartsPerKill = this.checkMin(e.getKey(), e.getValue(), 1, 1);
+                    break;
+                case "PartsLostUponDeath":
+                    this.PartsLostUponDeath = this.checkBoolean(e.getKey(), e.getValue(), false);
+                    break;
+                case "GetPartOfLifeOnPlaytime":
+                    this.GetPartOfLifeOnPlaytime = this.checkBoolean(e.getKey(), e.getValue(), false);
+                    break;
+                case "PlaytimePerPart":
+                    this.PlaytimePerPart = this.checkMin(e.getKey(), e.getValue(), 1, 60);
+                    break;
+                case "PlaytimeCheck":
+                    this.PlaytimeCheck = this.checkMin(e.getKey(), e.getValue(), 1, 60);
+                    break;
+                case "AmountOfPartsPerLife":
+                    this.AmountOfPartsPerLife = this.checkMin(e.getKey(), e.getValue(), 1, 5);
+                    break;
+                case "CountPlaytimeFromStart":
+                    this.CountPlaytimeFromStart = this.checkBoolean(e.getKey(), e.getValue(), false);
+                    break;
+                case "UseMetrics":
+                    this.UseMetrics = this.checkBoolean(e.getKey(), e.getValue(), true);
+                    break;
                 default:
                     break;
             }
@@ -231,10 +264,6 @@ public class LiteDeathBanConfig {
 
     public int getCombatTagTime() {
         return CombatTagTime;
-    }
-
-    public boolean isNotifyOnRespawn() {
-        return NotifyOnRespawn;
     }
 
     public String getBantimeByPlaytimeGrowth() {
@@ -315,5 +344,41 @@ public class LiteDeathBanConfig {
 
     public boolean isLogDeaths() {
         return LogDeaths;
+    }
+
+    public int getPartsPerKill() {
+        return PartsPerKill;
+    }
+
+    public int getPlaytimePerPart() {
+        return PlaytimePerPart;
+    }
+
+    public int getPlaytimeCheck() {
+        return PlaytimeCheck;
+    }
+
+    public int getAmountOfPartsPerLife() {
+        return AmountOfPartsPerLife;
+    }
+
+    public boolean isGetPartOfLifeOnKill() {
+        return GetPartOfLifeOnKill;
+    }
+
+    public boolean isPartsLostUponDeath() {
+        return PartsLostUponDeath;
+    }
+
+    public boolean isGetPartOfLifeOnPlaytime() {
+        return GetPartOfLifeOnPlaytime;
+    }
+
+    public boolean isCountPlaytimeFromStart() {
+        return CountPlaytimeFromStart;
+    }
+
+    public boolean isUseMetrics() {
+        return UseMetrics;
     }
 }

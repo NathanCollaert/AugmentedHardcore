@@ -18,7 +18,7 @@ public class DeathLogData {
     private final transient Logger log = Bukkit.getLogger();
     private final String PlayerName;
     private final String PlayerID;
-    private final String DeathLocation;
+    private final PlayerLocation DeathLocation;
     private final String DeathDate;
     private final int LivesLeft;
 
@@ -26,7 +26,7 @@ public class DeathLogData {
         this.plugin = plugin;
         this.PlayerName = plyr.getName();
         this.PlayerID = plyr.getUniqueId().toString();
-        this.DeathLocation = String.format("x: %.2f, y: %.2f, z: %.2f", plyr.getLocation().getX(), plyr.getLocation().getY(), plyr.getLocation().getZ());
+        this.DeathLocation = new PlayerLocation(plyr);
         this.DeathDate = deathDate;
         this.LivesLeft = livesLeft;
         this.addToFile();

@@ -1,4 +1,4 @@
-package com.backtobedrock.LiteDeathBan.helperClasses;
+package com.backtobedrock.LiteDeathBan.runnables;
 
 import com.backtobedrock.LiteDeathBan.LiteDeathBan;
 import org.bukkit.Bukkit;

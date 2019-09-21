@@ -1,6 +1,6 @@
 package com.backtobedrock.LiteDeathBan;
 
-import com.backtobedrock.LiteDeathBan.helperClasses.ReviveChatWarning;
+import com.backtobedrock.LiteDeathBan.runnables.ReviveChatWarning;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import net.md_5.bungee.api.ChatColor;
@@ -10,7 +10,6 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.Statistic;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -109,7 +108,7 @@ public class LiteDeathBanCommands {
                 }
                 return true;
             case "lives":
-                if (cs.hasPermission("litedeathban.lives.other")) {
+                if (sender == null || sender.hasPermission("litedeathban.lives.other")) {
                     OfflinePlayer plyr = Bukkit.getOfflinePlayer(arg);
                     if (plyr.hasPlayedBefore()) {
                         LiteDeathBanCRUD crud = new LiteDeathBanCRUD(plyr, this.plugin);

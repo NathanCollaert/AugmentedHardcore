@@ -1,19 +1,95 @@
-#Color codes can be used on all messages: https://wiki.ess3.net/mc/ as well as \n for a new line
+############################################################
+# +------------------------------------------------------+ #
+# |                        Notes                         | #
+# +------------------------------------------------------+ #
+############################################################
 
-#%tagged_by%/%playername%/%tag_time%
-OnCombatTaggedChat: "You have been combat tagged by &c&l%tagged_by%&r."
+#Color codes can be used in all messages: https://wiki.ess3.net/mc/ as well as \n for a new line
 
-#%tagged_by%/%playername%/%tag_time%
-OnCombatTaggedChatEnd: "Your combat tag with &c&l%tagged_by%&r ran out..."
 
-#%tagged_by%/%playername%/%tag_time%
-OnCombatTaggedBossBar: "You have been combat tagged by &c&l%tagged_by%&r, do &c&lnot&r log out!"
+############################################################
+# +------------------------------------------------------+ #
+# |                         Ban                          | #
+# +------------------------------------------------------+ #
+############################################################
 
-#%playername%/%lives_left%
-OnPlayerRespawn: "You have &6&l%lives_left%&r live(s) left, use them wisely!"
-
+#Ban reason when death banned.
 #%bantime_in_minutes%/%bantime_in_hours%/%bantime_in_days%/%ban_expire_date%/%playername%/%date_of_last_ban%/%total_bans%
 OnPlayerDeathBan: "&c&lYou have died\n\n&rYou have been banned until &b%ban_expire_date%&r (%bantime_in_hours% hours).\nYou have been banned &6%total_bans%&r time(s) in total!\nYour last ban was &b%date_of_last_ban%&r."
 
-#%playername%/%lives_left%
-OnLivesLeftInTabMenu: "Lives remaining: &6%lives_left%"
+
+############################################################
+# +------------------------------------------------------+ #
+# |                        Lives                         | #
+# +------------------------------------------------------+ #
+############################################################
+
+#Send to player when player respawns.
+#Leave empty for no message.
+#%playername%/%lives_left%/%max_lives%
+OnPlayerRespawn: "You have &6&l%lives_left%/%max_lives%&r lives left, use them wisely!"
+
+#Shown in tab menu footer when ShowLivesInTabMenu: true.
+#%playername%/%lives_left%/%max_lives%
+OnLivesLeftInTabMenu: "Lives : &6%lives_left%/%max_lives%"
+
+#Send to player when he/she receives an extra life.
+#Leave empty for no message.
+#%playername%/%lives_received%/%total_lives%/%max_lives%/%parts_received%/%parts_needed_for_life%
+OnExtraLife: "You have received %lives_received% lives and %parts_received%/%parts_needed_for_life% parts."
+
+#Send to all players when a player receives an extra life.
+#Leave empty for no message.
+#%playername%/%lives_received%/%total_lives%/%max_lives%/%parts_received%/%parts_needed_for_life%
+OnExtraLifeBroadcast: "%playername% has received %lives_received% lives and %parts_received%/%parts_needed_for_life% parts."
+
+#Send to player when he/she reaches the maximum amount of lives.
+#Leave empty for no message.
+#%playername%/%lives_received%/%total_lives%/%max_lives%/%parts_received%/%parts_needed_for_life%
+OnMaxLives: "You have achieved the maximum amount of lives possible!"
+
+#Send to all players when a player reaches the maximum amount of lives.
+#Leave empty for no message.
+#%playername%/%lives_received%/%total_lives%/%max_lives%/%parts_received%/%parts_needed_for_life%
+OnMaxLivesBroadcast: "%playername% has achieved the maximum amount of lives possible!"
+
+
+############################################################
+# +------------------------------------------------------+ #
+# |                      Combat Tag                      | #
+# +------------------------------------------------------+ #
+############################################################
+
+#Send to player when CombatTagWarningStyle: chat on being combat tagged.
+#%tagged_by%/%playername%/%tag_time%
+OnCombatTaggedChat: "You have been combat tagged by &c&l%tagged_by%&r."
+
+#Send to player when CombatTagWarningStyle: chat on combat tag end.
+#%tagged_by%/%playername%/%tag_time%
+OnCombatTaggedChatEnd: "Your combat tag with &c&l%tagged_by%&r ran out..."
+
+#Boss bar title send to player when CombatTagWarningStyle: bossbar on combat tagged.
+#%tagged_by%/%playername%/%tag_time%
+OnCombatTaggedBossBar: "You have been combat tagged by &c&l%tagged_by%&r, do &c&lnot&r log out!"
+
+
+############################################################
+# +------------------------------------------------------+ #
+# |                      Life Parts                      | #
+# +------------------------------------------------------+ #
+############################################################
+
+#Send to player when he/she receives an extra life part.
+#Leave empty for no message.
+#%playername%/%total_parts%/%parts_received%/%parts_needed_for_life%
+OnExtraPart: "You have achieved %total_parts%/%parts_needed_for_life% parts of a life."
+
+#Send to all players when a player receives an extra life part.
+#Leave empty for no message.
+#%playername%/%total_parts%/%parts_received%/%parts_needed_for_life%
+OnExtraPartBroadcast: "%playername% has achieved %parts_received%/%parts_needed_for_life% parts of a life!"
+
+#Send to player if PartsLostUponDeath: true and player dies.
+#Leave empty for no message.
+#%playername%/%parts_needed_for_life%
+OnPartsLostCauseDeath: "You have lost all of your life parts."

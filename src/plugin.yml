@@ -1,10 +1,10 @@
 main: com.backtobedrock.LiteDeathBan.LiteDeathBan
 name: LiteDeathBan
 version: 1.0.0
-author: Nathanisme
+author: Nathan
 website: www.backtobedrock.com
 prefix: LiteDeathBan
-description: A very customizable and light weighted plugin that bans players on death
+description: A very customizable and lightweight plugin that bans players on death
 api-version: 1.14
 commands:
     revive:
@@ -12,7 +12,7 @@ commands:
         permission: litedeathban.revive
         usage: /<command> <player>
     setlives:
-        description: Set the amount of lives a player has.
+        description: Set the amount of lives for a player.
         permission: litedeathban.setlives
         usage: /<command> <player> <amount>
     lives:
@@ -25,11 +25,13 @@ permissions:
         default: false
     litedeathban.bypass.combattag:
         default: false
+    litedeathban.bypass.loseparts:
+        deafult: false
     litedeathban.revive:
         default: false
     litedeathban.setlives:
-        default: op
+        default: false
     litedeathban.lives:
         default: false
     litedeathban.lives.other:
-        default: op
+        default: false
