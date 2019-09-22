@@ -16,17 +16,7 @@ LiteDeathBan is a lightweight, advanced and very customizable deathban plugin th
   
     
 ### COMMANDS  
-* **/lives [player]** - Check your current amount of lives or that of another player.  
-* **/setlives \<player> \<amount>** - Set the amount of lives for a player. Setting the lives to 0 kills and bans the player.  
-* **/revive \<player>** - Transfer one of your lives to another player. If you use your last live you die and get banned.  
-  
-LiteDeathBan makes use of the vanilla ban system. Players can easily be unbanned by executing the command **/pardon \<player>**.  
+For all the commands, please check out the Spigot page of this plugin [here](https://www.spigotmc.org/resources/litedeathban-an-advanced-deathban-plugin.71483/). 
   
 ### PERMISSIONS  
-* **litedeathban.bypass.ban** - Players with this permission will bypass being banned on death.  
-* **litedeathban.bypass.combattag** - Players with this permission will not be combat tagged.  
-* **litedeathban.bypass.loseparts** - Players with this permission will not lose parts of a life on death.  
-* **litedeathban.lives** - Players with this permission will be able to check their own lives.  
-* **litedeathban.lives.other** - Players with this permission will be able to check lives of others.  
-* **litedeathban.setlives** - Players with this permission will be able to set the amount of lives of a player.  
-* **litedeathban.revive** - Players with this permission will be able to revive other players.  
+For all the commands, please check out the Spigot page of this plugin [here](https://www.spigotmc.org/resources/litedeathban-an-advanced-deathban-plugin.71483/).  
