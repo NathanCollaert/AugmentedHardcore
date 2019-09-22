@@ -41,7 +41,7 @@ OnExtraLife: "You have received %lives_received% lives and %parts_received%/%par
 #Send to all players when a player receives an extra life.
 #Leave empty to disable.
 #%playername%/%lives_received%/%total_lives%/%max_lives%/%parts_received%/%parts_needed_for_life%
-OnExtraLifeBroadcast: "%playername% has received %lives_received% lives and %parts_received%/%parts_needed_for_life% parts."
+OnExtraLifeBroadcast: ""
 
 #Send to player when he/she reaches the maximum amount of lives.
 #Leave empty to disable.
@@ -51,7 +51,7 @@ OnMaxLives: "You have achieved the maximum amount of lives possible!"
 #Send to all players when a player reaches the maximum amount of lives.
 #Leave empty to disable.
 #%playername%/%lives_received%/%total_lives%/%max_lives%/%parts_received%/%parts_needed_for_life%
-OnMaxLivesBroadcast: "%playername% has achieved the maximum amount of lives possible!"
+OnMaxLivesBroadcast: ""
 
 
 ############################################################

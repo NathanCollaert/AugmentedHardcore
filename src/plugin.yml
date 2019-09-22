@@ -18,15 +18,15 @@ commands:
     lives:
         description: Check your current amount of lives.
         permission: litedeathban.lives
-        usage: /<command> [playername]
+        usage: /<command> [player]
     addlives:
         description: Add an amount of lives to a player.
         permission: litedeathban.addlives
-        usage: /<command> <playername> <amount>
+        usage: /<command> <player> <amount>
     lifeparts:
         description: Check your current amount of life parts.
         permission: litedeathban.lifeparts
-        usage: /<command> [playername]
+        usage: /<command> [player]
     
 permissions:
     litedeathban.bypass.ban:
