@@ -1,6 +1,6 @@
 main: com.backtobedrock.LiteDeathBan.LiteDeathBan
 name: LiteDeathBan
-version: 1.0.0
+version: 1.1.0
 author: Nathan
 website: www.backtobedrock.com
 prefix: LiteDeathBan
@@ -19,6 +19,10 @@ commands:
         description: Check your current amount of lives.
         permission: litedeathban.lives
         usage: /<command> [playername]
+    addlives:
+        description: Add an amount of lives to a player.
+        permission: litedeathban.addlives
+        usage: /<command> <playername> <amount>
     
 permissions:
     litedeathban.bypass.ban:
@@ -27,6 +31,8 @@ permissions:
         default: false
     litedeathban.bypass.loseparts:
         deafult: false
+    litedeathban.bypass.loselives:
+        deafult: false
     litedeathban.revive:
         default: false
     litedeathban.setlives:
@@ -34,4 +40,6 @@ permissions:
     litedeathban.lives:
         default: false
     litedeathban.lives.other:
+        default: false
+    litedeathban.addlives:
         default: false

@@ -16,14 +16,13 @@ public class PartsOnPlaytime extends BukkitRunnable {
     @Override
     public void run() {
         this.plugin.getServer().getOnlinePlayers().stream().forEach(p -> {
-            int playtimeParts = LiteDeathBanEventHandlers.checkPlaytimeForParts(p, this.plugin.getFromPlaytimeLastLifeOnlinePlayers(p.getUniqueId()), this.plugin.getLDBConfig().getPlaytimePerPart());
+            int playtimeParts = LiteDeathBanEventHandlers.checkPlaytimeForParts(p, this.plugin.getFromPlaytimeLastLifeOnlinePlayers(p.getUniqueId()), this.plugin.getLDBConfig().getPlaytimePerPart(), this.plugin.getLDBConfig().getDisableGettingLifePartsInWorlds());
             if (playtimeParts > 0) {
                 LiteDeathBanCRUD crud = new LiteDeathBanCRUD(p, this.plugin);
                 crud.setLifeParts(crud.getLifeParts() + playtimeParts, false);
                 crud.setLastPartPlaytime(crud.getLastPartPlaytime() + (playtimeParts * this.plugin.getLDBConfig().getPlaytimePerPart() * 60 * 20), true);
                 this.plugin.addToPlaytimeLastLifeOnlinePlayers(p.getUniqueId(), crud.getLastPartPlaytime());
             }
-
         });
     }
 

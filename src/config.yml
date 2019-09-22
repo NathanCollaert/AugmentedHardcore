@@ -1,16 +1,36 @@
+#Should the plugin check for updates?
+UpdateChecker: true
+
+
 ############################################################
 # +------------------------------------------------------+ #
-# |                       General                        | #
+# |                        Lives                         | #
 # +------------------------------------------------------+ #
 ############################################################
 
 #What should the max amount of lives a player can have be?
-#minimum is 1, 0 is unlimited.
+#Minimum is 1, 0 is unlimited.
 MaxLives: 5
 
 #Should the current amount of lives of a player be shown in the tab menu?
 #This is personal per player, a player will only see his/her lives.
 ShowLivesInTabMenu: true
+
+#What amount of lives should players start at when first joining?
+#Minimum is 1.
+LivesAtStart: 1
+
+#Should losing lives be disabled in any worlds?
+#This will also disable banning of players and reviving of players in these worlds.
+#Combat tagging will still be enabled (if not also disabled for these worlds) and players will die on leaving when combat tagged but won't lose lives or get banned.
+#Players will still lose part of lives (if enabled)
+DisableLosingLivesInWorlds:
+    #- world
+    #- world_nether
+    #- world_the_end
+
+#Should players be unable to die in these disabled worlds (only the list above)?
+DisableDyingInDisabledWorlds: false
 
 
 ############################################################
@@ -30,6 +50,15 @@ MonsterDeathBantime: 2880
 #What bantime should players get if killed by environment?
 #In Minutes, -1 is disable (0 is unlimited but can only be used if BantimeByPlaytime: true).
 EnvironmentDeathBantime: 4320
+
+#Should banning players be disabled in any worlds?
+#This does also count for Ban By Playtime. Players will still lose lives and part of lives (if enabled).
+#Reviving and logging of deathbans will also be disabled in these worlds.
+#Combat tagging will still be enabled (if not also disabled for these worlds) and players will die on leaving when combat tagged but won't get banned.
+DisableBanInWorlds:
+    #- world
+    #- world_nether
+    #- world_the_end
 
 
 ############################################################
@@ -95,6 +124,12 @@ CombatTagWarningStyle: bossbar
 #Should players tagged in combat be killed on kick?
 CombatTagPlayerKickDeath: false
 
+#Should combat tagging be disabled in any worlds?
+DisableCombatTagInWorlds:
+    #- world
+    #- world_nether
+    #- world_the_end
+
 
 ############################################################
 # +------------------------------------------------------+ #
@@ -118,6 +153,12 @@ TimeBetweenRevives: 1440
 #Should players be able to use the revive option directly on first join?
 #If false, players will be able to use revive after TimeBetweenRevives minutes.
 ReviveOptionOnFirstJoin: false
+
+#Should reviving be disabled in any worlds?
+DisableReviveInWorlds:
+    #- world
+    #- world_nether
+    #- world_the_end
 
 
 ############################################################
@@ -156,6 +197,18 @@ PlaytimeCheck: 60
 #Minimum is 1.
 AmountOfPartsPerLife: 5
 
+#Should getting parts of a life be disabled in any worlds?
+DisableGettingLifePartsInWorlds:
+    #- world
+    #- world_nether
+    #- world_the_end
+
+#Should losing parts of a life be disabled in any worlds?
+DisableLosingLifePartsInWorlds:
+    #- world
+    #- world_nether
+    #- world_the_end
+
 
 ############################################################
 # +------------------------------------------------------+ #
@@ -168,6 +221,18 @@ LogDeathBans: false
 
 #Should all deaths, regardless if ban or not, be logged?
 LogDeaths: false
+
+#Should logging death bans be disabled in any worlds?
+DisableLoggingDeathBansInWorlds:
+    #- world
+    #- world_nether
+    #- world_the_end
+
+#Should logging deaths be disabled in any worlds?
+DisableLoggingDeathsInWorlds:
+    #- world
+    #- world_nether
+    #- world_the_end
 
 
 ############################################################

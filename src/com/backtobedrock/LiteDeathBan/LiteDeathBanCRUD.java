@@ -30,7 +30,7 @@ public class LiteDeathBanCRUD {
     public LiteDeathBanCRUD(OfflinePlayer player, LiteDeathBan plugin) {
         this.plugin = plugin;
         this.player = player;
-        this.lives = this.getConfig().getInt("lives", 1);
+        this.lives = this.getConfig().getInt("lives", this.plugin.getLDBConfig().getLivesAtStart());
         this.totalDeathBans = this.getConfig().getInt("totalDeathBans", 0);
         this.lastBan = this.getConfig().getString("lastBan", "never");
         this.lastRevive = LocalDateTime.parse(this.getConfig().getString("lastRevive", this.plugin.getLDBConfig().isReviveOptionOnFirstJoin() ? LocalDateTime.MIN.toString() : LocalDateTime.now().toString()));
@@ -58,7 +58,7 @@ public class LiteDeathBanCRUD {
         FileConfiguration conf = this.getConfig();
         conf.set("uuid", player.getUniqueId().toString());
         conf.set("playername", player.getName());
-        conf.set("lives", 1);
+        conf.set("lives", this.plugin.getLDBConfig().getLivesAtStart());
         conf.set("totalDeathBans", 0);
         conf.set("lastBan", "never");
         conf.set("lastRevive", this.plugin.getLDBConfig().isReviveOptionOnFirstJoin() ? LocalDateTime.MIN.toString() : LocalDateTime.now().toString());
@@ -153,11 +153,11 @@ public class LiteDeathBanCRUD {
                 int lifePartsLeft = this.lives >= maxLives ? 0 : lifeParts - (amountOfPartsPerLife * extraLives);
                 conf.set("lifeParts", lifePartsLeft);
                 this.lifeParts = lifePartsLeft;
-                String broadcastMessage = this.plugin.getMessages().getOnExtraLifeBroadcast(this.player.getName(), this.lives + extraLives >= maxLives - oldLives ? maxLives : extraLives, this.lives, maxLives, lifePartsLeft, amountOfPartsPerLife);
-                String playerMessage = this.plugin.getMessages().getOnExtraLife(this.player.getName(), this.lives + extraLives >= maxLives - oldLives ? maxLives : extraLives, this.lives, maxLives, lifePartsLeft, amountOfPartsPerLife);
+                String broadcastMessage = this.plugin.getMessages().getOnExtraLifeBroadcast(this.player.getName(), oldLives + extraLives >= maxLives ? maxLives - oldLives : extraLives, this.lives, maxLives, lifePartsLeft, amountOfPartsPerLife);
+                String playerMessage = this.plugin.getMessages().getOnExtraLife(this.player.getName(), oldLives + extraLives >= maxLives ? maxLives - oldLives : extraLives, this.lives, maxLives, lifePartsLeft, amountOfPartsPerLife);
                 if (this.lives == maxLives) {
-                    broadcastMessage = this.plugin.getMessages().getOnMaxLivesBroadcast(this.player.getName(), this.lives + extraLives >= maxLives - oldLives ? maxLives : extraLives, this.lives, maxLives, lifePartsLeft, amountOfPartsPerLife);
-                    playerMessage = this.plugin.getMessages().getOnMaxLives(this.player.getName(), this.lives + extraLives >= maxLives - oldLives ? maxLives : extraLives, this.lives, maxLives, lifePartsLeft, amountOfPartsPerLife);
+                    broadcastMessage = this.plugin.getMessages().getOnMaxLivesBroadcast(this.player.getName(), oldLives + extraLives >= maxLives ? maxLives - oldLives : extraLives, this.lives, maxLives, lifePartsLeft, amountOfPartsPerLife);
+                    playerMessage = this.plugin.getMessages().getOnMaxLives(this.player.getName(), oldLives + extraLives >= maxLives ? maxLives - oldLives : extraLives, this.lives, maxLives, lifePartsLeft, amountOfPartsPerLife);
                     if (!broadcastMessage.trim().isEmpty()) {
                         Bukkit.broadcastMessage(broadcastMessage);
                     }

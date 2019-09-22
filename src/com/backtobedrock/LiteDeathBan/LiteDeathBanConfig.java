@@ -2,8 +2,10 @@ package com.backtobedrock.LiteDeathBan;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -28,6 +30,7 @@ public class LiteDeathBanConfig {
     private int PlaytimePerPart;
     private int PlaytimeCheck;
     private int AmountOfPartsPerLife;
+    private int LivesAtStart;
     private boolean BantimeByPlaytime;
     private boolean CombatTag;
     private boolean bantimeByPlaytimeSinceLastDeath;
@@ -42,10 +45,19 @@ public class LiteDeathBanConfig {
     private boolean PartsLostUponDeath;
     private boolean GetPartOfLifeOnPlaytime;
     private boolean CountPlaytimeFromStart;
-    private boolean UseMetrics;
+    private boolean UpdateChecker;
+    private boolean DisableDyingInDisabledWorlds;
     private String BantimeByPlaytimeGrowth;
     private String CombatTagWarningStyle;
     private DateTimeFormatter saveDateFormat;
+    private List<String> DisableLosingLivesInWorlds;
+    private List<String> DisableBanInWorlds;
+    private List<String> DisableCombatTagInWorlds;
+    private List<String> DisableReviveInWorlds;
+    private List<String> DisableGettingLifePartsInWorlds;
+    private List<String> DisableLosingLifePartsInWorlds;
+    private List<String> DisableLoggingDeathBansInWorlds;
+    private List<String> DisableLoggingDeathsInWorlds;
 
     public LiteDeathBanConfig(FileConfiguration fc) {
         this.config = fc;
@@ -54,6 +66,14 @@ public class LiteDeathBanConfig {
 
     private void initialize() {
         this.BantimeByPlaytime = this.config.getBoolean("BantimeByPlaytime", false);
+        this.DisableLosingLivesInWorlds = this.config.getStringList("DisableLosingLivesInWorlds").stream().map(String::toLowerCase).collect(Collectors.toList());
+        this.DisableBanInWorlds = this.config.getStringList("DisableBanInWorlds").stream().map(String::toLowerCase).collect(Collectors.toList());
+        this.DisableCombatTagInWorlds = this.config.getStringList("DisableCombatTagInWorlds").stream().map(String::toLowerCase).collect(Collectors.toList());
+        this.DisableReviveInWorlds = this.config.getStringList("DisableReviveInWorlds").stream().map(String::toLowerCase).collect(Collectors.toList());
+        this.DisableGettingLifePartsInWorlds = this.config.getStringList("DisableGettingLifePartsInWorlds").stream().map(String::toLowerCase).collect(Collectors.toList());
+        this.DisableLosingLifePartsInWorlds = this.config.getStringList("DisableLosingLifePartsInWorlds").stream().map(String::toLowerCase).collect(Collectors.toList());
+        this.DisableLoggingDeathBansInWorlds = this.config.getStringList("DisableLoggingDeathBansInWorlds").stream().map(String::toLowerCase).collect(Collectors.toList());
+        this.DisableLoggingDeathsInWorlds = this.config.getStringList("DisableLoggingDeathsInWorlds").stream().map(String::toLowerCase).collect(Collectors.toList());
         for (Map.Entry<String, Object> e : this.config.getValues(true).entrySet()) {
             switch (e.getKey()) {
                 case "PlayerDeathBantime":
@@ -212,8 +232,14 @@ public class LiteDeathBanConfig {
                 case "CountPlaytimeFromStart":
                     this.CountPlaytimeFromStart = this.checkBoolean(e.getKey(), e.getValue(), false);
                     break;
-                case "UseMetrics":
-                    this.UseMetrics = this.checkBoolean(e.getKey(), e.getValue(), true);
+                case "LivesAtStart":
+                    this.LivesAtStart = this.checkMin(e.getKey(), e.getValue(), 1, 1);
+                    break;
+                case "UpdateChecker":
+                    this.UpdateChecker = this.checkBoolean(e.getKey(), e.getValue(), true);
+                    break;
+                case "DisableDyingInDisabledWorlds":
+                    this.DisableDyingInDisabledWorlds = this.checkBoolean(e.getKey(), e.getValue(), false);
                     break;
                 default:
                     break;
@@ -378,7 +404,47 @@ public class LiteDeathBanConfig {
         return CountPlaytimeFromStart;
     }
 
-    public boolean isUseMetrics() {
-        return UseMetrics;
+    public int getLivesAtStart() {
+        return LivesAtStart;
+    }
+
+    public boolean isUpdateChecker() {
+        return UpdateChecker;
+    }
+
+    public List<String> getDisableBanInWorlds() {
+        return DisableBanInWorlds;
+    }
+
+    public List<String> getDisableLosingLivesInWorlds() {
+        return DisableLosingLivesInWorlds;
+    }
+
+    public List<String> getDisableCombatTagInWorlds() {
+        return DisableCombatTagInWorlds;
+    }
+
+    public List<String> getDisableReviveInWorlds() {
+        return DisableReviveInWorlds;
+    }
+
+    public List<String> getDisableGettingLifePartsInWorlds() {
+        return DisableGettingLifePartsInWorlds;
+    }
+
+    public List<String> getDisableLosingLifePartsInWorlds() {
+        return DisableLosingLifePartsInWorlds;
+    }
+
+    public List<String> getDisableLoggingDeathBansInWorlds() {
+        return DisableLoggingDeathBansInWorlds;
+    }
+
+    public List<String> getDisableLoggingDeathsInWorlds() {
+        return DisableLoggingDeathsInWorlds;
+    }
+
+    public boolean isDisableDyingInDisabledWorlds() {
+        return DisableDyingInDisabledWorlds;
     }
 }

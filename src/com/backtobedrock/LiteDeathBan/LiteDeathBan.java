@@ -2,6 +2,7 @@ package com.backtobedrock.LiteDeathBan;
 
 import java.io.File;
 import com.backtobedrock.LiteDeathBan.eventHandlers.LiteDeathBanEventHandlers;
+import com.backtobedrock.LiteDeathBan.helperClasses.UpdateChecker;
 import com.backtobedrock.LiteDeathBan.runnables.PartsOnPlaytime;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ public class LiteDeathBan extends JavaPlugin implements Listener {
     private final TreeMap<UUID, Integer> confirmationRunners = new TreeMap<>();
     private final List<UUID> usedRevive = new ArrayList<>();
     private final TreeMap<UUID, Long> PlaytimeLastLifeOnlinePlayers = new TreeMap<>();
+    private boolean oldVersion = false;
 
     @Override
     public void onEnable() {
@@ -41,13 +43,19 @@ public class LiteDeathBan extends JavaPlugin implements Listener {
         this.messages = new LiteDeathBanMessages(this);
         this.commands = new LiteDeathBanCommands(this);
 
+        if (this.getLDBConfig().isUpdateChecker()) {
+            new UpdateChecker(this, 12345).getVersion(version -> {
+                this.oldVersion = !this.getDescription().getVersion().equalsIgnoreCase(version);
+            });
+        }
+        
         getServer().getPluginManager().registerEvents(new LiteDeathBanEventHandlers(this), this);
-
-        super.onEnable(); //To change body of generated methods, choose Tools | Templates.
-
+        
         if (this.getLDBConfig().isGetPartOfLifeOnPlaytime()) {
             new PartsOnPlaytime(this).runTaskTimer(this, 0, this.getLDBConfig().getPlaytimeCheck() * 60 * 20);
         }
+
+        super.onEnable(); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -134,5 +142,9 @@ public class LiteDeathBan extends JavaPlugin implements Listener {
 
     public long getFromPlaytimeLastLifeOnlinePlayers(UUID plyrID) {
         return this.PlaytimeLastLifeOnlinePlayers.get(plyrID);
+    }
+
+    public boolean isOldVersion() {
+        return this.oldVersion;
     }
 }
