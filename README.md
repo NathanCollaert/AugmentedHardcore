@@ -19,4 +19,4 @@ LiteDeathBan is a lightweight, advanced and very customizable deathban plugin th
 For all the commands, please check out the Spigot page of this plugin [here](https://www.spigotmc.org/resources/litedeathban-an-advanced-deathban-plugin.71483/). 
   
 ### PERMISSIONS  
-For all the commands, please check out the Spigot page of this plugin [here](https://www.spigotmc.org/resources/litedeathban-an-advanced-deathban-plugin.71483/).  
+For all the permissions, please check out the Spigot page of this plugin [here](https://www.spigotmc.org/resources/litedeathban-an-advanced-deathban-plugin.71483/).  
