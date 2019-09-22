@@ -218,4 +218,9 @@ public class LiteDeathBanCRUD {
     public void reloadConfig() {
         YamlConfiguration.loadConfiguration(file);
     }
+
+    public static boolean doesPlayerDataExists(String id, LiteDeathBan plugin) {
+        File file = new File(plugin.getDataFolder() + id + ".yml");
+        return file.exists();
+    }
 }

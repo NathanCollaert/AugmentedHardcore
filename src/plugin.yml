@@ -23,23 +23,31 @@ commands:
         description: Add an amount of lives to a player.
         permission: litedeathban.addlives
         usage: /<command> <playername> <amount>
+    lifeparts:
+        description: Check your current amount of life parts.
+        permission: litedeathban.lifeparts
+        usage: /<command> [playername]
     
 permissions:
     litedeathban.bypass.ban:
-        default: false
+        default: op
     litedeathban.bypass.combattag:
-        default: false
+        default: op
     litedeathban.bypass.loseparts:
-        deafult: false
+        deafult: op
     litedeathban.bypass.loselives:
-        deafult: false
+        deafult: op
     litedeathban.revive:
-        default: false
+        default: op
     litedeathban.setlives:
-        default: false
+        default: op
     litedeathban.lives:
-        default: false
+        default: op
     litedeathban.lives.other:
-        default: false
+        default: op
+    litedeathban.lifeparts:
+        default: op
+    litedeathban.lifeparts.other:
+        default: op
     litedeathban.addlives:
-        default: false
+        default: op
