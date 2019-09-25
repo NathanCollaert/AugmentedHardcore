@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -12,19 +11,18 @@ import org.bukkit.Statistic;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-public class LiteDeathBanCRUD {
+public final class LiteDeathBanCRUD {
 
-    private final Logger log = Bukkit.getLogger();
     private final LiteDeathBan plugin;
 
     private File file = null;
     private FileConfiguration configuration = null;
     private OfflinePlayer player = null;
+    private LocalDateTime lastRevive;
+    private String lastBan;
+    private int lifeParts;
     private int lives;
     private int totalDeathBans;
-    private String lastBan;
-    private LocalDateTime lastRevive;
-    private int lifeParts;
     private long lastPartPlaytime;
 
     public LiteDeathBanCRUD(OfflinePlayer player, LiteDeathBan plugin) {
@@ -50,7 +48,7 @@ public class LiteDeathBanCRUD {
         try {
             configuration.save(this.getFile());
         } catch (IOException e) {
-            this.log.log(Level.SEVERE, "Cannot save to {0}", file.getName());
+            Bukkit.getLogger().log(Level.SEVERE, "Cannot save to {0}", file.getName());
         }
     }
 
@@ -204,10 +202,10 @@ public class LiteDeathBanCRUD {
                 try {
                     if (this.file.createNewFile()) {
                         this.setNewStart();
-                        this.log.log(Level.INFO, "[LiteDeathBan] File for player {0} has been created", player.getName());
+                        Bukkit.getLogger().log(Level.INFO, "[LiteDeathBan] File for player {0} has been created", player.getName());
                     }
                 } catch (IOException e) {
-                    this.log.log(Level.SEVERE, "[LiteDeathBan] Cannot create data for {0}", player.getName());
+                    Bukkit.getLogger().log(Level.SEVERE, "[LiteDeathBan] Cannot create data for {0}", player.getName());
                 }
             }
             return file;

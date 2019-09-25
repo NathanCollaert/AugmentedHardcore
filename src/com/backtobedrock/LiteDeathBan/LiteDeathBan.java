@@ -16,16 +16,18 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class LiteDeathBan extends JavaPlugin implements Listener {
 
+    private boolean oldVersion = false;
+
     private LiteDeathBanConfig config;
     private LiteDeathBanMessages messages;
     private LiteDeathBanCommands commands;
+
     private final TreeMap<UUID, Integer> tagList = new TreeMap<>();
     private final TreeMap<UUID, BossBar> bars = new TreeMap<>();
     private final TreeMap<UUID, String> confirmationList = new TreeMap<>();
     private final TreeMap<UUID, Integer> confirmationRunners = new TreeMap<>();
     private final List<UUID> usedRevive = new ArrayList<>();
     private final TreeMap<UUID, Long> PlaytimeLastLifeOnlinePlayers = new TreeMap<>();
-    private boolean oldVersion = false;
 
     @Override
     public void onEnable() {
@@ -48,9 +50,9 @@ public class LiteDeathBan extends JavaPlugin implements Listener {
                 this.oldVersion = !this.getDescription().getVersion().equalsIgnoreCase(version);
             });
         }
-        
+
         getServer().getPluginManager().registerEvents(new LiteDeathBanEventHandlers(this), this);
-        
+
         if (this.getLDBConfig().isGetPartOfLifeOnPlaytime()) {
             new PartsOnPlaytime(this).runTaskTimer(this, 0, this.getLDBConfig().getPlaytimeCheck() * 60 * 20);
         }

@@ -12,7 +12,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Logger;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -40,7 +39,6 @@ import org.bukkit.scheduler.BukkitTask;
 public class LiteDeathBanEventHandlers implements Listener {
 
     private final LiteDeathBan plugin;
-    private static final Logger log = Bukkit.getLogger();
     private final ArrayList<UUID> kickList = new ArrayList<>();
 
     private final DateTimeFormatter saveDateFormat;

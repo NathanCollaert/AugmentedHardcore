@@ -76,7 +76,6 @@ public class LiteDeathBanCommands {
         }
         switch (cmnd.getName().toLowerCase()) {
             case "revive":
-                OfflinePlayer playerToRevive = Bukkit.getOfflinePlayer(arg);
                 if (sender != null) {
                     if (cmnd.testPermission(cs)) {
                         if (this.plugin.getLDBConfig().isRevive()) {
@@ -85,7 +84,8 @@ public class LiteDeathBanCommands {
                             List<String> disableReviveInWorlds = this.plugin.getLDBConfig().getDisableReviveInWorlds();
                             if (!disableLosingLivesInWorlds.contains(sender.getWorld().getName().toLowerCase()) || !disableBanInWorlds.contains(sender.getWorld().getName().toLowerCase()) || !disableReviveInWorlds.contains(sender.getWorld().getName().toLowerCase())) {
                                 if (!arg.equalsIgnoreCase(sender.getName())) {
-                                    if (LiteDeathBanCRUD.doesPlayerDataExists(playerToRevive.getName(), this.plugin)) {
+                                    OfflinePlayer playerToRevive = Bukkit.getOfflinePlayer(arg);
+                                    if (LiteDeathBanCRUD.doesPlayerDataExists(playerToRevive.getUniqueId().toString(), this.plugin)) {
                                         LiteDeathBanCRUD crudPlayerToRevive = new LiteDeathBanCRUD(playerToRevive, this.plugin);
                                         if (crudPlayerToRevive.getLives() != this.maxLives) {
                                             LiteDeathBanCRUD crud = new LiteDeathBanCRUD(playerToRevive, this.plugin);
@@ -134,7 +134,7 @@ public class LiteDeathBanCommands {
             case "lives":
                 if (cs.hasPermission("litedeathban.lives.other")) {
                     OfflinePlayer plyr = Bukkit.getOfflinePlayer(arg);
-                    if (LiteDeathBanCRUD.doesPlayerDataExists(plyr.getName(), this.plugin)) {
+                    if (LiteDeathBanCRUD.doesPlayerDataExists(plyr.getUniqueId().toString(), this.plugin)) {
                         LiteDeathBanCRUD crud = new LiteDeathBanCRUD(plyr, this.plugin);
                         cs.spigot().sendMessage(new ComponentBuilder(crud.getLives() > 1 ? plyr.getName() + " has " + crud.getLives() + " lives left." : plyr.getName() + " has one life left.").color(ChatColor.GOLD).create());
                     } else {
@@ -145,7 +145,7 @@ public class LiteDeathBanCommands {
             case "lifeparts":
                 if (cs.hasPermission("litedeathban.lifeparts.other")) {
                     OfflinePlayer plyr = Bukkit.getOfflinePlayer(arg);
-                    if (LiteDeathBanCRUD.doesPlayerDataExists(plyr.getName(), this.plugin)) {
+                    if (LiteDeathBanCRUD.doesPlayerDataExists(plyr.getUniqueId().toString(), this.plugin)) {
                         LiteDeathBanCRUD crud = new LiteDeathBanCRUD(plyr, this.plugin);
                         cs.spigot().sendMessage(new ComponentBuilder(crud.getLifeParts() == 1 ? plyr.getName() + " has one life part left." : plyr.getName() + " has " + crud.getLifeParts() + " life parts left.").color(ChatColor.GOLD).create());
                     } else {
@@ -197,7 +197,7 @@ public class LiteDeathBanCommands {
                 OfflinePlayer plyr = Bukkit.getOfflinePlayer(args[0]);
                 int amount = this.parseStringToInt(args[1], cs);
                 if (cmnd.testPermission(cs)) {
-                    if (LiteDeathBanCRUD.doesPlayerDataExists(plyr.getName(), this.plugin)) {
+                    if (LiteDeathBanCRUD.doesPlayerDataExists(plyr.getUniqueId().toString(), this.plugin)) {
                         if (amount >= 0) {
                             LiteDeathBanCRUD crud = new LiteDeathBanCRUD(plyr, this.plugin);
                             if (amount == 0 && plyr.isOnline()) {
@@ -226,7 +226,7 @@ public class LiteDeathBanCommands {
                 plyr = Bukkit.getOfflinePlayer(args[0]);
                 amount = this.parseStringToInt(args[1], cs);
                 if (cmnd.testPermission(cs)) {
-                    if (LiteDeathBanCRUD.doesPlayerDataExists(plyr.getName(), this.plugin)) {
+                    if (LiteDeathBanCRUD.doesPlayerDataExists(plyr.getUniqueId().toString(), this.plugin)) {
                         if (amount > 0) {
                             LiteDeathBanCRUD crud = new LiteDeathBanCRUD(plyr, this.plugin);
                             if (amount + crud.getLives() <= this.maxLives) {

@@ -8,14 +8,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class DeathLogData {
 
     private final transient LiteDeathBan plugin;
-    private final transient Logger log = Bukkit.getLogger();
+
     private final String PlayerName;
     private final String PlayerID;
     private final PlayerLocation DeathLocation;
@@ -37,10 +36,10 @@ public class DeathLogData {
         if (!file.exists()) {
             try {
                 if (file.getParentFile().mkdirs() && file.createNewFile()) {
-                    this.log.log(Level.INFO, "[LiteDeathBan] DeathLog file has been created");
+                    Bukkit.getLogger().log(Level.INFO, "[LiteDeathBan] DeathLog file has been created");
                 }
             } catch (IOException e) {
-                this.log.log(Level.SEVERE, "[LiteDeathBan] Cannot create DeathLog file.");
+                Bukkit.getLogger().log(Level.SEVERE, "[LiteDeathBan] Cannot create DeathLog file.");
             }
         }
         Gson gson = new GsonBuilder().setPrettyPrinting().create();

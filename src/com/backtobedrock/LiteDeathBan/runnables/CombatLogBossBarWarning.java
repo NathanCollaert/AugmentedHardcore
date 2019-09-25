@@ -11,6 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class CombatLogBossBarWarning extends BukkitRunnable {
 
     private final LiteDeathBan plugin;
+    
     private final int total;
     private int counter;
     private final Player plyr;
