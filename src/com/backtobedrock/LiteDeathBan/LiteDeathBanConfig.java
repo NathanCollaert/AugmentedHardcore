@@ -1,450 +1,263 @@
 package com.backtobedrock.LiteDeathBan;
 
+import java.io.InputStreamReader;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 public class LiteDeathBanConfig {
 
     private final FileConfiguration config;
-    private Logger log = Bukkit.getLogger();
 
-    private int PlayerDeathBantime;
-    private int MonsterDeathBantime;
-    private int EnvironmentDeathBantime;
-    private int BantimeByPlaytimePercent;
-    private int BantimeByPlaytimeInterval;
-    private int BantimeByPlaytimeMinimumPlayerDeath;
-    private int BantimeByPlaytimeMinimumMonsterDeath;
-    private int BantimeByPlaytimeMinimumEnvironmentDeath;
-    private int CombatTagTime;
-    private int BantimeOnReviveDeath;
-    private int TimeBetweenRevives;
-    private int MaxLives;
-    private int PartsPerKill;
-    private int PlaytimePerPart;
-    private int PlaytimeCheck;
-    private int AmountOfPartsPerLife;
-    private int LivesAtStart;
-    private boolean BantimeByPlaytime;
-    private boolean CombatTag;
-    private boolean bantimeByPlaytimeSinceLastDeath;
-    private boolean Revive;
-    private boolean ReviveOptionOnFirstJoin;
-    private boolean CombatTagPlayerKickDeath;
-    private boolean CombatTagSelf;
-    private boolean ShowLivesInTabMenu;
-    private boolean LogDeathBans;
-    private boolean LogDeaths;
-    private boolean GetPartOfLifeOnKill;
-    private boolean PartsLostUponDeath;
-    private boolean GetPartOfLifeOnPlaytime;
-    private boolean CountPlaytimeFromStart;
-    private boolean UpdateChecker;
-    private boolean DisableDyingInDisabledWorlds;
-    private String BantimeByPlaytimeGrowth;
-    private String CombatTagWarningStyle;
-    private DateTimeFormatter saveDateFormat;
-    private List<String> DisableLosingLivesInWorlds;
-    private List<String> DisableBanInWorlds;
-    private List<String> DisableCombatTagInWorlds;
-    private List<String> DisableReviveInWorlds;
-    private List<String> DisableGettingLifePartsInWorlds;
-    private List<String> DisableLosingLifePartsInWorlds;
-    private List<String> DisableLoggingDeathBansInWorlds;
-    private List<String> DisableLoggingDeathsInWorlds;
+    private final LiteDeathBan plugin;
 
-    public LiteDeathBanConfig(FileConfiguration fc) {
-        this.config = fc;
-        this.initialize();
+    public LiteDeathBanConfig(LiteDeathBan plugin) {
+        this.plugin = plugin;
+        this.config = this.checkConfigVersion();
     }
 
-    private void initialize() {
-        this.BantimeByPlaytime = this.config.getBoolean("BantimeByPlaytime", false);
-        this.DisableLosingLivesInWorlds = this.config.getStringList("DisableLosingLivesInWorlds").stream().map(String::toLowerCase).collect(Collectors.toList());
-        this.DisableBanInWorlds = this.config.getStringList("DisableBanInWorlds").stream().map(String::toLowerCase).collect(Collectors.toList());
-        this.DisableCombatTagInWorlds = this.config.getStringList("DisableCombatTagInWorlds").stream().map(String::toLowerCase).collect(Collectors.toList());
-        this.DisableReviveInWorlds = this.config.getStringList("DisableReviveInWorlds").stream().map(String::toLowerCase).collect(Collectors.toList());
-        this.DisableGettingLifePartsInWorlds = this.config.getStringList("DisableGettingLifePartsInWorlds").stream().map(String::toLowerCase).collect(Collectors.toList());
-        this.DisableLosingLifePartsInWorlds = this.config.getStringList("DisableLosingLifePartsInWorlds").stream().map(String::toLowerCase).collect(Collectors.toList());
-        this.DisableLoggingDeathBansInWorlds = this.config.getStringList("DisableLoggingDeathBansInWorlds").stream().map(String::toLowerCase).collect(Collectors.toList());
-        this.DisableLoggingDeathsInWorlds = this.config.getStringList("DisableLoggingDeathsInWorlds").stream().map(String::toLowerCase).collect(Collectors.toList());
-        for (Map.Entry<String, Object> e : this.config.getValues(true).entrySet()) {
-            switch (e.getKey()) {
-                case "PlayerDeathBantime":
-                    if (!e.getValue().equals(0)) {
-                        this.PlayerDeathBantime = this.checkMin(e.getKey(), e.getValue(), -1, 7200);
-                    } else {
-                        if (!this.BantimeByPlaytime) {
-                            this.PlayerDeathBantime = 7200;
-                            log.warning(String.format("[LiteDeathBan] %s has been changed to its default value (%d) due it being 0.", e.getKey(), 7200));
-                        } else {
-                            this.PlayerDeathBantime = this.checkMin(e.getKey(), e.getValue(), -1, 7200);
-                        }
-                    }
-                    break;
-                case "MonsterDeathBantime":
-                    if (!e.getValue().equals(0)) {
-                        this.MonsterDeathBantime = this.checkMin(e.getKey(), e.getValue(), -1, 2880);
-                    } else {
-                        if (!this.BantimeByPlaytime) {
-                            this.MonsterDeathBantime = 2880;
-                            log.warning(String.format("[LiteDeathBan] %s has been changed to its default value (%d) due it being 0.", e.getKey(), 2880));
-                        } else {
-                            this.MonsterDeathBantime = this.checkMin(e.getKey(), e.getValue(), -1, 2880);
-                        }
-                    }
-                    break;
-                case "EnvironmentDeathBantime":
-                    if (!e.getValue().equals(0)) {
-                        this.EnvironmentDeathBantime = this.checkMin(e.getKey(), e.getValue(), -1, 4320);
-                    } else {
-                        if (!this.BantimeByPlaytime) {
-                            this.EnvironmentDeathBantime = 4320;
-                            log.warning(String.format("[LiteDeathBan] %s has been changed to its default value (%d) due it being 0.", e.getKey(), 4320));
-                        } else {
-                            this.EnvironmentDeathBantime = this.checkMin(e.getKey(), e.getValue(), -1, 4320);
-                        }
-                    }
-                    break;
-                case "BantimeByPlaytimePercent":
-                    this.BantimeByPlaytimePercent = this.checkMin(e.getKey(), e.getValue(), 1, 10);
-                    break;
-                case "BantimeByPlaytimeInterval":
-                    this.BantimeByPlaytimeInterval = this.checkMin(e.getKey(), e.getValue(), 1, 60);
-                    break;
-                case "BantimeByPlaytimeMinimumPlayerDeath":
-                    this.BantimeByPlaytimeMinimumPlayerDeath = this.checkMin(e.getKey(), e.getValue(), 1, 72);
-                    break;
-                case "BantimeByPlaytimeMinimumMonsterDeath":
-                    this.BantimeByPlaytimeMinimumMonsterDeath = this.checkMin(e.getKey(), e.getValue(), 1, 28);
-                    break;
-                case "BantimeByPlaytimeMinimumEnvironmentDeath":
-                    this.BantimeByPlaytimeMinimumEnvironmentDeath = this.checkMin(e.getKey(), e.getValue(), 1, 43);
-                    break;
-                case "CombatTag":
-                    this.CombatTag = this.checkBoolean(e.getKey(), e.getValue(), true);
-                    break;
-                case "CombatTagTime":
-                    this.CombatTagTime = this.checkMin(e.getKey(), e.getValue(), 1, 10);
-                    break;
-                case "BantimeByPlaytimeGrowth":
-                    if (e.getValue().toString().equalsIgnoreCase("linear") || e.getValue().toString().equalsIgnoreCase("exponential")) {
-                        this.BantimeByPlaytimeGrowth = e.getValue().toString().toLowerCase();
-                    } else {
-                        this.BantimeByPlaytimeGrowth = "exponential";
-                        log.warning(String.format("[LiteDeathBan] %s has been changed to its default value (%s) due it not being configured as linear or exponential.", e.getKey(), "exponential"));
-                    }
-                    break;
-                case "CombatTagWarningStyle":
-                    String style = e.getValue().toString();
-                    if (style.equalsIgnoreCase("chat") || style.equalsIgnoreCase("none") || style.equalsIgnoreCase("bossbar")) {
-                        this.CombatTagWarningStyle = style;
-                    } else {
-                        this.CombatTagWarningStyle = "bossbar";
-                        log.warning(String.format("[LiteDeathBan] %s has been changed to its default value (%s) due it not being configured as linear or exponential.", e.getKey(), "bossbar"));
-                    }
-                    break;
-                case "SaveDateFormat":
-                    switch (e.getValue().toString()) {
-                        case "short":
-                            this.saveDateFormat = DateTimeFormatter.ofPattern("MM/dd/yy',' HH:mm z").withZone(ZoneId.systemDefault());
-                            break;
-                        case "medium":
-                            this.saveDateFormat = DateTimeFormatter.ofPattern("MMM dd yyyy',' HH:mm z").withZone(ZoneId.systemDefault());
-                            break;
-                        case "long":
-                            this.saveDateFormat = DateTimeFormatter.ofPattern("EEEE MMM dd yyyy 'at' HH:mm:ss z").withZone(ZoneId.systemDefault());
-                            break;
-                        default:
-                            this.saveDateFormat = DateTimeFormatter.ofPattern("MMM dd yyyy',' HH:mm:ss z").withZone(ZoneId.systemDefault());
-                            log.warning(String.format("[LiteDeathBan] %s has been changed to its default value (%s) due it not being configured as short, medium or long.", e.getKey(), "medium"));
-                            break;
-                    }
-                    break;
-                case "BantimeByPlaytimeSinceLastDeath":
-                    if (this.BantimeByPlaytime) {
-                        this.bantimeByPlaytimeSinceLastDeath = this.checkBoolean(e.getKey(), e.getValue(), false);
-                    } else {
-                        this.bantimeByPlaytimeSinceLastDeath = false;
-                    }
-                    break;
-                case "Revive":
-                    this.Revive = this.checkBoolean(e.getKey(), e.getValue(), true);
-                    break;
-                case "BantimeOnReviveDeath":
-                    this.BantimeOnReviveDeath = this.checkMin(e.getKey(), e.getValue(), 1, 7200);
-                    break;
-                case "TimeBetweenRevives":
-                    this.TimeBetweenRevives = this.checkMin(e.getKey(), e.getValue(), 0, 1440);
-                    break;
-                case "ReviveOptionOnFirstJoin":
-                    this.ReviveOptionOnFirstJoin = this.checkBoolean(e.getKey(), e.getValue(), false);
-                    break;
-                case "MaxLives":
-                    if (e.getValue() instanceof Integer && (int) e.getValue() == 0) {
-                        this.MaxLives = Integer.MAX_VALUE;
-                    } else {
-                        this.MaxLives = this.checkMin(e.getKey(), e.getValue(), 1, 5);
-                    }
-                    break;
-                case "CombatTagPlayerKickDeath":
-                    this.CombatTagPlayerKickDeath = this.checkBoolean(e.getKey(), e.getValue(), false);
-                    break;
-                case "CombatTagSelf":
-                    this.CombatTagSelf = this.checkBoolean(e.getKey(), e.getValue(), false);
-                    break;
-                case "ShowLivesInTabMenu":
-                    this.ShowLivesInTabMenu = this.checkBoolean(e.getKey(), e.getValue(), true);
-                    break;
-                case "LogDeathBans":
-                    this.LogDeathBans = this.checkBoolean(e.getKey(), e.getValue(), false);
-                    break;
-                case "LogDeaths":
-                    this.LogDeaths = this.checkBoolean(e.getKey(), e.getValue(), false);
-                    break;
-                case "GetPartOfLifeOnKill":
-                    this.GetPartOfLifeOnKill = this.checkBoolean(e.getKey(), e.getValue(), true);
-                    break;
-                case "PartsPerKill":
-                    this.PartsPerKill = this.checkMin(e.getKey(), e.getValue(), 1, 1);
-                    break;
-                case "PartsLostUponDeath":
-                    this.PartsLostUponDeath = this.checkBoolean(e.getKey(), e.getValue(), false);
-                    break;
-                case "GetPartOfLifeOnPlaytime":
-                    this.GetPartOfLifeOnPlaytime = this.checkBoolean(e.getKey(), e.getValue(), false);
-                    break;
-                case "PlaytimePerPart":
-                    this.PlaytimePerPart = this.checkMin(e.getKey(), e.getValue(), 1, 60);
-                    break;
-                case "PlaytimeCheck":
-                    this.PlaytimeCheck = this.checkMin(e.getKey(), e.getValue(), 1, 60);
-                    break;
-                case "AmountOfPartsPerLife":
-                    this.AmountOfPartsPerLife = this.checkMin(e.getKey(), e.getValue(), 1, 5);
-                    break;
-                case "CountPlaytimeFromStart":
-                    this.CountPlaytimeFromStart = this.checkBoolean(e.getKey(), e.getValue(), false);
-                    break;
-                case "LivesAtStart":
-                    this.LivesAtStart = this.checkMin(e.getKey(), e.getValue(), 1, 1);
-                    break;
-                case "UpdateChecker":
-                    this.UpdateChecker = this.checkBoolean(e.getKey(), e.getValue(), true);
-                    break;
-                case "DisableDyingInDisabledWorlds":
-                    this.DisableDyingInDisabledWorlds = this.checkBoolean(e.getKey(), e.getValue(), false);
-                    break;
-                default:
-                    break;
-            }
-        }
+    // <editor-fold desc="Miscellaneous" defaultstate="collapsed">
+    public boolean isUpdateChecker() {
+        return this.config.getBoolean("UpdateChecker", true);
     }
+    // </editor-fold>
 
-    private int checkMin(String key, Object value, int MIN, int defaultValue) {
-        int number;
-        if (value instanceof Integer) {
-            number = (int) value;
-        } else {
-            number = defaultValue;
-            log.warning(String.format("[LiteDeathBan] %s has been changed to its default value (%d) due it not being configured as a number.", key, defaultValue));
-        }
-        if (number >= MIN) {
-            return number;
-        } else {
-            log.warning(String.format("[LiteDeathBan] %s has been changed to its default value (%d) due it being below the minimum value.", key, defaultValue));
-            return defaultValue;
-        }
-    }
-
-    private boolean checkBoolean(String key, Object value, boolean defaultValue) {
-        if (value instanceof Boolean) {
-            return (boolean) value;
-        } else {
-            log.warning(String.format("[LiteDeathBan] %s has been changed to its default value (%s) due it being true or false.", key, defaultValue));
-            return defaultValue;
-        }
-    }
-
-    public boolean isBantimeByPlaytime() {
-        return BantimeByPlaytime;
-    }
-
-    public int getBantimeByPlaytimePercent() {
-        return BantimeByPlaytimePercent;
-    }
-
-    public int getBantimeByPlaytimeInterval() {
-        return BantimeByPlaytimeInterval;
-    }
-
-    public boolean isCombatTag() {
-        return CombatTag;
-    }
-
-    public int getCombatTagTime() {
-        return CombatTagTime;
-    }
-
-    public String getBantimeByPlaytimeGrowth() {
-        return BantimeByPlaytimeGrowth;
-    }
-
-    public int getPlayerDeathBantime() {
-        return PlayerDeathBantime;
-    }
-
-    public int getMonsterDeathBantime() {
-        return MonsterDeathBantime;
-    }
-
-    public int getEnvironmentDeathBantime() {
-        return EnvironmentDeathBantime;
-    }
-
-    public int getBantimeByPlaytimeMinimumPlayerDeath() {
-        return BantimeByPlaytimeMinimumPlayerDeath;
-    }
-
-    public int getBantimeByPlaytimeMinimumMonsterDeath() {
-        return BantimeByPlaytimeMinimumMonsterDeath;
-    }
-
-    public int getBantimeByPlaytimeMinimumEnvironmentDeath() {
-        return BantimeByPlaytimeMinimumEnvironmentDeath;
-    }
-
-    public String getCombatTagWarningStyle() {
-        return CombatTagWarningStyle;
-    }
-
-    public boolean isBantimeByPlaytimeSinceLastDeath() {
-        return bantimeByPlaytimeSinceLastDeath;
-    }
-
-    public DateTimeFormatter getSaveDateFormat() {
-        return saveDateFormat;
-    }
-
-    public int getBantimeOnReviveDeath() {
-        return BantimeOnReviveDeath;
-    }
-
-    public boolean isRevive() {
-        return Revive;
-    }
-
-    public int getTimeBetweenRevives() {
-        return TimeBetweenRevives;
-    }
-
-    public boolean isReviveOptionOnFirstJoin() {
-        return ReviveOptionOnFirstJoin;
-    }
-
+    // <editor-fold desc="Lives" defaultstate="collapsed">
     public int getMaxLives() {
-        return MaxLives;
-    }
-
-    public boolean isCombatTagPlayerKickDeath() {
-        return CombatTagPlayerKickDeath;
-    }
-
-    public boolean isCombatTagSelf() {
-        return CombatTagSelf;
+        int lives = this.config.getInt("MaxLives", 5);
+        return lives == 0 ? Integer.MAX_VALUE : this.checkMin(lives, 1, 5);
     }
 
     public boolean isShowLivesInTabMenu() {
-        return ShowLivesInTabMenu;
-    }
-
-    public boolean isLogDeathBans() {
-        return LogDeathBans;
-    }
-
-    public boolean isLogDeaths() {
-        return LogDeaths;
-    }
-
-    public int getPartsPerKill() {
-        return PartsPerKill;
-    }
-
-    public int getPlaytimePerPart() {
-        return PlaytimePerPart;
-    }
-
-    public int getPlaytimeCheck() {
-        return PlaytimeCheck;
-    }
-
-    public int getAmountOfPartsPerLife() {
-        return AmountOfPartsPerLife;
-    }
-
-    public boolean isGetPartOfLifeOnKill() {
-        return GetPartOfLifeOnKill;
-    }
-
-    public boolean isPartsLostUponDeath() {
-        return PartsLostUponDeath;
-    }
-
-    public boolean isGetPartOfLifeOnPlaytime() {
-        return GetPartOfLifeOnPlaytime;
-    }
-
-    public boolean isCountPlaytimeFromStart() {
-        return CountPlaytimeFromStart;
+        return this.config.getBoolean("ShowLivesInTabMenu", true);
     }
 
     public int getLivesAtStart() {
-        return LivesAtStart;
-    }
-
-    public boolean isUpdateChecker() {
-        return UpdateChecker;
-    }
-
-    public List<String> getDisableBanInWorlds() {
-        return DisableBanInWorlds;
+        return this.checkMin(this.config.getInt("LivesAtStart", 1), 1, 1);
     }
 
     public List<String> getDisableLosingLivesInWorlds() {
-        return DisableLosingLivesInWorlds;
-    }
-
-    public List<String> getDisableCombatTagInWorlds() {
-        return DisableCombatTagInWorlds;
-    }
-
-    public List<String> getDisableReviveInWorlds() {
-        return DisableReviveInWorlds;
-    }
-
-    public List<String> getDisableGettingLifePartsInWorlds() {
-        return DisableGettingLifePartsInWorlds;
-    }
-
-    public List<String> getDisableLosingLifePartsInWorlds() {
-        return DisableLosingLifePartsInWorlds;
-    }
-
-    public List<String> getDisableLoggingDeathBansInWorlds() {
-        return DisableLoggingDeathBansInWorlds;
-    }
-
-    public List<String> getDisableLoggingDeathsInWorlds() {
-        return DisableLoggingDeathsInWorlds;
+        return this.config.getStringList("DisableLosingLivesInWorlds").stream().map(String::toLowerCase).collect(Collectors.toList());
     }
 
     public boolean isDisableDyingInDisabledWorlds() {
-        return DisableDyingInDisabledWorlds;
+        return this.config.getBoolean("DisableDyingInDisabledWorlds", false);
+    }
+    // </editor-fold>
+
+    // <editor-fold desc="Ban Times" defaultstate="collapsed">
+    public int getPlayerDeathBantime() {
+        return this.checkBantime(this.config.getInt("PlayerDeathBantime", 7200), 7200);
+    }
+
+    public int getMonsterDeathBantime() {
+        return this.checkBantime(this.config.getInt("MonsterDeathBantime", 2880), 2880);
+    }
+
+    public int getEnvironmentDeathBantime() {
+        return this.checkBantime(this.config.getInt("EnvironmentDeathBantime", 4320), 4320);
+    }
+
+    public List<String> getDisableBanInWorlds() {
+        return this.config.getStringList("DisableBanInWorlds").stream().map(String::toLowerCase).collect(Collectors.toList());
+    }
+
+    private int checkBantime(int value, int defaultValue) {
+        if (value != 0) {
+            return this.checkMin(value, -1, defaultValue);
+        } else {
+            if (!this.isBantimeByPlaytime()) {
+                return defaultValue;
+            } else {
+                return value;
+            }
+        }
+    }
+    // </editor-fold>
+
+    // <editor-fold desc="Ban By Playtime" defaultstate="collapsed">
+    public boolean isBantimeByPlaytime() {
+        return this.config.getBoolean("BantimeByPlaytime", false);
+    }
+
+    public boolean isBantimeByPlaytimeSinceLastDeath() {
+        return this.config.getBoolean("BantimeByPlaytimeSinceLastDeath", false);
+    }
+
+    public int getBantimeByPlaytimePercent() {
+        return this.checkMin(this.config.getInt("BantimeByPlaytimePercent", 10), 1, 10);
+    }
+
+    public int getBantimeByPlaytimeInterval() {
+        return this.checkMin(this.config.getInt("BantimeByPlaytimeInterval", 60), 1, 60);
+    }
+
+    public String getBantimeByPlaytimeGrowth() {
+        String value = this.config.getString("BantimeByPlaytimeGrowth", "exponential");
+        return (value != null && (value.equalsIgnoreCase("linear") || value.equalsIgnoreCase("exponential"))) ? value : "exponential";
+    }
+
+    public int getBantimeByPlaytimeMinimumPlayerDeath() {
+        return this.checkMin(this.config.getInt("BantimeByPlaytimeMinimumPlayerDeath", 72), 1, 72);
+    }
+
+    public int getBantimeByPlaytimeMinimumMonsterDeath() {
+        return this.checkMin(this.config.getInt("BantimeByPlaytimeMinimumMonsterDeath", 28), 1, 28);
+    }
+
+    public int getBantimeByPlaytimeMinimumEnvironmentDeath() {
+        return this.checkMin(this.config.getInt("BantimeByPlaytimeMinimumEnvironmentDeath", 43), 1, 43);
+    }
+    // </editor-fold>
+
+    // <editor-fold desc="Combat Tag" defaultstate="collapsed">
+    public boolean isCombatTag() {
+        return this.config.getBoolean("CombatTag", true);
+    }
+
+    public boolean isCombatTagSelf() {
+        return this.config.getBoolean("CombatTagSelf", false);
+    }
+
+    public int getCombatTagTime() {
+        return this.checkMin(this.config.getInt("CombatTagTime", 10), 1, 10);
+    }
+
+    public String getCombatTagWarningStyle() {
+        String value = this.config.getString("CombatTagWarningStyle", "bossbar");
+        return (value != null && (value.equalsIgnoreCase("chat") || value.equalsIgnoreCase("none") || value.equalsIgnoreCase("bossbar"))) ? value : "bossbar";
+
+    }
+
+    public boolean isCombatTagPlayerKickDeath() {
+        return this.config.getBoolean("CombatTagPlayerKickDeath", false);
+    }
+
+    public List<String> getDisableCombatTagInWorlds() {
+        return this.config.getStringList("DisableCombatTagInWorlds").stream().map(String::toLowerCase).collect(Collectors.toList());
+    }
+    // </editor-fold>
+
+    // <editor-fold desc="Reviving" defaultstate="collapsed">
+    public boolean isRevive() {
+        return this.config.getBoolean("Revive", true);
+    }
+
+    public int getBantimeOnReviveDeath() {
+        return this.checkMin(this.config.getInt("BantimeOnReviveDeath", 7200), 1, 7200);
+    }
+
+    public int getTimeBetweenRevives() {
+        return this.checkMin(this.config.getInt("TimeBetweenRevives", 1440), 0, 1440);
+    }
+
+    public boolean isReviveOptionOnFirstJoin() {
+        return this.config.getBoolean("ReviveOptionOnFirstJoin", false);
+    }
+
+    public List<String> getDisableReviveInWorlds() {
+        return this.config.getStringList("DisableReviveInWorlds").stream().map(String::toLowerCase).collect(Collectors.toList());
+    }
+    // </editor-fold>
+
+    // <editor-fold desc="Life Parts" defaultstate="collapsed">
+    public boolean isGetPartOfLifeOnKill() {
+        return this.config.getBoolean("GetPartOfLifeOnKill", true);
+    }
+
+    public int getPartsPerKill() {
+        return this.checkMin(this.config.getInt("PartsPerKill", 1), 1, 1);
+    }
+
+    public boolean isPartsLostUponDeath() {
+        return this.config.getBoolean("PartsLostUponDeath", false);
+    }
+
+    public boolean isGetPartOfLifeOnPlaytime() {
+        return this.config.getBoolean("GetPartOfLifeOnPlaytime", false);
+    }
+
+    public boolean isCountPlaytimeFromStart() {
+        return this.config.getBoolean("CountPlaytimeFromStart", false);
+    }
+
+    public int getPlaytimePerPart() {
+        return this.checkMin(this.config.getInt("PlaytimePerPart", 60), 1, 60);
+    }
+
+    public int getPlaytimeCheck() {
+        return this.checkMin(this.config.getInt("PlaytimeCheck", 60), 1, 60);
+    }
+
+    public int getAmountOfPartsPerLife() {
+        return this.checkMin(this.config.getInt("AmountOfPartsPerLife", 5), 1, 5);
+    }
+
+    public List<String> getDisableGettingLifePartsInWorlds() {
+        return this.config.getStringList("DisableGettingLifePartsInWorlds").stream().map(String::toLowerCase).collect(Collectors.toList());
+    }
+
+    public List<String> getDisableLosingLifePartsInWorlds() {
+        return this.config.getStringList("DisableLosingLifePartsInWorlds").stream().map(String::toLowerCase).collect(Collectors.toList());
+    }
+    // </editor-fold>
+
+    // <editor-fold desc="Logging" defaultstate="collapsed">
+    public boolean isLogDeathBans() {
+        return this.config.getBoolean("LogDeathBans", false);
+    }
+
+    public boolean isLogDeaths() {
+        return this.config.getBoolean("LogDeaths", false);
+    }
+
+    public List<String> getDisableLoggingDeathBansInWorlds() {
+        return this.config.getStringList("DisableLoggingDeathBansInWorlds").stream().map(String::toLowerCase).collect(Collectors.toList());
+    }
+
+    public List<String> getDisableLoggingDeathsInWorlds() {
+        return this.config.getStringList("DisableLoggingDeathsInWorlds").stream().map(String::toLowerCase).collect(Collectors.toList());
+    }
+    // </editor-fold>
+
+    // <editor-fold desc="Format" defaultstate="collapsed">
+    public DateTimeFormatter getSaveDateFormat() {
+        String value = this.config.getString("SaveDateFormat", "medium");
+        switch (value.toLowerCase()) {
+            case "short":
+                return DateTimeFormatter.ofPattern("MM/dd/yy',' HH:mm z").withZone(ZoneId.systemDefault());
+            case "medium":
+                return DateTimeFormatter.ofPattern("MMM dd yyyy',' HH:mm z").withZone(ZoneId.systemDefault());
+            case "long":
+                return DateTimeFormatter.ofPattern("EEEE MMM dd yyyy 'at' HH:mm:ss z").withZone(ZoneId.systemDefault());
+            default:
+                return DateTimeFormatter.ofPattern("MMM dd yyyy',' HH:mm:ss z").withZone(ZoneId.systemDefault());
+        }
+    }
+    // </editor-fold>
+
+    private int checkMin(int value, int min, int defaultValue) {
+        if (value >= min) {
+            return value;
+        } else {
+            return defaultValue;
+        }
+    }
+
+    private FileConfiguration checkConfigVersion() {
+        //Load current config and default one.
+        FileConfiguration currentConfig = this.plugin.getConfig();
+        FileConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(this.plugin.getResource("config.yml")));
+
+        //If default config has a different amount of keys, send error.
+        if (!currentConfig.getKeys(true).equals(defaultConfig.getKeys(true))) {
+            Bukkit.getLogger().severe("[LiteDeathBan] Detected old config file, please regenerate your config file to configure everything correctly! Default values are being used for new options.");
+        }
+
+        return this.plugin.getConfig();
     }
 }

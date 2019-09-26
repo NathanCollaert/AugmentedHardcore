@@ -22,31 +22,26 @@ public class LiteDeathBan extends JavaPlugin implements Listener {
     private LiteDeathBanMessages messages;
     private LiteDeathBanCommands commands;
 
+    private final List<UUID> usedRevive = new ArrayList<>();
     private final TreeMap<UUID, Integer> tagList = new TreeMap<>();
     private final TreeMap<UUID, BossBar> bars = new TreeMap<>();
     private final TreeMap<UUID, String> confirmationList = new TreeMap<>();
     private final TreeMap<UUID, Integer> confirmationRunners = new TreeMap<>();
-    private final List<UUID> usedRevive = new ArrayList<>();
-    private final TreeMap<UUID, Long> PlaytimeLastLifeOnlinePlayers = new TreeMap<>();
+    private final TreeMap<UUID, Long> playtimeLastLifeOnlinePlayers = new TreeMap<>();
 
     @Override
     public void onEnable() {
         this.saveDefaultConfig();
 
-        File file = new File(this.getDataFolder(), "messages.yml");
-        if (!file.exists()) {
-            this.saveResource("messages.yml", false);
-        }
-
         File dir = new File(this.getDataFolder() + "/userdata");
         dir.mkdirs();
 
-        this.config = new LiteDeathBanConfig(getConfig());
+        this.config = new LiteDeathBanConfig(this);
         this.messages = new LiteDeathBanMessages(this);
         this.commands = new LiteDeathBanCommands(this);
 
         if (this.getLDBConfig().isUpdateChecker()) {
-            new UpdateChecker(this, 12345).getVersion(version -> {
+            new UpdateChecker(this, 71483).getVersion(version -> {
                 this.oldVersion = !this.getDescription().getVersion().equalsIgnoreCase(version);
             });
         }
@@ -57,12 +52,12 @@ public class LiteDeathBan extends JavaPlugin implements Listener {
             new PartsOnPlaytime(this).runTaskTimer(this, 0, this.getLDBConfig().getPlaytimeCheck() * 60 * 20);
         }
 
-        super.onEnable(); //To change body of generated methods, choose Tools | Templates.
+        super.onEnable();
     }
 
     @Override
     public void onDisable() {
-        super.onDisable(); //To change body of generated methods, choose Tools | Templates.
+        super.onDisable();
     }
 
     @Override
@@ -135,15 +130,15 @@ public class LiteDeathBan extends JavaPlugin implements Listener {
     }
 
     public void addToPlaytimeLastLifeOnlinePlayers(UUID plyrID, long playtime) {
-        this.PlaytimeLastLifeOnlinePlayers.put(plyrID, playtime);
+        this.playtimeLastLifeOnlinePlayers.put(plyrID, playtime);
     }
 
     public void removeFromPlaytimeLastLifeOnlinePlayers(UUID plyrID) {
-        this.PlaytimeLastLifeOnlinePlayers.remove(plyrID);
+        this.playtimeLastLifeOnlinePlayers.remove(plyrID);
     }
 
     public long getFromPlaytimeLastLifeOnlinePlayers(UUID plyrID) {
-        return this.PlaytimeLastLifeOnlinePlayers.get(plyrID);
+        return this.playtimeLastLifeOnlinePlayers.get(plyrID);
     }
 
     public boolean isOldVersion() {

@@ -8,7 +8,7 @@ import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class CombatLogBossBarWarning extends BukkitRunnable {
+public class CombatTagBossBarWarning extends BukkitRunnable {
 
     private final LiteDeathBan plugin;
     
@@ -18,7 +18,7 @@ public class CombatLogBossBarWarning extends BukkitRunnable {
     private final BossBar bar;
     private final String taggedBy;
 
-    public CombatLogBossBarWarning(LiteDeathBan plugin, int counter, Player plyr, String taggedBy) {
+    public CombatTagBossBarWarning(LiteDeathBan plugin, int counter, Player plyr, String taggedBy) {
         this.plugin = plugin;
         if (counter < 1) {
             throw new IllegalArgumentException("counter must be greater than 1");

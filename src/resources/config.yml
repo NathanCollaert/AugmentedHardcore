@@ -188,7 +188,7 @@ CountPlaytimeFromStart: false
 #In minutes, minimum is 1.
 PlaytimePerPart: 60
 
-#How many minutes should be between each playtime check? The lower this value the more accurate people will get their reward, at cost of performance.
+#How many minutes should be between each playtime check? The lower this value the more accurate people will get their reward at cost of performance.
 #I would recommend not setting this lower than 30 to avoid lag, especially with many active players.
 #In minutes, minimum is 1.
 PlaytimeCheck: 60

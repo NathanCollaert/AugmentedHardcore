@@ -217,8 +217,8 @@ public final class LiteDeathBanCRUD {
         YamlConfiguration.loadConfiguration(file);
     }
 
-    public static boolean doesPlayerDataExists(String id, LiteDeathBan plugin) {
-        File file = new File(plugin.getDataFolder() + id + ".yml");
+    public static boolean doesPlayerDataExists(OfflinePlayer plyr, LiteDeathBan plugin) {
+        File file = new File(plugin.getDataFolder() + plyr.getUniqueId().toString() + ".yml");
         return file.exists();
     }
 }

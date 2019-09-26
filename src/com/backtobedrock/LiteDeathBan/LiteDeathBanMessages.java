@@ -16,7 +16,11 @@ public class LiteDeathBanMessages {
 
     public LiteDeathBanMessages(LiteDeathBan plugin) {
         this.plugin = plugin;
-        this.config = YamlConfiguration.loadConfiguration(new File(this.plugin.getDataFolder() + "/messages.yml"));
+        File messagesFile = new File(this.plugin.getDataFolder(), "messages.yml");
+        if (!messagesFile.exists()) {
+            this.plugin.saveResource("messages.yml", false);
+        }
+        this.config = YamlConfiguration.loadConfiguration(messagesFile);
         this.config.getValues(true).entrySet().forEach((e) -> {
             this.messages.put(e.getKey(), e.getValue().toString().replaceAll("&", "§"));
         });
