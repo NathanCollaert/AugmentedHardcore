@@ -12,10 +12,6 @@ UpdateChecker: true
 #Minimum is 1, 0 is unlimited.
 MaxLives: 5
 
-#Should the current amount of lives of a player be shown in the tab menu?
-#This is personal per player, a player will only see his/her lives.
-ShowLivesInTabMenu: true
-
 #What amount of lives should players start at when first joining?
 #Minimum is 1.
 LivesAtStart: 1

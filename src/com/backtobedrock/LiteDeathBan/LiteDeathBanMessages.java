@@ -1,15 +1,17 @@
 package com.backtobedrock.LiteDeathBan;
 
 import java.io.File;
+import java.io.InputStreamReader;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 public class LiteDeathBanMessages {
 
-    private final FileConfiguration config;
+    private final FileConfiguration messagesConfig;
     private final LiteDeathBan plugin;
 
     private TreeMap<String, String> messages = new TreeMap<>();
@@ -20,10 +22,23 @@ public class LiteDeathBanMessages {
         if (!messagesFile.exists()) {
             this.plugin.saveResource("messages.yml", false);
         }
-        this.config = YamlConfiguration.loadConfiguration(messagesFile);
-        this.config.getValues(true).entrySet().forEach((e) -> {
+        this.messagesConfig = this.checkMessagesVersion();
+        this.messagesConfig.getValues(true).entrySet().forEach((e) -> {
             this.messages.put(e.getKey(), e.getValue().toString().replaceAll("&", "§"));
         });
+    }
+
+    private FileConfiguration checkMessagesVersion() {
+        File messagesFile = new File(this.plugin.getDataFolder(), "messages.yml");
+        //Load current config and default one.
+        FileConfiguration currentMessages = YamlConfiguration.loadConfiguration(messagesFile);
+        FileConfiguration defaultMessages = YamlConfiguration.loadConfiguration(new InputStreamReader(this.plugin.getResource("messages.yml")));
+
+        //If default config has a different amount of keys, send error.
+        if (!currentMessages.getKeys(true).equals(defaultMessages.getKeys(true))) {
+            Bukkit.getLogger().severe("[LiteDeathBan] Detected old messages file, please regenerate your messages file to configure everything correctly! New options are disabled until then.");
+        }
+        return currentMessages;
     }
 
     public String getOnPlayerDeathBan(String playername, int banTimeInMinutes, String banExpireDate, String dateOfLastBan, int totalBans) {
@@ -69,21 +84,25 @@ public class LiteDeathBanMessages {
                 playername);
     }
 
-    public String getOnPlayerRespawn(String playername, int livesLeft, int maxLives) {
+    public String getOnPlayerRespawn(String playername, int totalLives, int maxLives) {
         String message = this.messages.get("OnPlayerRespawn");
         return this.playernamePH(
-                this.livesLeftPH(
+                this.totalLivesPH(
                         this.maxLivesPH(message, maxLives),
-                        livesLeft),
+                        totalLives),
                 playername);
     }
 
-    public String getOnLivesLeftInTabMenu(String playername, int livesLeft, int maxLives) {
-        String message = this.messages.get("OnLivesLeftInTabMenu");
+    public String getTabMenuFooter(String playername, int totalLives, int maxLives, int totalParts, int partsNeededForLife) {
+        String message = this.messages.get("TabMenuFooter");
         return this.playernamePH(
-                this.livesLeftPH(
-                        this.maxLivesPH(message, maxLives),
-                        livesLeft),
+                this.totalLivesPH(
+                        this.maxLivesPH(
+                                this.totalPartsPH(
+                                        this.partsNeededForLifePH(message, partsNeededForLife),
+                                        totalParts),
+                                maxLives),
+                        totalLives),
                 playername);
     }
 
@@ -210,10 +229,6 @@ public class LiteDeathBanMessages {
 
     private String tagTimePH(String message, int tagTime) {
         return message.replace("%tag_time%", Integer.toString(tagTime));
-    }
-
-    private String livesLeftPH(String message, int livesLeft) {
-        return message.replace("%lives_left%", Integer.toString(livesLeft));
     }
 
     private String maxLivesPH(String message, int maxLives) {

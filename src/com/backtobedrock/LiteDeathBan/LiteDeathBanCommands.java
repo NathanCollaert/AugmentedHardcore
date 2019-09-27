@@ -44,23 +44,32 @@ public class LiteDeathBanCommands {
         if (cs instanceof Player) {
             sender = (Player) cs;
         }
-
-        //check if command is used by player
-        if (sender == null) {
-            cs.spigot().sendMessage(new ComponentBuilder("You'll need to log in to use this command.").color(ChatColor.RED).create());
-            return true;
-        }
-
-        //check if player has permission
-        if (!cmnd.testPermission(cs)) {
-            return true;
-        }
         switch (cmnd.getName().toLowerCase()) {
             case "lives":
+                //check if player
+                if (sender == null) {
+                    cs.spigot().sendMessage(new ComponentBuilder("You'll need to log in to use this command.").color(ChatColor.RED).create());
+                    return true;
+                }
+                //check for permission
+                if (!cmnd.testPermission(cs)) {
+                    return true;
+                }
+
                 LiteDeathBanCRUD livesCrud = new LiteDeathBanCRUD(sender, this.plugin);
                 cs.spigot().sendMessage(new ComponentBuilder(livesCrud.getLives() > 1 ? "You have " + livesCrud.getLives() + " lives left." : "You have one life left.").color(ChatColor.GOLD).create());
                 return true;
             case "lifeparts":
+                //check if player
+                if (sender == null) {
+                    cs.spigot().sendMessage(new ComponentBuilder("You'll need to log in to use this command.").color(ChatColor.RED).create());
+                    return true;
+                }
+                //check for permission
+                if (!cmnd.testPermission(cs)) {
+                    return true;
+                }
+
                 LiteDeathBanCRUD lifePartsCrud = new LiteDeathBanCRUD(sender, this.plugin);
                 cs.spigot().sendMessage(new ComponentBuilder(lifePartsCrud.getLifeParts() == 1 ? "You have one life part left." : "You have " + lifePartsCrud.getLifeParts() + " life parts left.").color(ChatColor.GOLD).create());
                 return true;
@@ -75,24 +84,21 @@ public class LiteDeathBanCommands {
         }
         switch (cmnd.getName().toLowerCase()) {
             case "revive":
-                //check if command is used by player
+                //check if player
                 if (sender == null) {
                     cs.spigot().sendMessage(new ComponentBuilder("You'll need to log in to use this command.").color(ChatColor.RED).create());
                     return true;
                 }
-
-                //check if player has permission
+                //check for permission
                 if (!cmnd.testPermission(cs)) {
                     return true;
                 }
-
-                //check if revive is enabled in config
+                //check if enabled
                 if (!this.plugin.getLDBConfig().isRevive()) {
                     cs.spigot().sendMessage(new ComponentBuilder("Reviving is not available.").color(ChatColor.RED).create());
                     return true;
                 }
-
-                //check if player isn't in a disbaled world
+                //check if in a disbaled world
                 List<String> disableLosingLivesInWorlds = this.plugin.getLDBConfig().getDisableLosingLivesInWorlds();
                 List<String> disableBanInWorlds = this.plugin.getLDBConfig().getDisableBanInWorlds();
                 List<String> disableReviveInWorlds = this.plugin.getLDBConfig().getDisableReviveInWorlds();
@@ -100,30 +106,26 @@ public class LiteDeathBanCommands {
                     cs.spigot().sendMessage(new ComponentBuilder("Reviving is not available in this world.").color(ChatColor.RED).create());
                     return true;
                 }
-
-                //check if player isn't trying to revive him/herself
+                //check if trying to revive him/herself
                 if (arg.equalsIgnoreCase(sender.getName())) {
                     cs.spigot().sendMessage(new ComponentBuilder("You cannot revive yourself.").color(ChatColor.RED).create());
                     return true;
                 }
-
-                //check if player to revive has data on the server
+                //check for player data
                 OfflinePlayer playerToRevive = Bukkit.getOfflinePlayer(arg);
                 if (!playerToRevive.hasPlayedBefore()) {
                     cs.spigot().sendMessage(new ComponentBuilder(playerToRevive.getName() + " has no data on this server.").color(ChatColor.RED).create());
                     return true;
                 }
-
-                //check if player to revive hasn't got max lives already
-                LiteDeathBanCRUD crudPlayerToRevive = new LiteDeathBanCRUD(playerToRevive, this.plugin);
-                if (crudPlayerToRevive.getLives() >= this.maxLives) {
+                //check if max lives already
+                LiteDeathBanCRUD reviveCrudPlayerToRevive = new LiteDeathBanCRUD(playerToRevive, this.plugin);
+                if (reviveCrudPlayerToRevive.getLives() >= this.maxLives) {
                     cs.spigot().sendMessage(new ComponentBuilder(playerToRevive.getName() + " already has the maximum amount of lives.").color(ChatColor.RED).create());
                     return true;
                 }
-
-                //check if revive option is not on cooldown
-                crud = new LiteDeathBanCRUD(sender, this.plugin);
-                int timeLeft = this.plugin.getLDBConfig().getTimeBetweenRevives() - (int) Duration.between(crud.getLastRevive(), LocalDateTime.now()).toMinutes();
+                //check if on cooldown
+                LiteDeathBanCRUD reviveCrudPlayer = new LiteDeathBanCRUD(sender, this.plugin);
+                int timeLeft = this.plugin.getLDBConfig().getTimeBetweenRevives() - (int) Duration.between(reviveCrudPlayer.getLastRevive(), LocalDateTime.now()).toMinutes();
                 if (timeLeft > 0) {
                     cs.spigot().sendMessage(new ComponentBuilder("Your revive ability is on cooldown for another " + timeLeft + " minutes.").color(ChatColor.RED).create());
                     return true;
@@ -133,42 +135,49 @@ public class LiteDeathBanCommands {
                 if (!containsConfirmation) {
                     BukkitTask chatTask = new ReviveChatWarning(this.plugin, sender).runTaskLater(this.plugin, 7 * 20);
                     this.plugin.addToConfirmation(sender.getUniqueId(), arg, chatTask.getTaskId());
-                    cs.spigot().sendMessage(new ComponentBuilder("Would you really like to give a life to " + arg + "?\n").color(ChatColor.GOLD).append("[Confirm]").color(ChatColor.GREEN).event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/revive " + arg + " confirm")).event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to confirm revive").create())).append(" / or execute the following command ").color(ChatColor.GOLD).append("/revive " + arg + " confirm").color(ChatColor.AQUA).event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/revive " + arg + " confirm")).event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to use command").create())).create());
+                    cs.spigot().sendMessage(new ComponentBuilder("Would you really like to give a life to " + playerToRevive.getName() + "?\n").color(ChatColor.GOLD).append("[Confirm]").color(ChatColor.GREEN).event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/revive " + playerToRevive.getName() + " confirm")).event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to confirm revive").create())).append(" or ").reset().color(ChatColor.GOLD).append("/revive " + playerToRevive.getName() + " confirm").color(ChatColor.AQUA).event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/revive " + playerToRevive.getName() + " confirm")).event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to use command").create())).create());
                 } else {
                     if (this.plugin.getFromConfirmation(sender.getUniqueId()).equalsIgnoreCase(arg)) {
                         cs.spigot().sendMessage(new ComponentBuilder("already reviving this player").color(ChatColor.YELLOW).create());
                     } else {
                         Bukkit.getScheduler().cancelTask(this.plugin.getFromConfirmationRunners(sender.getUniqueId()));
                         BukkitTask chatTask = new ReviveChatWarning(this.plugin, sender).runTaskLater(this.plugin, 7 * 20);
-                        //replaces old values automatically
                         this.plugin.addToConfirmation(sender.getUniqueId(), arg, chatTask.getTaskId());
-                        cs.spigot().sendMessage(new ComponentBuilder("Would you really like to give a life to " + arg + "?\n").color(ChatColor.GOLD).append("[Confirm]").color(ChatColor.GREEN).event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/revive " + arg + " confirm")).event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to confirm revive").create())).append(" / or execute the following command ").color(ChatColor.GOLD).append("/revive " + arg + " confirm").color(ChatColor.AQUA).event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/revive " + arg + " confirm")).event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to use command").create())).create());
+                        cs.spigot().sendMessage(new ComponentBuilder("Would you really like to give a life to " + playerToRevive.getName() + "?\n").color(ChatColor.GOLD).append("[Confirm]").color(ChatColor.GREEN).event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/revive " + playerToRevive.getName() + " confirm")).event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to confirm revive").create())).append(" or ").reset().color(ChatColor.GOLD).append("/revive " + playerToRevive.getName() + " confirm").color(ChatColor.AQUA).event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/revive " + playerToRevive.getName() + " confirm")).event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to use command").create())).create());
                     }
                 }
                 return true;
             case "lives":
+                //check for permission
                 if (!cs.hasPermission("litedeathban.lives.other")) {
+                    cs.spigot().sendMessage(new ComponentBuilder(cmnd.getPermissionMessage()).color(ChatColor.RED).create());
                     return true;
                 }
-                OfflinePlayer plyr = Bukkit.getOfflinePlayer(arg);
-                if (!plyr.hasPlayedBefore()) {
-                    cs.spigot().sendMessage(new ComponentBuilder(arg + " has no data on this server.").color(ChatColor.RED).create());
+                //check for player data
+                OfflinePlayer livesPlyr = Bukkit.getOfflinePlayer(arg);
+                if (!livesPlyr.hasPlayedBefore()) {
+                    cs.spigot().sendMessage(new ComponentBuilder(livesPlyr.getName() + " has no data on this server.").color(ChatColor.RED).create());
                     return true;
                 }
-                crud = new LiteDeathBanCRUD(plyr, this.plugin);
-                cs.spigot().sendMessage(new ComponentBuilder(crud.getLives() > 1 ? plyr.getName() + " has " + crud.getLives() + " lives left." : plyr.getName() + " has one life left.").color(ChatColor.GOLD).create());
+
+                LiteDeathBanCRUD livesPlyrCrud = new LiteDeathBanCRUD(livesPlyr, this.plugin);
+                cs.spigot().sendMessage(new ComponentBuilder(livesPlyrCrud.getLives() > 1 ? livesPlyr.getName() + " has " + livesPlyrCrud.getLives() + " lives left." : livesPlyr.getName() + " has one life left.").color(ChatColor.GOLD).create());
                 return true;
             case "lifeparts":
+                //check for permission
                 if (!cs.hasPermission("litedeathban.lifeparts.other")) {
+                    cs.spigot().sendMessage(new ComponentBuilder(cmnd.getPermissionMessage()).color(ChatColor.RED).create());
                     return true;
                 }
-                OfflinePlayer plyr = Bukkit.getOfflinePlayer(arg);
-                if (!plyr.hasPlayedBefore()) {
-                    cs.spigot().sendMessage(new ComponentBuilder(arg + " has no data on this server.").color(ChatColor.RED).create());
+                //check for player data
+                OfflinePlayer lifePartsPlyr = Bukkit.getOfflinePlayer(arg);
+                if (!lifePartsPlyr.hasPlayedBefore()) {
+                    cs.spigot().sendMessage(new ComponentBuilder(lifePartsPlyr.getName() + " has no data on this server.").color(ChatColor.RED).create());
                     return true;
                 }
-                LiteDeathBanCRUD crud = new LiteDeathBanCRUD(plyr, this.plugin);
-                cs.spigot().sendMessage(new ComponentBuilder(crud.getLifeParts() == 1 ? plyr.getName() + " has one life part left." : plyr.getName() + " has " + crud.getLifeParts() + " life parts left.").color(ChatColor.GOLD).create());
+
+                LiteDeathBanCRUD lifePartsPlyrCrud = new LiteDeathBanCRUD(lifePartsPlyr, this.plugin);
+                cs.spigot().sendMessage(new ComponentBuilder(lifePartsPlyrCrud.getLifeParts() == 1 ? lifePartsPlyr.getName() + " has one life part left." : lifePartsPlyr.getName() + " has " + lifePartsPlyrCrud.getLifeParts() + " life parts left.").color(ChatColor.GOLD).create());
                 return true;
             default:
                 return false;
@@ -177,87 +186,117 @@ public class LiteDeathBanCommands {
 
     private boolean twoParameters(CommandSender cs, Command cmnd, String[] args) {
         Player sender = null;
-        OfflinePlayer plyr = Bukkit.getOfflinePlayer(args[0]);
         if (cs instanceof Player) {
             sender = (Player) cs;
         }
         switch (cmnd.getName().toLowerCase()) {
             case "revive":
-                if (sender != null) {
-                    if (cmnd.testPermission(cs)) {
-                        if (this.plugin.getLDBConfig().isRevive()) {
-                            List<String> disableLosingLivesInWorlds = this.plugin.getLDBConfig().getDisableLosingLivesInWorlds();
-                            List<String> disableBanInWorlds = this.plugin.getLDBConfig().getDisableBanInWorlds();
-                            List<String> disableReviveInWorlds = this.plugin.getLDBConfig().getDisableReviveInWorlds();
-                            if (!disableLosingLivesInWorlds.contains(sender.getWorld().getName().toLowerCase()) || !disableBanInWorlds.contains(sender.getWorld().getName().toLowerCase()) || !disableReviveInWorlds.contains(sender.getWorld().getName().toLowerCase())) {
-                                if (args[1].equalsIgnoreCase("confirm") && this.plugin.doesConfirmationContain(sender.getUniqueId())) {
-                                    String personInConfirmationList = this.plugin.getFromConfirmation(sender.getUniqueId());
-                                    if (personInConfirmationList.equalsIgnoreCase(args[0])) {
-                                        this.plugin.removeFromConfirmation(sender.getUniqueId());
-                                        this.revivePlayer(sender, Bukkit.getOfflinePlayer(personInConfirmationList));
-                                        sender.spigot().sendMessage(new ComponentBuilder("You've given a live to  " + args[0] + ".").color(ChatColor.GOLD).create());
-                                    } else {
-                                        sender.spigot().sendMessage(new ComponentBuilder("The player you wanted to revive was not " + args[0] + ".").color(ChatColor.RED).create());
-                                    }
-                                }
-                            } else {
-                                sender.spigot().sendMessage(new ComponentBuilder("Reviving is not available in this world.").color(ChatColor.RED).create());
-                            }
-                        } else {
-                            sender.spigot().sendMessage(new ComponentBuilder("Reviving is not available.").color(ChatColor.RED).create());
-                        }
-                    }
-                } else {
+                //check if player
+                if (sender == null) {
                     cs.spigot().sendMessage(new ComponentBuilder("You'll need to log in to use this command.").color(ChatColor.RED).create());
+                    return true;
                 }
+                //check for permission
+                if (!cmnd.testPermission(cs)) {
+                    return true;
+                }
+                //check if enabled
+                if (!this.plugin.getLDBConfig().isRevive()) {
+                    cs.spigot().sendMessage(new ComponentBuilder("Reviving is not available.").color(ChatColor.RED).create());
+                    return true;
+                }
+                //check if in disbaled world
+                List<String> disableLosingLivesInWorlds = this.plugin.getLDBConfig().getDisableLosingLivesInWorlds();
+                List<String> disableBanInWorlds = this.plugin.getLDBConfig().getDisableBanInWorlds();
+                List<String> disableReviveInWorlds = this.plugin.getLDBConfig().getDisableReviveInWorlds();
+                if (disableLosingLivesInWorlds.contains(sender.getWorld().getName().toLowerCase()) || disableBanInWorlds.contains(sender.getWorld().getName().toLowerCase()) || disableReviveInWorlds.contains(sender.getWorld().getName().toLowerCase())) {
+                    cs.spigot().sendMessage(new ComponentBuilder("Reviving is not available in this world.").color(ChatColor.RED).create());
+                    return true;
+                }
+                //check if confirmation
+                if (!args[1].equalsIgnoreCase("confirm")) {
+                    cs.spigot().sendMessage(new ComponentBuilder("/revive <player> confirm").color(ChatColor.RED).create());
+                    return true;
+                }
+                //check if reviving someone
+                if (!this.plugin.doesConfirmationContain(sender.getUniqueId())) {
+                    cs.spigot().sendMessage(new ComponentBuilder("You are not reviving any player. Use /revive <player>").color(ChatColor.RED).create());
+                    return true;
+                }
+                //check if confirming correct player
+                String personInConfirmationList = this.plugin.getFromConfirmation(sender.getUniqueId());
+                if (!personInConfirmationList.equalsIgnoreCase(args[0])) {
+                    cs.spigot().sendMessage(new ComponentBuilder("The player you wanted to revive was not " + args[0] + ".").color(ChatColor.RED).create());
+                    return true;
+                }
+
+                Bukkit.getScheduler().cancelTask(this.plugin.getFromConfirmationRunners(sender.getUniqueId()));
+                this.plugin.removeFromConfirmation(sender.getUniqueId());
+                this.revivePlayer(sender, Bukkit.getOfflinePlayer(personInConfirmationList));
+                cs.spigot().sendMessage(new ComponentBuilder("You've given a live to " + args[0] + ".").color(ChatColor.GOLD).create());
                 return true;
             case "setlives":
                 int amount = this.parseStringToInt(args[1], cs);
-                if (cmnd.testPermission(cs)) {
-                    if (LiteDeathBanCRUD.doesPlayerDataExists(plyr, this.plugin)) {
-                        if (amount >= 0) {
-                            LiteDeathBanCRUD crud = new LiteDeathBanCRUD(plyr, this.plugin);
-                            if (amount == 0 && plyr.isOnline()) {
-                                crud.setLives(1, true);
-                                ((Player) plyr).setHealth(0.0D);
-                                cs.spigot().sendMessage(new ComponentBuilder(args[0] + " has been killed.").color(ChatColor.GOLD).create());
-                            } else if (amount > 0) {
-                                if (amount <= this.maxLives) {
-                                    crud.setLives(amount, true);
-                                    cs.spigot().sendMessage(new ComponentBuilder(args[0] + "'s lives has been set to " + amount + ".").color(ChatColor.GOLD).create());
-                                } else {
-                                    cs.spigot().sendMessage(new ComponentBuilder("Can't give that amount of lives to a player as the max amount of lives is " + this.maxLives + ".").color(ChatColor.RED).create());
-                                }
-                            } else {
-                                cs.spigot().sendMessage(new ComponentBuilder("You cannot kill an offline player.").color(ChatColor.RED).create());
-                            }
-                        } else {
-                            cs.spigot().sendMessage(new ComponentBuilder("You can't set a player's lives to " + amount + ".").color(ChatColor.RED).create());
-                        }
-                    } else {
-                        cs.spigot().sendMessage(new ComponentBuilder(args[0] + " has no data on this server.").color(ChatColor.RED).create());
+                //check for permission
+                if (!cmnd.testPermission(cs)) {
+                    return true;
+                }
+                //check for player data
+                OfflinePlayer setLivesPlyrToSetLivesOf = Bukkit.getOfflinePlayer(args[0]);
+                if (!setLivesPlyrToSetLivesOf.hasPlayedBefore()) {
+                    cs.spigot().sendMessage(new ComponentBuilder(setLivesPlyrToSetLivesOf.getName() + " has no data on this server.").color(ChatColor.RED).create());
+                    return true;
+                }
+                //check if amount < 0
+                if (amount < 0) {
+                    cs.spigot().sendMessage(new ComponentBuilder("You can't set a player's lives to " + amount + ".").color(ChatColor.RED).create());
+                    return true;
+                }
+
+                LiteDeathBanCRUD setLivesCrudPlyrToSetLivesOf = new LiteDeathBanCRUD(setLivesPlyrToSetLivesOf, this.plugin);
+                if (amount == 0 && setLivesPlyrToSetLivesOf.isOnline()) {
+                    setLivesCrudPlyrToSetLivesOf.setLives(1, true);
+                    ((Player) setLivesPlyrToSetLivesOf).setHealth(0.0D);
+                    cs.spigot().sendMessage(new ComponentBuilder(setLivesPlyrToSetLivesOf.getName() + " has been killed.").color(ChatColor.GOLD).create());
+                } else if (amount > 0) {
+                    //check if amount > max lives
+                    if (amount > this.maxLives) {
+                        cs.spigot().sendMessage(new ComponentBuilder("Can't give that amount of lives to a player as the max amount of lives is " + this.maxLives + ".").color(ChatColor.RED).create());
+                        return true;
                     }
+
+                    setLivesCrudPlyrToSetLivesOf.setLives(amount, true);
+                    cs.spigot().sendMessage(new ComponentBuilder(setLivesPlyrToSetLivesOf.getName() + "'s lives has been set to " + amount + ".").color(ChatColor.GOLD).create());
+                } else {
+                    cs.spigot().sendMessage(new ComponentBuilder("You cannot kill an offline player.").color(ChatColor.RED).create());
                 }
                 return true;
             case "addlives":
                 amount = this.parseStringToInt(args[1], cs);
-                if (cmnd.testPermission(cs)) {
-                    if (LiteDeathBanCRUD.doesPlayerDataExists(plyr, this.plugin)) {
-                        if (amount > 0) {
-                            LiteDeathBanCRUD crud = new LiteDeathBanCRUD(plyr, this.plugin);
-                            if (amount + crud.getLives() <= this.maxLives) {
-                                crud.setLives(amount + crud.getLives(), true);
-                                cs.spigot().sendMessage(new ComponentBuilder(args[0] + "'s lives has been set to " + crud.getLives() + ".").color(ChatColor.GOLD).create());
-                            } else {
-                                cs.spigot().sendMessage(new ComponentBuilder("Can't add that amount of lives, as the max amount of lives is " + this.maxLives + ". And " + args[0] + " already has " + crud.getLives() + " lives.").color(ChatColor.RED).create());
-                            }
-                        } else {
-                            cs.spigot().sendMessage(new ComponentBuilder("You can't add " + amount + " lives to a player.").color(ChatColor.RED).create());
-                        }
-                    } else {
-                        cs.spigot().sendMessage(new ComponentBuilder(args[0] + " has data on this server.").color(ChatColor.RED).create());
-                    }
+                //check for permission
+                if (!cmnd.testPermission(cs)) {
+                    return true;
                 }
+                //check for player data
+                OfflinePlayer addLivesPlyrToAddLivesTo = Bukkit.getOfflinePlayer(args[0]);
+                if (!addLivesPlyrToAddLivesTo.hasPlayedBefore()) {
+                    cs.spigot().sendMessage(new ComponentBuilder(addLivesPlyrToAddLivesTo.getName() + " has no data on this server.").color(ChatColor.RED).create());
+                    return true;
+                }
+                //check if amount <= 0
+                if (amount <= 0) {
+                    cs.spigot().sendMessage(new ComponentBuilder("You can't add " + amount + " lives to a player.").color(ChatColor.RED).create());
+                    return true;
+                }
+                //check if player lives + amount isn't more then max lives
+                LiteDeathBanCRUD addLivesCrudPlyrToAddLivesTo = new LiteDeathBanCRUD(addLivesPlyrToAddLivesTo, this.plugin);
+                if (amount + addLivesCrudPlyrToAddLivesTo.getLives() > this.maxLives) {
+                    cs.spigot().sendMessage(new ComponentBuilder("Can't add that amount of lives, as the max amount of lives is " + this.maxLives + ". And " + addLivesPlyrToAddLivesTo.getName() + " already has " + addLivesCrudPlyrToAddLivesTo.getLives() + " lives.").color(ChatColor.RED).create());
+                    return true;
+                }
+
+                addLivesCrudPlyrToAddLivesTo.setLives(amount + addLivesCrudPlyrToAddLivesTo.getLives(), true);
+                cs.spigot().sendMessage(new ComponentBuilder(addLivesPlyrToAddLivesTo.getName() + "'s lives has been set to " + addLivesCrudPlyrToAddLivesTo.getLives() + ".").color(ChatColor.GOLD).create());
                 return true;
             default:
                 return false;

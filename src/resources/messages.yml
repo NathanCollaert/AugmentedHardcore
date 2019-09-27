@@ -26,17 +26,18 @@ OnPlayerDeathBan: "&c&lYou have died\n\n&rYou have been banned until &b%ban_expi
 
 #Send to player when player respawns.
 #Leave empty to disable.
-#%playername%/%lives_left%/%max_lives%
-OnPlayerRespawn: "You have &6&l%lives_left%/%max_lives%&r lives left, use them wisely!"
+#%playername%/%total_lives%/%max_lives%
+OnPlayerRespawn: "You have &6&l%total_lives% out of %max_lives%&r lives left, use them wisely!"
 
-#Shown in tab menu footer when ShowLivesInTabMenu: true.
-#%playername%/%lives_left%/%max_lives%
-OnLivesLeftInTabMenu: "Lives : &6%lives_left%/%max_lives%"
+#Shown in tab menu footer per player.
+#Leave empty to disable.
+#%playername%/%total_lives%/%max_lives%/%total_parts%/%parts_needed_for_life%
+TabMenuFooter: "Lives : &6%total_lives%/%max_lives% &r| &6%total_parts%/%parts_needed_for_life% &r: Parts"
 
 #Send to player when he/she receives an extra life.
 #Leave empty to disable.
 #%playername%/%lives_received%/%total_lives%/%max_lives%/%parts_received%/%parts_needed_for_life%
-OnExtraLife: "You have received %lives_received% lives and %parts_received%/%parts_needed_for_life% parts."
+OnExtraLife: "You have received %lives_received% lives and %parts_received% parts."
 
 #Send to all players when a player receives an extra life.
 #Leave empty to disable.

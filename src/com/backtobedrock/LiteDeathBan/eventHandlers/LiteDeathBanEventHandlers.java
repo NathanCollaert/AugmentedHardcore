@@ -58,8 +58,9 @@ public class LiteDeathBanEventHandlers implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
         LiteDeathBanCRUD crud = new LiteDeathBanCRUD(e.getPlayer(), this.plugin);
-        if (config.isShowLivesInTabMenu()) {
-            e.getPlayer().setPlayerListFooter(this.plugin.getMessages().getOnLivesLeftInTabMenu(e.getPlayer().getName(), crud.getLives(), this.config.getMaxLives()));
+        String tabMenuFooterText = this.plugin.getMessages().getTabMenuFooter(e.getPlayer().getName(), crud.getLives(), this.config.getMaxLives(), crud.getLifeParts(), this.config.getAmountOfPartsPerLife());
+        if (!tabMenuFooterText.isEmpty()) {
+            e.getPlayer().setPlayerListFooter(tabMenuFooterText);
         }
         if (this.config.isGetPartOfLifeOnPlaytime()) {
             this.plugin.addToPlaytimeLastLifeOnlinePlayers(e.getPlayer().getUniqueId(), crud.getLastPartPlaytime());

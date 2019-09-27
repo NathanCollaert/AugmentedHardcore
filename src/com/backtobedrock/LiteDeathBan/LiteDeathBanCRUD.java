@@ -70,8 +70,9 @@ public final class LiteDeathBanCRUD {
         conf.set("playername", player.getName());
         conf.set("lives", amount);
         this.lives = amount;
-        if (this.plugin.getLDBConfig().isShowLivesInTabMenu() && this.player.isOnline()) {
-            this.player.getPlayer().setPlayerListFooter(this.plugin.getMessages().getOnLivesLeftInTabMenu(this.player.getName(), this.lives, this.plugin.getLDBConfig().getMaxLives()));
+        String tabMenuFooterText = this.plugin.getMessages().getTabMenuFooter(this.player.getName(), this.lives, this.plugin.getLDBConfig().getMaxLives(), this.lifeParts, this.plugin.getLDBConfig().getAmountOfPartsPerLife());
+        if (!tabMenuFooterText.isEmpty() && this.player.isOnline()) {
+            this.player.getPlayer().setPlayerListFooter(tabMenuFooterText);
         }
         if (save) {
             this.saveConfig();
@@ -215,10 +216,5 @@ public final class LiteDeathBanCRUD {
 
     public void reloadConfig() {
         YamlConfiguration.loadConfiguration(file);
-    }
-
-    public static boolean doesPlayerDataExists(OfflinePlayer plyr, LiteDeathBan plugin) {
-        File file = new File(plugin.getDataFolder() + plyr.getUniqueId().toString() + ".yml");
-        return file.exists();
     }
 }

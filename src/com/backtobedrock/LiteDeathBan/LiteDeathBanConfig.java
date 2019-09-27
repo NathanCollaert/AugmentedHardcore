@@ -32,10 +32,6 @@ public class LiteDeathBanConfig {
         return lives == 0 ? Integer.MAX_VALUE : this.checkMin(lives, 1, 5);
     }
 
-    public boolean isShowLivesInTabMenu() {
-        return this.config.getBoolean("ShowLivesInTabMenu", true);
-    }
-
     public int getLivesAtStart() {
         return this.checkMin(this.config.getInt("LivesAtStart", 1), 1, 1);
     }
@@ -257,7 +253,6 @@ public class LiteDeathBanConfig {
         if (!currentConfig.getKeys(true).equals(defaultConfig.getKeys(true))) {
             Bukkit.getLogger().severe("[LiteDeathBan] Detected old config file, please regenerate your config file to configure everything correctly! Default values are being used for new options.");
         }
-
         return this.plugin.getConfig();
     }
 }
