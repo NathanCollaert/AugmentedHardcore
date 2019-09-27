@@ -144,4 +144,8 @@ public class LiteDeathBan extends JavaPlugin implements Listener {
     public boolean isOldVersion() {
         return this.oldVersion;
     }
+
+    public int getFromConfirmationRunners(UUID plyrID) {
+        return this.confirmationRunners.get(plyrID);
+    }
 }

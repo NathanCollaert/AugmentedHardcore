@@ -16,8 +16,8 @@ public final class LiteDeathBanCRUD {
     private final LiteDeathBan plugin;
 
     private File file = null;
-    private FileConfiguration configuration = null;
-    private OfflinePlayer player = null;
+    private FileConfiguration configuration;
+    private final OfflinePlayer player;
     private LocalDateTime lastRevive;
     private String lastBan;
     private int lifeParts;
@@ -196,7 +196,7 @@ public final class LiteDeathBanCRUD {
     }
 
     private File getFile() {
-        if (file == null) {
+        if (file == null && player.hasPlayedBefore()) {
             this.file = new File(this.plugin.getDataFolder() + "/userdata/" + player.getUniqueId().toString() + ".yml");
             if (!this.file.exists()) {
                 try {
