@@ -33,7 +33,7 @@ public final class LiteDeathBanCRUD {
         this.lastBan = this.getConfig().getString("lastBan", "never");
         this.lastRevive = LocalDateTime.parse(this.getConfig().getString("lastRevive", this.plugin.getLDBConfig().isReviveOptionOnFirstJoin() ? LocalDateTime.MIN.toString() : LocalDateTime.now().toString()));
         this.lifeParts = this.getConfig().getInt("lifeParts", 0);
-        this.lastPartPlaytime = this.getConfig().getLong("lastPartPlaytime", 0);
+        this.lastPartPlaytime = this.getConfig().getLong("lastPartPlaytime", this.plugin.getLDBConfig().isCountPlaytimeFromStart() ? 0 : this.player.getPlayer().getStatistic(Statistic.PLAY_ONE_MINUTE));
     }
 
     public FileConfiguration getConfig() {
@@ -212,9 +212,5 @@ public final class LiteDeathBanCRUD {
             return file;
         }
         return file;
-    }
-
-    public void reloadConfig() {
-        YamlConfiguration.loadConfiguration(file);
     }
 }

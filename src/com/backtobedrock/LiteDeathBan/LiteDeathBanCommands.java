@@ -19,11 +19,9 @@ import org.bukkit.scheduler.BukkitTask;
 public class LiteDeathBanCommands {
 
     private LiteDeathBan plugin = null;
-    private final int maxLives;
 
     public LiteDeathBanCommands(LiteDeathBan plugin) {
         this.plugin = plugin;
-        this.maxLives = this.plugin.getLDBConfig().getMaxLives();
     }
 
     public boolean onCommand(CommandSender cs, Command cmnd, String alias, String[] args) {
@@ -119,7 +117,7 @@ public class LiteDeathBanCommands {
                 }
                 //check if max lives already
                 LiteDeathBanCRUD reviveCrudPlayerToRevive = new LiteDeathBanCRUD(playerToRevive, this.plugin);
-                if (reviveCrudPlayerToRevive.getLives() >= this.maxLives) {
+                if (reviveCrudPlayerToRevive.getLives() >= this.plugin.getLDBConfig().getMaxLives()) {
                     cs.spigot().sendMessage(new ComponentBuilder(playerToRevive.getName() + " already has the maximum amount of lives.").color(ChatColor.RED).create());
                     return true;
                 }
@@ -260,8 +258,8 @@ public class LiteDeathBanCommands {
                     cs.spigot().sendMessage(new ComponentBuilder(setLivesPlyrToSetLivesOf.getName() + " has been killed.").color(ChatColor.GOLD).create());
                 } else if (amount > 0) {
                     //check if amount > max lives
-                    if (amount > this.maxLives) {
-                        cs.spigot().sendMessage(new ComponentBuilder("Can't give that amount of lives to a player as the max amount of lives is " + this.maxLives + ".").color(ChatColor.RED).create());
+                    if (amount > this.plugin.getLDBConfig().getMaxLives()) {
+                        cs.spigot().sendMessage(new ComponentBuilder("Can't give that amount of lives to a player as the max amount of lives is " + this.plugin.getLDBConfig().getMaxLives() + ".").color(ChatColor.RED).create());
                         return true;
                     }
 
@@ -290,8 +288,8 @@ public class LiteDeathBanCommands {
                 }
                 //check if player lives + amount isn't more then max lives
                 LiteDeathBanCRUD addLivesCrudPlyrToAddLivesTo = new LiteDeathBanCRUD(addLivesPlyrToAddLivesTo, this.plugin);
-                if (amount + addLivesCrudPlyrToAddLivesTo.getLives() > this.maxLives) {
-                    cs.spigot().sendMessage(new ComponentBuilder("Can't add that amount of lives, as the max amount of lives is " + this.maxLives + ". And " + addLivesPlyrToAddLivesTo.getName() + " already has " + addLivesCrudPlyrToAddLivesTo.getLives() + " lives.").color(ChatColor.RED).create());
+                if (amount + addLivesCrudPlyrToAddLivesTo.getLives() > this.plugin.getLDBConfig().getMaxLives()) {
+                    cs.spigot().sendMessage(new ComponentBuilder("Can't add that amount of lives, as the max amount of lives is " + this.plugin.getLDBConfig().getMaxLives() + ". And " + addLivesPlyrToAddLivesTo.getName() + " already has " + addLivesCrudPlyrToAddLivesTo.getLives() + " lives.").color(ChatColor.RED).create());
                     return true;
                 }
 
@@ -317,7 +315,7 @@ public class LiteDeathBanCommands {
         } else {
             LiteDeathBanCRUD crudPlayerBeingRevived = new LiteDeathBanCRUD(playerBeingRevived, this.plugin);
             crudPlayerBeingRevived.setLives(crudPlayerBeingRevived.getLives() + 1, true);
-            if (crudPlayerBeingRevived.getLives() == this.maxLives && playerBeingRevived.isOnline()) {
+            if (crudPlayerBeingRevived.getLives() == this.plugin.getLDBConfig().getMaxLives() && playerBeingRevived.isOnline()) {
                 ((Player) playerBeingRevived).spigot().sendMessage(new ComponentBuilder("You have reached the maximum amount of lives!").color(ChatColor.GOLD).create());
             } else {
                 ((Player) playerBeingRevived).spigot().sendMessage(new ComponentBuilder("You have received an extra live from " + sender.getName() + ". Your total live count is now " + crudPlayerBeingRevived.getLives()).color(ChatColor.GOLD).create());

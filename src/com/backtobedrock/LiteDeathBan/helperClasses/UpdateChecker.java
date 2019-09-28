@@ -11,7 +11,7 @@ import org.bukkit.Bukkit;
 
 public class UpdateChecker {
 
-    private LiteDeathBan plugin;
+    private final LiteDeathBan plugin;
     private final int resourceId;
 
     public UpdateChecker(LiteDeathBan plugin, int resourceId) {
