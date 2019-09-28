@@ -197,7 +197,7 @@ public final class LiteDeathBanCRUD {
     }
 
     private File getFile() {
-        if (file == null && player.hasPlayedBefore()) {
+        if (file == null) {
             this.file = new File(this.plugin.getDataFolder() + "/userdata/" + player.getUniqueId().toString() + ".yml");
             if (!this.file.exists()) {
                 try {
