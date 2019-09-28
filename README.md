@@ -5,9 +5,10 @@ LiteDeathBan is a lightweight, advanced and very customizable deathban plugin th
 
 
 ### FEATURES  
+* Players get banned when reaching 0 lives.  
+* Player, monster, environment and revive deaths all have different ban times.  
 * Players can have a maximum amount of lives.  
-* Player - monster - environment - revive deaths all have different ban times.  
-* Ban players by playtime or time since last death instead of a set time.  
+* Calculate bantime by playtime or time since last death instead of a set amount.  
 * Players can be combat tagged.  
 * Players are able to revive other players.  
 * Players are able to gain parts of a life by killing other players or by playtime.  
