@@ -128,7 +128,8 @@ public class LiteDeathBanCommands {
                     cs.spigot().sendMessage(new ComponentBuilder("Your revive ability is on cooldown for another " + timeLeft + " minutes.").color(ChatColor.RED).create());
                     return true;
                 }
-
+                
+                //revive message
                 boolean containsConfirmation = this.plugin.doesConfirmationContain(sender.getUniqueId());
                 if (!containsConfirmation) {
                     BukkitTask chatTask = new ReviveChatWarning(this.plugin, sender).runTaskLater(this.plugin, 7 * 20);
@@ -228,6 +229,7 @@ public class LiteDeathBanCommands {
                     return true;
                 }
 
+                //revive
                 Bukkit.getScheduler().cancelTask(this.plugin.getFromConfirmationRunners(sender.getUniqueId()));
                 this.plugin.removeFromConfirmation(sender.getUniqueId());
                 this.revivePlayer(sender, Bukkit.getOfflinePlayer(personInConfirmationList));
@@ -303,15 +305,19 @@ public class LiteDeathBanCommands {
 
     private void revivePlayer(Player sender, OfflinePlayer playerBeingRevived) {
         LiteDeathBanCRUD crudSender = new LiteDeathBanCRUD(sender, this.plugin);
+        //if reviver has 1 life left, kill on revive
         if (crudSender.getLives() == 1) {
             this.plugin.addToUsedRevive(sender.getUniqueId());
             sender.setHealth(0.0D);
+        //remove life on revive
         } else {
             crudSender.setLives(crudSender.getLives() - 1, false);
         }
         crudSender.setLastRevive(LocalDateTime.now(), true);
+        //if player who is being revived is banned, unban
         if (playerBeingRevived.isBanned()) {
             Bukkit.getBanList(BanList.Type.NAME).pardon(playerBeingRevived.getName());
+        //give life to player
         } else {
             LiteDeathBanCRUD crudPlayerBeingRevived = new LiteDeathBanCRUD(playerBeingRevived, this.plugin);
             crudPlayerBeingRevived.setLives(crudPlayerBeingRevived.getLives() + 1, true);

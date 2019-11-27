@@ -31,23 +31,25 @@ public class LiteDeathBan extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
+        //config
         this.saveDefaultConfig();
 
+        //make userdata folder if not existing
         File dir = new File(this.getDataFolder() + "/userdata");
         dir.mkdirs();
 
+        //initialize config, messages and commands
         this.config = new LiteDeathBanConfig(this);
         this.messages = new LiteDeathBanMessages(this);
         this.commands = new LiteDeathBanCommands(this);
 
-        if (this.getLDBConfig().isUpdateChecker()) {
-            new UpdateChecker(this, 71483).getVersion(version -> {
-                this.oldVersion = !this.getDescription().getVersion().equalsIgnoreCase(version);
-            });
-        }
+        //check version of plugin
+        this.checkForOldVersion();
 
+        //register event handlers
         getServer().getPluginManager().registerEvents(new LiteDeathBanEventHandlers(this), this);
 
+        //start runnable for gaining life parts
         if (this.getLDBConfig().isGetPartOfLifeOnPlaytime()) {
             new PartsOnPlaytime(this).runTaskTimer(this, 0, this.getLDBConfig().getPlaytimeCheck() * 60 * 20);
         }
@@ -147,5 +149,13 @@ public class LiteDeathBan extends JavaPlugin implements Listener {
 
     public int getFromConfirmationRunners(UUID plyrID) {
         return this.confirmationRunners.get(plyrID);
+    }
+
+    public void checkForOldVersion() {
+        if (this.getLDBConfig().isUpdateChecker()) {
+            new UpdateChecker(this, 71483).getVersion(version -> {
+                this.oldVersion = !this.getDescription().getVersion().equalsIgnoreCase(version);
+            });
+        }
     }
 }
