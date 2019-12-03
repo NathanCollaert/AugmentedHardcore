@@ -11,12 +11,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class CombatTagBossBarWarning extends BukkitRunnable {
 
     private final LiteDeathBan plugin;
-    
+
     private final int total;
     private int counter;
     private final Player plyr;
     private final BossBar bar;
-    private final String taggedBy;
 
     public CombatTagBossBarWarning(LiteDeathBan plugin, int counter, Player plyr, String taggedBy) {
         this.plugin = plugin;
@@ -26,7 +25,6 @@ public class CombatTagBossBarWarning extends BukkitRunnable {
             this.total = counter;
             this.counter = counter;
             this.plyr = plyr;
-            this.taggedBy = taggedBy;
             this.bar = Bukkit.createBossBar(this.plugin.getMessages().getOnCombatTaggedBossBar(plyr.getName(), taggedBy, total), BarColor.RED, BarStyle.SOLID);
             this.plugin.addBar(plyr.getUniqueId(), this.bar);
             bar.addPlayer(plyr);

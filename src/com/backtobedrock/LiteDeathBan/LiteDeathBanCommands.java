@@ -111,7 +111,7 @@ public class LiteDeathBanCommands {
                 }
                 //check for player data
                 OfflinePlayer playerToRevive = Bukkit.getOfflinePlayer(arg);
-                if (!playerToRevive.hasPlayedBefore()) {
+                if (!LiteDeathBanCRUD.doesPlayerDataExists(playerToRevive, this.plugin)) {
                     cs.spigot().sendMessage(new ComponentBuilder(playerToRevive.getName() + " has no data on this server.").color(ChatColor.RED).create());
                     return true;
                 }
@@ -128,7 +128,7 @@ public class LiteDeathBanCommands {
                     cs.spigot().sendMessage(new ComponentBuilder("Your revive ability is on cooldown for another " + timeLeft + " minutes.").color(ChatColor.RED).create());
                     return true;
                 }
-                
+
                 //revive message
                 boolean containsConfirmation = this.plugin.doesConfirmationContain(sender.getUniqueId());
                 if (!containsConfirmation) {
@@ -154,7 +154,7 @@ public class LiteDeathBanCommands {
                 }
                 //check for player data
                 OfflinePlayer livesPlyr = Bukkit.getOfflinePlayer(arg);
-                if (!livesPlyr.hasPlayedBefore()) {
+                if (!LiteDeathBanCRUD.doesPlayerDataExists(livesPlyr, this.plugin)) {
                     cs.spigot().sendMessage(new ComponentBuilder(livesPlyr.getName() + " has no data on this server.").color(ChatColor.RED).create());
                     return true;
                 }
@@ -170,7 +170,7 @@ public class LiteDeathBanCommands {
                 }
                 //check for player data
                 OfflinePlayer lifePartsPlyr = Bukkit.getOfflinePlayer(arg);
-                if (!lifePartsPlyr.hasPlayedBefore()) {
+                if (!LiteDeathBanCRUD.doesPlayerDataExists(lifePartsPlyr, this.plugin)) {
                     cs.spigot().sendMessage(new ComponentBuilder(lifePartsPlyr.getName() + " has no data on this server.").color(ChatColor.RED).create());
                     return true;
                 }
@@ -243,7 +243,7 @@ public class LiteDeathBanCommands {
                 }
                 //check for player data
                 OfflinePlayer setLivesPlyrToSetLivesOf = Bukkit.getOfflinePlayer(args[0]);
-                if (!setLivesPlyrToSetLivesOf.hasPlayedBefore()) {
+                if (!LiteDeathBanCRUD.doesPlayerDataExists(setLivesPlyrToSetLivesOf, this.plugin)) {
                     cs.spigot().sendMessage(new ComponentBuilder(setLivesPlyrToSetLivesOf.getName() + " has no data on this server.").color(ChatColor.RED).create());
                     return true;
                 }
@@ -279,7 +279,7 @@ public class LiteDeathBanCommands {
                 }
                 //check for player data
                 OfflinePlayer addLivesPlyrToAddLivesTo = Bukkit.getOfflinePlayer(args[0]);
-                if (!addLivesPlyrToAddLivesTo.hasPlayedBefore()) {
+                if (!LiteDeathBanCRUD.doesPlayerDataExists(addLivesPlyrToAddLivesTo, this.plugin)) {
                     cs.spigot().sendMessage(new ComponentBuilder(addLivesPlyrToAddLivesTo.getName() + " has no data on this server.").color(ChatColor.RED).create());
                     return true;
                 }
@@ -309,7 +309,7 @@ public class LiteDeathBanCommands {
         if (crudSender.getLives() == 1) {
             this.plugin.addToUsedRevive(sender.getUniqueId());
             sender.setHealth(0.0D);
-        //remove life on revive
+            //remove life on revive
         } else {
             crudSender.setLives(crudSender.getLives() - 1, false);
         }
@@ -317,7 +317,7 @@ public class LiteDeathBanCommands {
         //if player who is being revived is banned, unban
         if (playerBeingRevived.isBanned()) {
             Bukkit.getBanList(BanList.Type.NAME).pardon(playerBeingRevived.getName());
-        //give life to player
+            //give life to player
         } else {
             LiteDeathBanCRUD crudPlayerBeingRevived = new LiteDeathBanCRUD(playerBeingRevived, this.plugin);
             crudPlayerBeingRevived.setLives(crudPlayerBeingRevived.getLives() + 1, true);

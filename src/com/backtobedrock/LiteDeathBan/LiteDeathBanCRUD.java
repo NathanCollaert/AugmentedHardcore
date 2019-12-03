@@ -141,7 +141,7 @@ public final class LiteDeathBanCRUD {
             //if lifeparts is 0, means player died and lost all it's parts
             if (lifeParts == 0) {
                 this.player.getPlayer().spigot().sendMessage(new ComponentBuilder(this.plugin.getMessages().getOnPartsLostCauseDeath(this.player.getName(), amountOfPartsPerLife)).create());
-            //if lifeparts is smaller then amount needed for a life, write them away and show messages
+                //if lifeparts is smaller then amount needed for a life, write them away and show messages
             } else if (lifeParts < amountOfPartsPerLife) {
                 int oldLifeParts = this.lifeParts;
                 conf.set("lifeParts", lifeParts);
@@ -154,7 +154,7 @@ public final class LiteDeathBanCRUD {
                 if (!playerMessage.trim().isEmpty()) {
                     this.player.getPlayer().spigot().sendMessage(new ComponentBuilder(playerMessage).create());
                 }
-            //if lifeparts is bigger then amount needed for life, calculate how many lives need to be added and how many lifeparts are left
+                //if lifeparts is bigger then amount needed for life, calculate how many lives need to be added and how many lifeparts are left
             } else {
                 //how many lives need to be added
                 int extraLives = lifeParts / amountOfPartsPerLife;
@@ -166,7 +166,7 @@ public final class LiteDeathBanCRUD {
                 int lifePartsLeft = this.lives >= maxLives ? 0 : lifeParts - (amountOfPartsPerLife * extraLives);
                 conf.set("lifeParts", lifePartsLeft);
                 this.lifeParts = lifePartsLeft;
-                
+
                 //messages
                 String broadcastMessage = this.plugin.getMessages().getOnExtraLifeBroadcast(this.player.getName(), oldLives + extraLives >= maxLives ? maxLives - oldLives : extraLives, this.lives, maxLives, lifePartsLeft, amountOfPartsPerLife);
                 String playerMessage = this.plugin.getMessages().getOnExtraLife(this.player.getName(), oldLives + extraLives >= maxLives ? maxLives - oldLives : extraLives, this.lives, maxLives, lifePartsLeft, amountOfPartsPerLife);
@@ -212,7 +212,7 @@ public final class LiteDeathBanCRUD {
         return lastPartPlaytime;
     }
 
-    private File getFile(){
+    private File getFile() {
         //get file, if null create it
         if (file == null) {
             this.file = new File(this.plugin.getDataFolder() + "/userdata/" + player.getUniqueId().toString() + ".yml");
@@ -229,5 +229,10 @@ public final class LiteDeathBanCRUD {
             return file;
         }
         return file;
+    }
+
+    public static boolean doesPlayerDataExists(OfflinePlayer plyr, LiteDeathBan plugin) {
+        File file = new File(plugin.getDataFolder() + plyr.getUniqueId().toString() + ".yml");
+        return file.exists();
     }
 }

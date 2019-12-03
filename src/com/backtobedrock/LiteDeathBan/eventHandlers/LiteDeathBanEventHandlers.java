@@ -170,12 +170,12 @@ public class LiteDeathBanEventHandlers implements Listener {
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent e) {
         LiteDeathBanCRUD crud = new LiteDeathBanCRUD(e.getPlayer(), this.plugin);
-        
+
         //if lives is 0, give one back
         if (crud.getLives() == 0) {
             crud.setLives(1, true);
         }
-        
+
         //if on respawn message is not empty, player did not die in a world where lives cannot be lost and does not have the permission to bypass losing lives, show lives remeaning message
         String message = this.plugin.getMessages().getOnPlayerRespawn(e.getPlayer().getName(), crud.getLives(), this.config.getMaxLives());
         if (!message.trim().isEmpty() && !this.config.getDisableLosingLivesInWorlds().contains(e.getPlayer().getWorld().getName().toLowerCase()) && !e.getPlayer().hasPermission("litedeathban.bypass.loselives")) {
@@ -185,7 +185,7 @@ public class LiteDeathBanEventHandlers implements Listener {
 
     private void tagPlayer(Player plyr, String taggedBy) {
         UUID plyrID = plyr.getUniqueId();
-        
+
         //show combat tag to player
         if (!(!this.config.isCombatTagSelf() && plyr.getName().equals(taggedBy)) && plyr.getHealth() != 0D && !this.config.getDisableCombatTagInWorlds().contains(plyr.getWorld().getName().toLowerCase()) && !plyr.hasPermission("litedeathban.bypass.combattag")) {
             boolean containsTag = this.plugin.doesTagListContain(plyrID);
@@ -206,7 +206,6 @@ public class LiteDeathBanEventHandlers implements Listener {
                     BukkitTask bossBarTask = new CombatTagBossBarWarning(this.plugin, this.config.getCombatTagTime(), plyr, taggedBy).runTaskTimer(this.plugin, 0, 20);
                     this.plugin.addToTagList(plyr.getUniqueId(), bossBarTask.getTaskId());
                     break;
-
                 case "chat":
                     if (!containsTag) {
                         plyr.spigot().sendMessage(new ComponentBuilder(this.plugin.getMessages().getOnCombatTaggedChat(plyr.getName(), taggedBy, this.config.getCombatTagTime())).create());
@@ -225,17 +224,17 @@ public class LiteDeathBanEventHandlers implements Listener {
         //get time now
         LocalDateTime now = LocalDateTime.now();
         LiteDeathBanCRUD crud = new LiteDeathBanCRUD(plyr, this.plugin);
-        
+
         //remove all collected parts of a life
         if (this.config.isPartsLostUponDeath() && !this.config.getDisableLosingLifePartsInWorlds().contains(plyr.getWorld().getName().toLowerCase()) && !plyr.hasPermission("litedeathban.bypass.loseparts")) {
             crud.setLifeParts(0, false);
         }
-        
+
         //remove a life if not in a disabled world or not has bypass permission
         if (!this.config.getDisableLosingLivesInWorlds().contains(plyr.getWorld().getName().toLowerCase()) && !plyr.hasPermission("litedeathban.bypass.loselives")) {
             crud.setLives(crud.getLives() - 1, false);
         }
-        
+
         //ban if player reaches 0 lives
         if (crud.getLives() == 0 && !this.config.getDisableBanInWorlds().contains(plyr.getWorld().getName().toLowerCase()) && !plyr.hasPermission("litedeathban.bypass.ban")) {
             //calculate bantime for player
@@ -250,7 +249,7 @@ public class LiteDeathBanEventHandlers implements Listener {
                 default:
                     //increase total bans
                     crud.setTotalDeathBans(crud.getTotalDeathBans() + 1, false);
-                    
+
                     //create ban message
                     String banMessage = this.plugin.getMessages().getOnPlayerDeathBan(plyr.getName(), bantime, this.config.getSaveDateFormat().format(now.plusMinutes(bantime)), crud.getLastBanDate(), crud.getTotalDeathBans());
                     //ban player
@@ -259,10 +258,10 @@ public class LiteDeathBanEventHandlers implements Listener {
                     Bukkit.getScheduler().runTask(this.plugin, () -> {
                         plyr.kickPlayer(banMessage);
                     });
-                    
+
                     //set last ban date to now
                     crud.setLastBanDate(now, true);
-                    
+
                     //log ban
                     if (this.config.isLogDeathBans() && !this.config.getDisableLoggingDeathBansInWorlds().contains(plyr.getWorld().getName().toLowerCase())) {
                         DeathBanLogData deathBanLogData = new DeathBanLogData(this.plugin, plyr, this.config.getSaveDateFormat().format(now), this.config.getSaveDateFormat().format(now.plusMinutes(bantime)), bantime);
@@ -289,20 +288,20 @@ public class LiteDeathBanEventHandlers implements Listener {
         //if taglist contains player
         if (this.plugin.doesTagListContain(plyr.getUniqueId())) {
             int bantime;
-            
+
             //calculate bantime if bantime since last death
             if (this.config.isBantimeByPlaytime() && this.config.isBantimeByPlaytimeSinceLastDeath()) {
                 int amountOfIntervalsPassed = (plyr.getStatistic(Statistic.TIME_SINCE_DEATH) / 20 / 60) / this.config.getBantimeByPlaytimeInterval();
                 bantime = this.linearVsExponentialBantime(this.config.getBantimeByPlaytimeMinimumPlayerDeath(), amountOfIntervalsPassed, this.config.getPlayerDeathBantime(), this.config.getBantimeByPlaytimeGrowth(), this.config.getBantimeByPlaytimePercent());
-            //calculate bantime of bantime by playtime
+                //calculate bantime of bantime by playtime
             } else if (this.config.isBantimeByPlaytime()) {
                 int amountOfIntervalsPassed = (plyr.getStatistic(Statistic.PLAY_ONE_MINUTE) / 20 / 60) / this.config.getBantimeByPlaytimeInterval();
                 bantime = this.linearVsExponentialBantime(this.config.getBantimeByPlaytimeMinimumPlayerDeath(), amountOfIntervalsPassed, this.config.getPlayerDeathBantime(), this.config.getBantimeByPlaytimeGrowth(), this.config.getBantimeByPlaytimePercent());
-            //else just give player death by player ban time
+                //else just give player death by player ban time
             } else {
                 bantime = this.config.getPlayerDeathBantime();
             }
-            
+
             //if player died from revive return bantime from revive if that's more then calculated bantimen above
             if (this.plugin.doesUsedReviveContain(plyr.getUniqueId())) {
                 this.plugin.removeFromUsedRevive(plyr.getUniqueId());
@@ -311,7 +310,7 @@ public class LiteDeathBanEventHandlers implements Listener {
                 return bantime;
             }
         }
-        
+
         //calculate bantime by playtime since last death
         if (this.config.isBantimeByPlaytime() && this.config.isBantimeByPlaytimeSinceLastDeath()) {
             int amountOfIntervalsPassed = (plyr.getStatistic(Statistic.TIME_SINCE_DEATH) / 20 / 60) / this.config.getBantimeByPlaytimeInterval();
@@ -323,7 +322,7 @@ public class LiteDeathBanEventHandlers implements Listener {
                 default:
                     return this.linearVsExponentialBantime(this.config.getBantimeByPlaytimeMinimumPlayerDeath(), amountOfIntervalsPassed, this.config.getPlayerDeathBantime(), this.config.getBantimeByPlaytimeGrowth(), this.config.getBantimeByPlaytimePercent());
             }
-        //calculate bantime by playtime
+            //calculate bantime by playtime
         } else if (this.config.isBantimeByPlaytime()) {
             int amountOfIntervalsPassed = (plyr.getStatistic(Statistic.PLAY_ONE_MINUTE) / 20 / 60) / this.config.getBantimeByPlaytimeInterval();
             switch (this.getDeathCause(plyr)) {
@@ -334,7 +333,7 @@ public class LiteDeathBanEventHandlers implements Listener {
                 default:
                     return this.linearVsExponentialBantime(this.config.getBantimeByPlaytimeMinimumPlayerDeath(), amountOfIntervalsPassed, this.config.getPlayerDeathBantime(), this.config.getBantimeByPlaytimeGrowth(), this.config.getBantimeByPlaytimePercent());
             }
-        //else return normal bantimes
+            //else return normal bantimes
         } else {
             switch (this.getDeathCause(plyr)) {
                 case "MONSTER":
