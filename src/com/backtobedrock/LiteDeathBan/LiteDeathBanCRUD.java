@@ -232,7 +232,7 @@ public final class LiteDeathBanCRUD {
     }
 
     public static boolean doesPlayerDataExists(OfflinePlayer plyr, LiteDeathBan plugin) {
-        File file = new File(plugin.getDataFolder() + plyr.getUniqueId().toString() + ".yml");
+        File file = new File(plugin.getDataFolder() + "/userdata/" + plyr.getUniqueId().toString() + ".yml");
         return file.exists();
     }
 }

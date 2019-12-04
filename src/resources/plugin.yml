@@ -1,10 +1,11 @@
 main: com.backtobedrock.LiteDeathBan.LiteDeathBan
 name: LiteDeathBan
-version: 2.0.3
+version: 2.0.4
 author: Nathan
 website: www.backtobedrock.com
 prefix: LiteDeathBan
 description: A very customizable and lightweight plugin that bans players on death
+api-version: 1.13
 commands:
     revive:
         description: Transfer one of your lives to another player.
