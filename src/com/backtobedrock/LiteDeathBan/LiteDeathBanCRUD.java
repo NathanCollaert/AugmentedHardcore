@@ -28,12 +28,12 @@ public final class LiteDeathBanCRUD {
     public LiteDeathBanCRUD(OfflinePlayer player, LiteDeathBan plugin) {
         this.plugin = plugin;
         this.player = player;
-        this.lives = this.getConfig().getInt("lives", this.plugin.getLDBConfig().getLivesAtStart());
-        this.totalDeathBans = this.getConfig().getInt("totalDeathBans", 0);
-        this.lastBan = this.getConfig().getString("lastBan", "never");
-        this.lastRevive = LocalDateTime.parse(this.getConfig().getString("lastRevive", this.plugin.getLDBConfig().isReviveOptionOnFirstJoin() ? LocalDateTime.MIN.toString() : LocalDateTime.now().toString()));
-        this.lifeParts = this.getConfig().getInt("lifeParts", 0);
-        this.lastPartPlaytime = this.getConfig().getLong("lastPartPlaytime", this.plugin.getLDBConfig().isCountPlaytimeFromStart() ? 0 : this.player.getPlayer().getStatistic(Statistic.PLAY_ONE_MINUTE));
+        this.lives = this.getConfig().getInt("lives");
+        this.totalDeathBans = this.getConfig().getInt("totalDeathBans");
+        this.lastBan = this.getConfig().getString("lastBan");
+        this.lastRevive = LocalDateTime.parse(this.getConfig().getString("lastRevive"));
+        this.lifeParts = this.getConfig().getInt("lifeParts");
+        this.lastPartPlaytime = this.getConfig().getLong("lastPartPlaytime");
     }
 
     public FileConfiguration getConfig() {
