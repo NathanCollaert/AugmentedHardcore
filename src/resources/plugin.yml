@@ -1,53 +1,37 @@
 main: com.backtobedrock.LiteDeathBan.LiteDeathBan
 name: LiteDeathBan
-version: 2.0.5
+version: ${project.version}
 author: Nathan
 website: www.backtobedrock.com
 prefix: LiteDeathBan
 description: A very customizable and lightweight plugin that bans players on death
 api-version: 1.13
 commands:
-    revive:
-        description: Transfer one of your lives to another player.
-        permission: litedeathban.revive
-        usage: /<command> <player>
-    setlives:
-        description: Set the amount of lives for a player.
-        permission: litedeathban.setlives
-        usage: /<command> <player> <amount>
-    lives:
-        description: Check your current amount of lives.
-        permission: litedeathban.lives
-        usage: /<command> [player]
-    addlives:
-        description: Add an amount of lives to a player.
-        permission: litedeathban.addlives
-        usage: /<command> <player> <amount>
-    lifeparts:
-        description: Check your current amount of life parts.
-        permission: litedeathban.lifeparts
-        usage: /<command> [player]
-    
+  litedeathban:
+    aliases:
+      - ldb
 permissions:
-    litedeathban.bypass.ban:
-        default: op
-    litedeathban.bypass.combattag:
-        default: op
-    litedeathban.bypass.loseparts:
-        deafult: op
-    litedeathban.bypass.loselives:
-        deafult: op
-    litedeathban.revive:
-        default: op
-    litedeathban.setlives:
-        default: op
-    litedeathban.lives:
-        default: op
-    litedeathban.lives.other:
-        default: op
-    litedeathban.lifeparts:
-        default: op
-    litedeathban.lifeparts.other:
-        default: op
-    litedeathban.addlives:
-        default: op
+  litedeathban.bypass.ban:
+    default: false
+  litedeathban.bypass.loselives:
+    default: false
+  litedeathban.bypass.loselifeparts:
+    default: false
+  litedeathban.bypass.gainlifeparts.kill:
+    default: false
+  litedeathban.bypass.gainlifeparts.playtime:
+    default: false
+  litedeathban.help:
+    default: op
+  litedeathban.unban:
+    default: op
+  litedeathban.reload:
+    default: op
+  litedeathban.setlives:
+    default: op
+  litedeathban.addlives:
+    default: op
+  litedeathban.addlifeparts:
+    default: op
+  litedeathban.setlifeparts:
+    default: op

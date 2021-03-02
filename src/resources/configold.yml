@@ -1,0 +1,244 @@
+#Should the plugin check for updates?
+UpdateChecker: true
+
+
+############################################################
+# +------------------------------------------------------+ #
+# |                        Lives                         | #
+# +------------------------------------------------------+ #
+############################################################
+
+#What should the max amount of lives a player can have be?
+#Minimum is 1, 0 is unlimited.
+MaxLives: 5
+
+#What amount of lives should players start at when first joining?
+#Minimum is 1.
+LivesAtStart: 1
+
+#Should losing lives be disabled in any worlds?
+#This will also disable banning of players and reviving of players in these worlds.
+#Combat tagging will still be enabled (if not also disabled for these worlds) and players will die on leaving when combat tagged but won't lose lives or get banned.
+#Players will still lose part of lives (if enabled)
+DisableLosingLivesInWorlds:
+#- world
+#- world_nether
+#- world_the_end
+
+#Should players be unable to die in these disabled worlds (only the list above)?
+DisableDyingInDisabledWorlds: false
+
+
+############################################################
+# +------------------------------------------------------+ #
+# |                      Ban Times                       | #
+# +------------------------------------------------------+ #
+############################################################
+
+#What bantime should players get if killed by players?
+#In Minutes, -1 is disable (0 is unlimited but can only be used if BantimeByPlaytime: true).
+PlayerDeathBantime: 7200
+
+#What bantime should players get if killed by monsters?
+#In Minutes, -1 is disable (0 is unlimited but can only be used if BantimeByPlaytime: true).
+MonsterDeathBantime: 2880
+
+#What bantime should players get if killed by environment?
+#In Minutes, -1 is disable (0 is unlimited but can only be used if BantimeByPlaytime: true).
+EnvironmentDeathBantime: 4320
+
+#Should banning players be disabled in any worlds?
+#This does also count for Ban By Playtime. Players will still lose lives and part of lives (if enabled).
+#Reviving and logging of deathbans will also be disabled in these worlds.
+#Combat tagging will still be enabled (if not also disabled for these worlds) and players will die on leaving when combat tagged but won't get banned.
+DisableBanInWorlds:
+#- world
+#- world_nether
+#- world_the_end
+
+
+############################################################
+# +------------------------------------------------------+ #
+# |                   Ban By Playtime                    | #
+# +------------------------------------------------------+ #
+############################################################
+
+#Should the ban time be calculated by playtime instead?
+#If true, above times are used as max ban time.
+BantimeByPlaytime: false
+
+#Should time since last death be used instead of total playtime for calculating the bantime?
+BantimeByPlaytimeSinceLastDeath: false
+
+#How much % of the BantimeByPlaytimeMinimum will be added to the bantime each BantimeByPlaytimeInterval?
+#In Percent, minimum is 1.
+BantimeByPlaytimePercent: 10
+
+#At what rate of playtime/time since last death should the bantime increase?
+#In Minutes, minimum is 1
+BantimeByPlaytimeInterval: 60
+
+#At what rate should the bantime by playtime grow?
+#Linear is slow overall, exponential is slow at start but quickly rises.
+# -> linear/exponential
+BantimeByPlaytimeGrowth: exponential
+
+#What should be the minimum amount of bantime for player deaths?
+#In minutes, minimum is 1.
+BantimeByPlaytimeMinimumPlayerDeath: 72
+
+#What should be the minimum amount of bantime for monster deaths?
+#In minutes, minimum is 1.
+BantimeByPlaytimeMinimumMonsterDeath: 28
+
+#What should be the minimum amount of bantime for environment deaths?
+#In minutes, minimum is 1.
+BantimeByPlaytimeMinimumEnvironmentDeath: 43
+
+
+############################################################
+# +------------------------------------------------------+ #
+# |                      Combat Tag                      | #
+# +------------------------------------------------------+ #
+############################################################
+
+#Should players die and receive PlayerDeathBantime if they log out while in combat with another player?
+#They will also receive PlayerDeathBantime if killed by a monster or environment during this time.
+CombatTag: true
+
+#Should players be able to combat tag themselves?
+CombatTagSelf: false
+
+#How long should a player be tagged for after combat?
+#In Seconds, minimum is 1.
+CombatTagTime: 10
+
+#How should the player be notified when tagged in combat?
+# -> chat/bossbar/none
+CombatTagWarningStyle: bossbar
+
+#Should players tagged in combat be killed on kick?
+CombatTagPlayerKickDeath: false
+
+#Should combat tagging be disabled in any worlds?
+DisableCombatTagInWorlds:
+#- world
+#- world_nether
+#- world_the_end
+
+
+############################################################
+# +------------------------------------------------------+ #
+# |                       Reviving                       | #
+# +------------------------------------------------------+ #
+############################################################
+
+#Should players be able to give a life of their own to someone else (players will still need permission to use the revive command)?
+#Players who were previously deathbanned will be unbanned if given a life.
+Revive: true
+
+#How long should a player be banned for if the player has 0 lives left after giving a revive?
+#If player is combat tagged, the player will receive PlayerDeathBantime if BantimeOnReviveDeath has a lower value.
+#In minutes, minimum is 1.
+BantimeOnReviveDeath: 7200
+
+#How much time should the revive option go on cooldown for after using it?
+#In minutes, minumum is 0.
+TimeBetweenRevives: 1440
+
+#Should players be able to use the revive option directly on first join?
+#If false, players will be able to use revive after TimeBetweenRevives minutes.
+ReviveOptionOnFirstJoin: false
+
+#Should reviving be disabled in any worlds?
+DisableReviveInWorlds:
+#- world
+#- world_nether
+#- world_the_end
+
+
+############################################################
+# +------------------------------------------------------+ #
+# |                      Life parts                      | #
+# +------------------------------------------------------+ #
+############################################################
+
+#Should players be able to receive parts of a life when killing another player?
+GetPartOfLifeOnKill: true
+
+#How many parts should a player receive when killing a player?
+#Minimum is 1.
+PartsPerKill: 1
+
+#Should parts be lost upon death?
+PartsLostUponDeath: false
+
+#Should players be able to receive parts by playtime?
+GetPartOfLifeOnPlaytime: false
+
+#Should players receive parts from the playtime before this plugin was installed or start from now on?
+#True will also count playtime from before this plugin was installed, false does not.
+CountPlaytimeFromStart: false
+
+#How much playtime should a player have to receive 1 part?
+#In minutes, minimum is 1.
+PlaytimePerPart: 60
+
+#How many minutes should be between each playtime check? The lower this value the more accurate people will get their reward at cost of performance.
+#I would recommend not setting this lower than 30 to avoid lag, especially with many active players.
+#In minutes, minimum is 1.
+PlaytimeCheck: 60
+
+#How many parts does it take to get a full life?
+#Minimum is 1.
+AmountOfPartsPerLife: 5
+
+#Should getting parts of a life be disabled in any worlds?
+DisableGettingLifePartsInWorlds:
+#- world
+#- world_nether
+#- world_the_end
+
+#Should losing parts of a life be disabled in any worlds?
+DisableLosingLifePartsInWorlds:
+#- world
+#- world_nether
+#- world_the_end
+
+
+############################################################
+# +------------------------------------------------------+ #
+# |                       Logging                        | #
+# +------------------------------------------------------+ #
+############################################################
+
+#Should deathbans be logged into a file?
+LogDeathBans: false
+
+#Should all deaths, regardless if ban or not, be logged?
+LogDeaths: false
+
+#Should logging death bans be disabled in any worlds?
+DisableLoggingDeathBansInWorlds:
+#- world
+#- world_nether
+#- world_the_end
+
+#Should logging deaths be disabled in any worlds?
+DisableLoggingDeathsInWorlds:
+#- world
+#- world_nether
+#- world_the_end
+
+
+############################################################
+# +------------------------------------------------------+ #
+# |                       Format                         | #
+# +------------------------------------------------------+ #
+############################################################
+
+#How should dates be shown in the plugin (Only shows on ban screen if implemented and death/ban log)?
+#'short': (6/15/15, 9:03 CEST)
+#'medium': (Jun 15, 2015, 9:03 CEST)
+#'long': (Saturday Jun 15, 2015 at 9:03:01 CEST)
+SaveDateFormat: medium

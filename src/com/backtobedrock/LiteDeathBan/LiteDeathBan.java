@@ -1,64 +1,55 @@
 package com.backtobedrock.LiteDeathBan;
 
-import java.io.File;
-import com.backtobedrock.LiteDeathBan.eventHandlers.LiteDeathBanEventHandlers;
-import com.backtobedrock.LiteDeathBan.helperClasses.UpdateChecker;
-import com.backtobedrock.LiteDeathBan.runnables.PartsOnPlaytime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TreeMap;
-import java.util.UUID;
-import org.bukkit.boss.BossBar;
+import com.backtobedrock.LiteDeathBan.commands.Commands;
+import com.backtobedrock.LiteDeathBan.configs.Configuration;
+import com.backtobedrock.LiteDeathBan.configs.Messages;
+import com.backtobedrock.LiteDeathBan.eventListeners.*;
+import com.backtobedrock.LiteDeathBan.repositories.PlayerRepository;
+import com.backtobedrock.LiteDeathBan.repositories.ServerRepository;
+import com.backtobedrock.LiteDeathBan.utils.Metrics;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+import java.util.logging.Level;
+
 public class LiteDeathBan extends JavaPlugin implements Listener {
 
-    private boolean oldVersion = false;
+    //configurations
+    private Commands commands;
+    private Configuration configuration;
+    private Messages messages;
 
-    private LiteDeathBanConfig config;
-    private LiteDeathBanMessages messages;
-    private LiteDeathBanCommands commands;
+    //repositories
+    private PlayerRepository playerRepository = null;
+    private ServerRepository serverRepository = null;
+//    private CombatTagRepository combatTagRepository = null;
 
-    private final List<UUID> usedRevive = new ArrayList<>();
-    private final TreeMap<UUID, Integer> tagList = new TreeMap<>();
-    private final TreeMap<UUID, BossBar> bars = new TreeMap<>();
-    private final TreeMap<UUID, String> confirmationList = new TreeMap<>();
-    private final TreeMap<UUID, Integer> confirmationRunners = new TreeMap<>();
-    private final TreeMap<UUID, Long> playtimeLastLifeOnlinePlayers = new TreeMap<>();
+    //various
+    private boolean stopping = false;
 
     @Override
     public void onEnable() {
-        //config
-        this.saveDefaultConfig();
+        //initialize plugin
+        this.initialize();
 
-        //make userdata folder if not existing
-        File dir = new File(this.getDataFolder() + "/userdata");
-        dir.mkdirs();
+        //register event listeners
+        this.registerListeners();
 
-        //initialize config, messages and commands
-        this.config = new LiteDeathBanConfig(this);
-        this.messages = new LiteDeathBanMessages(this);
-        this.commands = new LiteDeathBanCommands(this);
-
-        //check version of plugin
-        this.checkForOldVersion();
-
-        //register event handlers
-        getServer().getPluginManager().registerEvents(new LiteDeathBanEventHandlers(this), this);
-
-        //start runnable for gaining life parts
-        if (this.getLDBConfig().isGetPartOfLifeOnPlaytime()) {
-            new PartsOnPlaytime(this).runTaskTimer(this, 0, this.getLDBConfig().getPlaytimeCheck() * 60 * 20);
-        }
+        //bstats metrics
+        Metrics metrics = new Metrics(this, 5655);
 
         super.onEnable();
     }
 
     @Override
     public void onDisable() {
+        this.stopping = true;
+        this.getServerRepository().getServerData(data -> {
+            this.getServerRepository().updateServerData(data);
+        });
         super.onDisable();
     }
 
@@ -67,95 +58,76 @@ public class LiteDeathBan extends JavaPlugin implements Listener {
         return this.commands.onCommand(cs, cmnd, alias, args);
     }
 
-    public LiteDeathBanConfig getLDBConfig() {
-        return config;
-    }
-
-    public LiteDeathBanMessages getMessages() {
-        return this.messages;
-    }
-
-    public void addToTagList(UUID plyrID, int id) {
-        this.tagList.put(plyrID, id);
-
-    }
-
-    public void removeFromTagList(UUID plyrID) {
-        this.tagList.remove(plyrID);
-        if (this.config.getCombatTagWarningStyle().equalsIgnoreCase("bossbar")) {
-            BossBar bar = this.bars.remove(plyrID);
-            bar.setVisible(false);
+    public void initialize() {
+        //create userdata folder if none existent
+        File udFile = new File(this.getDataFolder() + "/userdata");
+        if (udFile.mkdirs()) {
+            this.getLogger().log(Level.INFO, "Creating {0}.", udFile.getAbsolutePath());
         }
-    }
 
-    public int getFromTagList(UUID plyrID) {
-        return this.tagList.get(plyrID);
-    }
-
-    public boolean doesTagListContain(UUID plyrID) {
-        return this.tagList.containsKey(plyrID);
-    }
-
-    public void addBar(UUID id, BossBar bar) {
-        this.bars.put(id, bar);
-    }
-
-    public void addToConfirmation(UUID plyrID, String name, int id) {
-        this.confirmationList.put(plyrID, name);
-        this.confirmationRunners.put(plyrID, id);
-
-    }
-
-    public void removeFromConfirmation(UUID plyrID) {
-        this.confirmationList.remove(plyrID);
-        this.confirmationRunners.remove(plyrID);
-    }
-
-    public String getFromConfirmation(UUID plyrID) {
-        return this.confirmationList.get(plyrID);
-    }
-
-    public boolean doesConfirmationContain(UUID plyrID) {
-        return this.confirmationList.containsKey(plyrID);
-    }
-
-    public void addToUsedRevive(UUID plyrID) {
-        this.usedRevive.add(plyrID);
-    }
-
-    public void removeFromUsedRevive(UUID plyrID) {
-        this.usedRevive.remove(plyrID);
-    }
-
-    public boolean doesUsedReviveContain(UUID plyrID) {
-        return this.usedRevive.contains(plyrID);
-    }
-
-    public void addToPlaytimeLastLifeOnlinePlayers(UUID plyrID, long playtime) {
-        this.playtimeLastLifeOnlinePlayers.put(plyrID, playtime);
-    }
-
-    public void removeFromPlaytimeLastLifeOnlinePlayers(UUID plyrID) {
-        this.playtimeLastLifeOnlinePlayers.remove(plyrID);
-    }
-
-    public long getFromPlaytimeLastLifeOnlinePlayers(UUID plyrID) {
-        return this.playtimeLastLifeOnlinePlayers.get(plyrID);
-    }
-
-    public boolean isOldVersion() {
-        return this.oldVersion;
-    }
-
-    public int getFromConfirmationRunners(UUID plyrID) {
-        return this.confirmationRunners.get(plyrID);
-    }
-
-    public void checkForOldVersion() {
-        if (this.getLDBConfig().isUpdateChecker()) {
-            new UpdateChecker(this, 71483).getVersion(version -> {
-                this.oldVersion = !this.getDescription().getVersion().equalsIgnoreCase(version);
-            });
+        //get config.yml and make if none existent
+        File configFile = new File(this.getDataFolder(), "config.yml");
+        if (!configFile.exists()) {
+            this.getLogger().log(Level.INFO, "Creating {0}.", configFile.getAbsolutePath());
+            this.saveResource("config.yml", false);
         }
+
+        //get messages.yml and make if none existent
+        File messagesFile = new File(this.getDataFolder(), "messages.yml");
+        if (!messagesFile.exists()) {
+            this.getLogger().log(Level.INFO, "Creating {0}.", messagesFile.getAbsolutePath());
+            this.saveResource("messages.yml", false);
+        }
+
+        //initialize configurations
+        this.configuration = new Configuration(configFile);
+        this.messages = new Messages(messagesFile);
+        //initialize commands
+        this.commands = new Commands();
+        //initialize repositories
+        if (this.playerRepository == null) {
+            this.playerRepository = new PlayerRepository();
+        } else {
+            this.playerRepository.onReload();
+        }
+        if (this.serverRepository == null)
+            this.serverRepository = new ServerRepository();
+//        if (this.combatTagRepository == null)
+//            this.combatTagRepository = new CombatTagRepository();
     }
+
+    private void registerListeners() {
+        getServer().getPluginManager().registerEvents(new EntityDeathListener(), this);
+        getServer().getPluginManager().registerEvents(new PlayerDeathListener(), this);
+        getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
+        getServer().getPluginManager().registerEvents(new PlayerKickListener(), this);
+        getServer().getPluginManager().registerEvents(new PlayerKillListener(), this);
+        getServer().getPluginManager().registerEvents(new PlayerLoginListener(), this);
+        getServer().getPluginManager().registerEvents(new PlayerQuitListener(), this);
+        getServer().getPluginManager().registerEvents(new PlayerRespawnListener(), this);
+    }
+
+    public Configuration getConfiguration() {
+        return configuration;
+    }
+
+    public Messages getMessages() {
+        return messages;
+    }
+
+    public PlayerRepository getPlayerRepository() {
+        return playerRepository;
+    }
+
+    public ServerRepository getServerRepository() {
+        return serverRepository;
+    }
+
+    public boolean isStopping() {
+        return stopping;
+    }
+
+//    public CombatTagRepository getCombatTagRepository() {
+//        return combatTagRepository;
+//    }
 }
