@@ -253,12 +253,16 @@ DeathCauseConfigurations:
 # -> name/ip
 BanType: name
 
-#Should the ban time be calculated by playtime instead?
-#If true, ban times start at 0 and will increase while playing. Above times are used as max ban time. Feel free to use the following calculator to visualize the ban times over time: .
-BanTimeByPlaytime: false
-
-#Should time since last death be used instead of total playtime for calculating the ban time?
-BanTimeByPlaytimeSinceLastDeath: false
+#What bantime type should be used for calculating the bantime?
+#Static:             Above times will be used for bans.
+#Playtime:           Playtime will be used for determining the bantime.
+#                    Bantimes will start at 0 but will increase the more playtime the player has.
+#                    Above times will be used as maximum.
+#Timesincelastdeath: Time since last death will be used for determining the bantime.
+#                    Bantimes will start at 0 but will increase the longer the player stays alive.
+#                    Every death will reset the bantime back to 0, above times will be used as maximum.
+# -> static/playtime/timesincelastdeath
+BanTimeType: static
 
 #By how much should the ban time increase each BantimeByPlaytimeInterval?
 #Minimum is 1.
@@ -269,7 +273,8 @@ BanTimeByPlaytimeGrowthIncrease: 10
 BanTimeByPlaytimeGrowthInterval: 60
 
 #At what rate should the ban time by playtime grow?
-#Linear is slow overall and will use BantimeByPlaytimeIncrease as a normal number, exponential is slow at start but quickly rises and will use BantimeByPlaytimeIncrease as percent.
+#Linear is slow overall and will use BantimeByPlaytimeIncrease as a normal number,
+#exponential is slow at start but quickly rises and will use BantimeByPlaytimeIncrease as percent.
 # -> linear/exponential
 BanTimeByPlaytimeGrowthType: exponential
 
