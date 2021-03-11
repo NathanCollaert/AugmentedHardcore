@@ -1,13 +1,15 @@
 package com.backtobedrock.LiteDeathBan.eventListeners;
 
-import com.backtobedrock.LiteDeathBan.LiteDeathBan;
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.event.player.PlayerKickEvent;
 
-public class PlayerKickListener implements Listener {
-    private final LiteDeathBan plugin;
+public class PlayerKickListener extends AbstractEventListener {
 
-    public PlayerKickListener() {
-        this.plugin = JavaPlugin.getPlugin(LiteDeathBan.class);
+    public void onPlayerKick(PlayerKickEvent event) {
+        if (event.isCancelled())
+            return;
+
+        this.plugin.getPlayerRepository().getByPlayer(event.getPlayer(), data -> {
+            data.onKick();
+        });
     }
 }

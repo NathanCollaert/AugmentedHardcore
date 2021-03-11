@@ -1,7 +1,6 @@
 package com.backtobedrock.LiteDeathBan.commands;
 
 import com.backtobedrock.LiteDeathBan.domain.enums.Command;
-import com.backtobedrock.LiteDeathBan.utils.BanUtils;
 import com.backtobedrock.LiteDeathBan.utils.CommandUtils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -11,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class LiteDeathBanCommand extends ICommand {
+public class LiteDeathBanCommand extends AbstractCommand {
     public LiteDeathBanCommand(CommandSender cs, String[] args) {
         super(cs, args);
     }
@@ -35,11 +34,10 @@ public class LiteDeathBanCommand extends ICommand {
         if (!this.hasCorrectAmountOfArguments(command))
             return;
 
-        final OfflinePlayer player;
         final int amount;
         switch (command) {
             case ADDLIVES:
-                if (!this.hasPlayedBefore()) {
+                if (!this.hasPlayedBefore(this.args[1])) {
                     return;
                 }
                 amount = CommandUtils.getPositiveNumberFromString(this.cs, this.args[2]);
@@ -56,7 +54,7 @@ public class LiteDeathBanCommand extends ICommand {
                 });
                 break;
             case ADDLIFEPARTS:
-                if (!this.hasPlayedBefore()) {
+                if (!this.hasPlayedBefore(this.args[1])) {
                     return;
                 }
                 amount = CommandUtils.getPositiveNumberFromString(this.cs, this.args[2]);
@@ -73,7 +71,7 @@ public class LiteDeathBanCommand extends ICommand {
                 });
                 break;
             case SETLIVES:
-                if (!this.hasPlayedBefore()) {
+                if (!this.hasPlayedBefore(this.args[1])) {
                     return;
                 }
                 amount = CommandUtils.getPositiveNumberFromString(this.cs, this.args[2]);
@@ -90,7 +88,7 @@ public class LiteDeathBanCommand extends ICommand {
                 });
                 break;
             case SETLIFEPARTS:
-                if (!this.hasPlayedBefore()) {
+                if (!this.hasPlayedBefore(this.args[1])) {
                     return;
                 }
                 amount = CommandUtils.getPositiveNumberFromString(this.cs, this.args[2]);
@@ -106,28 +104,6 @@ public class LiteDeathBanCommand extends ICommand {
                     );
                 });
                 break;
-            case UNBAN:
-                if (!this.hasPlayedBefore()) {
-                    return;
-                }
-
-                this.plugin.getPlayerRepository().getByPlayer(this.player, data -> {
-                    if (!data.isBanned(this.player)) {
-                        cs.sendMessage(String.format("§c%s is not banned.", this.player.getName()));
-                        return;
-                    }
-
-                    this.plugin.getServerRepository().getServerData(data1 -> {
-                        if (!data1.isDeathBanned(this.player)) {
-                            this.cs.sendMessage(String.format("§c%s is not death banned and cannot be unbanned by LiteDeathBan.", this.player.getName()));
-                            return;
-                        }
-
-                        BanUtils.unDeathBan(data, this.player);
-                        this.cs.sendMessage(String.format("§a%s has successfully been unbanned from a death ban.", this.player.getName()));
-                    });
-                });
-                break;
             case RELOAD:
                 this.plugin.initialize();
                 this.cs.sendMessage("§aLiteDeathBan has successfully been reloaded.");
@@ -140,7 +116,7 @@ public class LiteDeathBanCommand extends ICommand {
     private void sendHelpMessage() {
         List<String> helpMessage = new ArrayList<>();
         helpMessage.add("§8§m----------§6 LiteDeathBan §fHelp §8§m----------");
-        Arrays.stream(Command.values()).forEach(e -> helpMessage.add(e.getFancyVersion()));
+        Arrays.stream(Command.values()).filter(e -> e.getPermission() != null).forEach(e -> helpMessage.add(e.getFancyVersion()));
         helpMessage.add("§8§m------------------------------------------");
         cs.sendMessage(helpMessage.toArray(new String[0]));
     }

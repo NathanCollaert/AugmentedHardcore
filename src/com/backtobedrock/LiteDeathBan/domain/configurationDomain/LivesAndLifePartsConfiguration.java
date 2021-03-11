@@ -20,6 +20,7 @@ public class LivesAndLifePartsConfiguration {
 
     //life parts
     private final boolean useLifeParts;
+    private final int maxLifeParts;
     private final int lifePartsPerLife;
     private final int lifePartsAtStart;
     private final int lifePartsAfterBan;
@@ -42,6 +43,7 @@ public class LivesAndLifePartsConfiguration {
             List<String> disableLosingLivesInWorlds,
             //life parts
             boolean useLifeParts,
+            int maxLifeParts,
             int lifePartsPerLife,
             int lifePartsAtStart,
             int lifePartsAfterBan,
@@ -63,6 +65,7 @@ public class LivesAndLifePartsConfiguration {
 
         //life parts
         this.useLifeParts = useLifeParts;
+        this.maxLifeParts = maxLifeParts;
         this.lifePartsPerLife = lifePartsPerLife;
         this.lifePartsAtStart = lifePartsAtStart;
         this.lifePartsAfterBan = lifePartsAfterBan;
@@ -87,11 +90,12 @@ public class LivesAndLifePartsConfiguration {
 
         //life parts
         boolean cUseLifeParts = cUseLives && section.getBoolean("UseLifeParts", true);
+        int cMaxLifeParts = cUseLifeParts ? ConfigUtils.checkMin("MaxLifeParts", section.getInt("MaxLifeParts", 6), 0) : 0;
         int cLifePartsPerLife = cUseLifeParts ? ConfigUtils.checkMin("LifePartsPerLife", section.getInt("LifePartsPerLife"), 1) : 0;
         int cLifePartsAtStart = cUseLifeParts ? ConfigUtils.checkMin("LifePartsAtStart", section.getInt("LifePartsAtStart"), 0) : 0;
         int cLifePartsAfterBan = cUseLifeParts ? ConfigUtils.checkMin("LifePartsAfterBan", section.getInt("LifePartsAfterBan"), 0) : 0;
-        int cLifePartsLostPerDeath = ConfigUtils.checkMin("LifePartsLostPerDeath", section.getInt("LifePartsLostPerDeath", 1), -1);
-        int cLifePartsLostPerDeathBan = ConfigUtils.checkMin("LifePartsLostPerDeathBan", section.getInt("LifePartsLostPerDeathBan", -1), -1);
+        int cLifePartsLostPerDeath = cUseLifeParts ? ConfigUtils.checkMin("LifePartsLostPerDeath", section.getInt("LifePartsLostPerDeath", 1), -1) : 0;
+        int cLifePartsLostPerDeathBan = cUseLifeParts ? ConfigUtils.checkMin("LifePartsLostPerDeathBan", section.getInt("LifePartsLostPerDeathBan", -1), -1) : 0;
         boolean cLifePartsOnKill = cUseLifeParts && section.getBoolean("LifePartsOnKill");
         Map<EntityType, Integer> cLifePartsPerKill = new HashMap<>();
         boolean cGetLifePartsByPlaytime = cUseLifeParts && section.getBoolean("GetLifePartByPlaytime", false);
@@ -106,6 +110,9 @@ public class LivesAndLifePartsConfiguration {
         if (cLifePartsLostPerDeathBan == -1) {
             cLifePartsLostPerDeathBan = Integer.MAX_VALUE;
         }
+        if (cMaxLifeParts == -1) {
+            cMaxLifeParts = Integer.MAX_VALUE;
+        }
 
         ConfigurationSection lifePartsPerKillSection = section.getConfigurationSection("LifePartsPerKill");
         if (lifePartsPerKillSection != null) {
@@ -119,7 +126,7 @@ public class LivesAndLifePartsConfiguration {
             });
         }
 
-        if (cMaxLives == -10 || cLivesAtStart == -10 || cLivesAfterBan == -10 || cLivesLostPerDeath == -10 || cLifePartsPerLife == -10 || cLifePartsAtStart == -10 || cLifePartsAfterBan == -10 || cLifePartsLostPerDeath == -10 || cLifePartsLostPerDeathBan == -10 || cPlaytimePerLifePart == -10) {
+        if (cMaxLives == -10 || cLivesAtStart == -10 || cLivesAfterBan == -10 || cLivesLostPerDeath == -10 || cMaxLifeParts == -10 || cLifePartsPerLife == -10 || cLifePartsAtStart == -10 || cLifePartsAfterBan == -10 || cLifePartsLostPerDeath == -10 || cLifePartsLostPerDeathBan == -10 || cPlaytimePerLifePart == -10) {
             return null;
         }
 
@@ -133,6 +140,7 @@ public class LivesAndLifePartsConfiguration {
                 cDisableLosingLivesInWorlds,
                 //life parts
                 cUseLifeParts,
+                cMaxLifeParts,
                 cLifePartsPerLife,
                 cLifePartsAtStart,
                 cLifePartsAfterBan,
@@ -217,5 +225,9 @@ public class LivesAndLifePartsConfiguration {
 
     public List<String> getDisableGainingLifePartsInWorlds() {
         return disableGainingLifePartsInWorlds;
+    }
+
+    public int getMaxLifeParts() {
+        return maxLifeParts;
     }
 }

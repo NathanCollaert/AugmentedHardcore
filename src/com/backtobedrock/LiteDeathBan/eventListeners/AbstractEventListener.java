@@ -4,10 +4,10 @@ import com.backtobedrock.LiteDeathBan.LiteDeathBan;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class PlayerKillListener implements Listener {
-    private final LiteDeathBan plugin;
+public abstract class AbstractEventListener implements Listener {
+    protected final LiteDeathBan plugin;
 
-    public PlayerKillListener() {
+    public AbstractEventListener() {
         this.plugin = JavaPlugin.getPlugin(LiteDeathBan.class);
     }
 }

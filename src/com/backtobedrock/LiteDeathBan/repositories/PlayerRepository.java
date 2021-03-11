@@ -1,8 +1,8 @@
 package com.backtobedrock.LiteDeathBan.repositories;
 
 import com.backtobedrock.LiteDeathBan.LiteDeathBan;
-import com.backtobedrock.LiteDeathBan.domain.PlayerData;
-import com.backtobedrock.LiteDeathBan.domain.callbacks.PlayerDataCallback;
+import com.backtobedrock.LiteDeathBan.domain.callbacks.IPlayerDataCallback;
+import com.backtobedrock.LiteDeathBan.domain.data.PlayerData;
 import com.backtobedrock.LiteDeathBan.mappers.player.IPlayerMapper;
 import com.backtobedrock.LiteDeathBan.mappers.player.MySQLPlayerMapper;
 import com.backtobedrock.LiteDeathBan.mappers.player.YAMLPlayerMapper;
@@ -36,7 +36,7 @@ public class PlayerRepository {
     }
 
     private void initializeMapper() {
-        switch (this.plugin.getConfiguration().getDataConfiguration().getStorageType()) {
+        switch (this.plugin.getConfigurations().getDataConfiguration().getStorageType()) {
             case MYSQL:
                 this.mapper = new MySQLPlayerMapper();
                 break;
@@ -50,11 +50,7 @@ public class PlayerRepository {
         this.mapper.insertPlayerDataAsync(player, data);
     }
 
-    public void insertPlayerDataSync(OfflinePlayer player, PlayerData data) {
-        this.mapper.insertPlayerDataSync(player, data);
-    }
-
-    public void getByPlayer(OfflinePlayer player, PlayerDataCallback callback) {
+    public void getByPlayer(OfflinePlayer player, IPlayerDataCallback callback) {
         if (!this.playerCache.containsKey(player.getUniqueId())) {
             this.mapper.getByPlayer(player, data -> {
                 PlayerData pd = data;
@@ -76,6 +72,23 @@ public class PlayerRepository {
         }
     }
 
+    public PlayerData getByPlayerSync(OfflinePlayer player) {
+        if (!this.playerCache.containsKey(player.getUniqueId())) {
+            PlayerData pd = this.mapper.getByPlayerSync(player);
+            if (pd == null) {
+                pd = new PlayerData(player);
+                if (player.hasPlayedBefore())
+                    this.insertPlayerDataAsync(player, pd);
+            }
+            this.playerCache.put(player.getUniqueId(), pd);
+
+            if (!player.isOnline()) {
+                new ClearCache(player).runTaskLater(this.plugin, 6000);
+            }
+        }
+        return this.playerCache.get(player.getUniqueId());
+    }
+
     public void updatePlayerData(OfflinePlayer player, PlayerData data) {
         this.mapper.updatePlayerData(player, data);
     }
@@ -84,10 +97,7 @@ public class PlayerRepository {
         this.mapper.deletePlayerData(player);
     }
 
-    public PlayerData removeFromPlayerCache(OfflinePlayer player) {
-        PlayerData data = this.playerCache.remove(player.getUniqueId());
-        if (data != null)
-            this.updatePlayerData(player, data);
-        return data;
+    public void removeFromPlayerCache(OfflinePlayer player) {
+        this.playerCache.remove(player.getUniqueId());
     }
 }

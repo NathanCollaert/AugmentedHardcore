@@ -1,4 +1,4 @@
-package com.backtobedrock.LiteDeathBan.domain.configurationDomain.configurationHelperClasses;
+package com.backtobedrock.LiteDeathBan.domain;
 
 public class Location {
     private final String world;

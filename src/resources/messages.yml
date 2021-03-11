@@ -61,17 +61,42 @@ OnMaxLivesBroadcast: ""
 # +------------------------------------------------------+ #
 ############################################################
 
-#Send to player when CombatTagWarningStyle: chat on being combat tagged.
-#%tagged_by%/%playername%/%tag_time%
-OnCombatTaggedChat: "You have been combat tagged by &c&l%tagged_by%&r."
-
-#Send to player when CombatTagWarningStyle: chat on combat tag end.
-#%tagged_by%/%playername%/%tag_time%
-OnCombatTaggedChatEnd: "Your combat tag with &c&l%tagged_by%&r ran out..."
-
-#Boss bar title send to player when CombatTagWarningStyle: bossbar on combat tagged.
-#%tagged_by%/%playername%/%tag_time%
-OnCombatTaggedBossBar: "You have been combat tagged by &c&l%tagged_by%&r, do &c&lnot&r log out!"
+#How should the player be notified when combat tagged?
+#Multiple notification types can be used at once.
+CombatTagNotification:
+  #Text above health/food bar
+  Actionbar:
+    Enable: false
+    Configuration:
+      #TODO: placeholders
+      TextStart: "You have been combat tagged by &c&l%tagged_by%&r."
+      TextEnd: "Your combat tag with &c&l%tagged_by%&r ran out."
+  #Bossbar in upper middle of screen
+  Bossbar:
+    Enable: true
+    Configuration:
+      #TODO: placeholders
+      Text: "You have been combat tagged by &c&l%tagged_by%&r, do &c&lnot&r log out!"
+      # -> blue/green/pink/purple/red/white/yellow
+      Color: "red"
+      # -> solid/segmented_6/segmented_10/segmented_12/segmented_20
+      Style: "solid"
+  #Text in chat
+  Chat:
+    Enable: false
+    Configuration:
+      #TODO: placeholders
+      TextStart: "You have been combat tagged by &c&l%tagged_by%&r."
+      TextEnd: "Your combat tag with &c&l%tagged_by%&r ran out."
+  #Text in the middle of the screen
+  Title:
+    Enable: false
+    Configuration:
+      #TODO: placeholders
+      TitleStart: "Combat Tagged"
+      SubtitleStart: "You have been combat tagged by &c&l%tagged_by%&r."
+      TitleEnd: "Combat Tagged"
+      SubtitleEnd: "Your combat tag with &c&l%tagged_by%&r ran out."
 
 
 ############################################################

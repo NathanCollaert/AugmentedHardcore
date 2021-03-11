@@ -32,7 +32,8 @@ public enum DamageCause {
     PLAYER_THORNS(7200, "player thorns"), //can't test
     VOID(4320, "falling out of the world"), //works
     WITHER(2880, "withering away"), //works
-    COMBAT_LOG(7200, "combat logging"), //
+    COMBAT_LOG(2880, "combat logging"), //works
+    PLAYER_COMBAT_LOG(7200, "combat logging"), //works
     REVIVE(7200, "reviving"); //
 
     private final int defaultBantime;

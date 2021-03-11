@@ -1,7 +1,7 @@
 package com.backtobedrock.LiteDeathBan.domain.callbacks;
 
-import com.backtobedrock.LiteDeathBan.domain.PlayerData;
+import com.backtobedrock.LiteDeathBan.domain.data.PlayerData;
 
-public interface PlayerDataCallback {
+public interface IPlayerDataCallback {
     void onQueryDonePlayerData(PlayerData data);
 }

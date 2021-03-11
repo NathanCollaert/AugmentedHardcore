@@ -2,6 +2,7 @@ package com.backtobedrock.LiteDeathBan.domain.configurationDomain;
 
 import com.backtobedrock.LiteDeathBan.LiteDeathBan;
 import com.backtobedrock.LiteDeathBan.domain.configurationDomain.configurationHelperClasses.BanConfiguration;
+import com.backtobedrock.LiteDeathBan.domain.enums.BanTimeType;
 import com.backtobedrock.LiteDeathBan.domain.enums.DamageCause;
 import com.backtobedrock.LiteDeathBan.domain.enums.GrowthType;
 import com.backtobedrock.LiteDeathBan.utils.ConfigUtils;
@@ -18,21 +19,17 @@ import java.util.logging.Level;
 public class BanTimesConfiguration {
     private final Map<String, BanConfiguration> banTimes;
     private final BanList.Type banType;
-    private final boolean banTimeByPlaytime;
-    private final boolean banTimeByPlaytimeSinceLastDeath;
-    private final int banTimeByPlaytimeGrowthIncrease;
-    private final int banTimeByPlaytimeGrowthInterval;
+    private final BanTimeType banTimeType;
     private final GrowthType banTimeByPlaytimeGrowthType;
+    private final boolean selfHarmBan;
     private final List<String> disableBanInWorlds;
 
-    public BanTimesConfiguration(Map<String, BanConfiguration> banTimes, BanList.Type banType, boolean banTimeByPlaytime, boolean banTimeByPlaytimeSinceLastDeath, int banTimeByPlaytimeGrowthIncrease, int banTimeByPlaytimeGrowthInterval, GrowthType banTimeByPlaytimeGrowthType, List<String> disableBanInWorlds) {
+    public BanTimesConfiguration(Map<String, BanConfiguration> banTimes, BanList.Type banType, BanTimeType banTimeType, GrowthType banTimeByPlaytimeGrowthType, boolean selfHarmBan, List<String> disableBanInWorlds) {
         this.banTimes = banTimes;
         this.banType = banType;
-        this.banTimeByPlaytime = banTimeByPlaytime;
-        this.banTimeByPlaytimeSinceLastDeath = banTimeByPlaytimeSinceLastDeath;
-        this.banTimeByPlaytimeGrowthIncrease = banTimeByPlaytimeGrowthIncrease;
-        this.banTimeByPlaytimeGrowthInterval = banTimeByPlaytimeGrowthInterval;
+        this.banTimeType = banTimeType;
         this.banTimeByPlaytimeGrowthType = banTimeByPlaytimeGrowthType;
+        this.selfHarmBan = selfHarmBan;
         this.disableBanInWorlds = disableBanInWorlds;
     }
 
@@ -42,53 +39,32 @@ public class BanTimesConfiguration {
         //configurations
         Map<String, BanConfiguration> cBanTimes = new HashMap<>();
         BanList.Type cBanType = ConfigUtils.getBanType("BanType", section.getString("BanType", "name"), BanList.Type.NAME);
-        boolean cBanTimeByPlaytime = section.getBoolean("BanTimeByPlaytime");
-        boolean cBanTimeByPlaytimeSinceLastDeath = cBanTimeByPlaytime && section.getBoolean("BanTimeByPlaytimeSinceLastDeath");
-        int cBanTimeByPlaytimeGrowthIncrease = cBanTimeByPlaytime ? ConfigUtils.checkMin("BanTimeByPlaytimeGrowthIncrease", section.getInt("BanTimeByPlaytimeGrowthIncrease"), 1) : 1;
-        int cBanTimeByPlaytimeGrowthInterval = cBanTimeByPlaytime ? ConfigUtils.checkMin("BanTimeByPlaytimeGrowthInterval", section.getInt("BanTimeByPlaytimeGrowthInterval"), 1) : 1;
-        GrowthType cBanTimeByPlaytimeGrowthType = cBanTimeByPlaytime ? ConfigUtils.getGrowthType("BanTimeByPlaytimeGrowthType", section.getString("BanTimeByPlaytimeGrowthType", "exponential"), GrowthType.EXPONENTIAL) : GrowthType.EXPONENTIAL;
+        BanTimeType cBanTimeType = ConfigUtils.getBanTimeType("BanTimeType", section.getString("BanTimeType", "STATIC"), BanTimeType.STATIC);
+        GrowthType cBanTimeByPlaytimeGrowthType = ConfigUtils.getGrowthType("BanTimeByPlaytimeGrowthType", section.getString("BanTimeByPlaytimeGrowthType", "EXPONENTIAL"), GrowthType.EXPONENTIAL);
+        boolean cSelfHarmBan = section.getBoolean("SelfHarmBan", true);
         List<String> cDisableBanInWorlds = ConfigUtils.getWorlds("DisableBanInWorlds", section.getStringList("DisableBanInWorlds"));
 
         //loop over all damage causes
-        ConfigurationSection deathCauseConfigurations = section.getConfigurationSection("DeathCauseConfigurations");
-        if (deathCauseConfigurations == null) {
+        ConfigurationSection banTimesConfigurations = section.getConfigurationSection("BanTimes");
+        if (banTimesConfigurations == null) {
             plugin.getLogger().log(Level.SEVERE, "There were no ban times configured in the config.yml.");
             return null;
         }
         Arrays.stream(DamageCause.values()).forEach(e -> {
-            cBanTimes.put(e.name(), BanConfiguration.deserialize(e, deathCauseConfigurations.getConfigurationSection(e.name())));
+            cBanTimes.put(e.name(), BanConfiguration.deserialize(e, banTimesConfigurations.getConfigurationSection(e.name())));
         });
 
-        //check if everything configured correctly
-        if (cBanTimeByPlaytimeGrowthIncrease == -10 || cBanTimeByPlaytimeGrowthInterval == -10) {
-            return null;
-        }
-
-        return new BanTimesConfiguration(cBanTimes, cBanType, cBanTimeByPlaytime, cBanTimeByPlaytimeSinceLastDeath, cBanTimeByPlaytimeGrowthIncrease, cBanTimeByPlaytimeGrowthInterval, cBanTimeByPlaytimeGrowthType, cDisableBanInWorlds);
+        return new BanTimesConfiguration(
+                cBanTimes,
+                cBanType,
+                cBanTimeType,
+                cBanTimeByPlaytimeGrowthType,
+                cSelfHarmBan,
+                cDisableBanInWorlds);
     }
 
     public Map<String, BanConfiguration> getBanTimes() {
         return banTimes;
-    }
-
-    public boolean isBanTimeByPlaytime() {
-        return banTimeByPlaytime;
-    }
-
-    public boolean isBanTimeByPlaytimeSinceLastDeath() {
-        return banTimeByPlaytimeSinceLastDeath;
-    }
-
-    public int getBanTimeByPlaytimeGrowthIncrease() {
-        return banTimeByPlaytimeGrowthIncrease;
-    }
-
-    public int getBanTimeByPlaytimeGrowthInterval() {
-        return banTimeByPlaytimeGrowthInterval;
-    }
-
-    public GrowthType getBanTimeByPlaytimeGrowthType() {
-        return banTimeByPlaytimeGrowthType;
     }
 
     public List<String> getDisableBanInWorlds() {
@@ -97,5 +73,17 @@ public class BanTimesConfiguration {
 
     public BanList.Type getBanType() {
         return banType;
+    }
+
+    public BanTimeType getBanTimeType() {
+        return banTimeType;
+    }
+
+    public GrowthType getBanTimeByPlaytimeGrowthType() {
+        return banTimeByPlaytimeGrowthType;
+    }
+
+    public boolean isSelfHarmBan() {
+        return selfHarmBan;
     }
 }

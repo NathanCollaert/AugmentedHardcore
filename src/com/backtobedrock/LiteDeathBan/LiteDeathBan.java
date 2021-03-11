@@ -1,7 +1,7 @@
 package com.backtobedrock.LiteDeathBan;
 
 import com.backtobedrock.LiteDeathBan.commands.Commands;
-import com.backtobedrock.LiteDeathBan.configs.Configuration;
+import com.backtobedrock.LiteDeathBan.configs.Configurations;
 import com.backtobedrock.LiteDeathBan.configs.Messages;
 import com.backtobedrock.LiteDeathBan.eventListeners.*;
 import com.backtobedrock.LiteDeathBan.repositories.PlayerRepository;
@@ -19,13 +19,12 @@ public class LiteDeathBan extends JavaPlugin implements Listener {
 
     //configurations
     private Commands commands;
-    private Configuration configuration;
+    private Configurations configurations;
     private Messages messages;
 
     //repositories
     private PlayerRepository playerRepository = null;
     private ServerRepository serverRepository = null;
-//    private CombatTagRepository combatTagRepository = null;
 
     //various
     private boolean stopping = false;
@@ -80,7 +79,7 @@ public class LiteDeathBan extends JavaPlugin implements Listener {
         }
 
         //initialize configurations
-        this.configuration = new Configuration(configFile);
+        this.configurations = new Configurations(configFile);
         this.messages = new Messages(messagesFile);
         //initialize commands
         this.commands = new Commands();
@@ -92,23 +91,23 @@ public class LiteDeathBan extends JavaPlugin implements Listener {
         }
         if (this.serverRepository == null)
             this.serverRepository = new ServerRepository();
-//        if (this.combatTagRepository == null)
-//            this.combatTagRepository = new CombatTagRepository();
     }
 
     private void registerListeners() {
+        //TODO: register events on config
+        getServer().getPluginManager().registerEvents(new CustomInventoryClickListener(), this);
         getServer().getPluginManager().registerEvents(new EntityDeathListener(), this);
+        getServer().getPluginManager().registerEvents(new PlayerDamageListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerDeathListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerKickListener(), this);
-        getServer().getPluginManager().registerEvents(new PlayerKillListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerLoginListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerQuitListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerRespawnListener(), this);
     }
 
-    public Configuration getConfiguration() {
-        return configuration;
+    public Configurations getConfigurations() {
+        return configurations;
     }
 
     public Messages getMessages() {
@@ -126,8 +125,4 @@ public class LiteDeathBan extends JavaPlugin implements Listener {
     public boolean isStopping() {
         return stopping;
     }
-
-//    public CombatTagRepository getCombatTagRepository() {
-//        return combatTagRepository;
-//    }
 }

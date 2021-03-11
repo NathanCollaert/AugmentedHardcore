@@ -1,7 +1,7 @@
 package com.backtobedrock.LiteDeathBan.mappers.player;
 
-import com.backtobedrock.LiteDeathBan.domain.PlayerData;
-import com.backtobedrock.LiteDeathBan.domain.callbacks.PlayerDataCallback;
+import com.backtobedrock.LiteDeathBan.domain.callbacks.IPlayerDataCallback;
+import com.backtobedrock.LiteDeathBan.domain.data.PlayerData;
 import org.bukkit.OfflinePlayer;
 
 public class MySQLPlayerMapper implements IPlayerMapper {
@@ -16,8 +16,14 @@ public class MySQLPlayerMapper implements IPlayerMapper {
     }
 
     @Override
-    public void getByPlayer(OfflinePlayer player, PlayerDataCallback playerDataCallback) {
+    public void getByPlayer(OfflinePlayer player, IPlayerDataCallback callback) {
         //TODO: implement
+    }
+
+    @Override
+    public PlayerData getByPlayerSync(OfflinePlayer player) {
+        //TODO: implement
+        return null;
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.backtobedrock.LiteDeathBan.domain.configurationDomain;
 
-import com.backtobedrock.LiteDeathBan.domain.configurationDomain.configurationHelperClasses.Connection;
+import com.backtobedrock.LiteDeathBan.domain.Connection;
 import com.backtobedrock.LiteDeathBan.domain.enums.StorageType;
 import com.backtobedrock.LiteDeathBan.utils.ConfigUtils;
 import org.bukkit.configuration.ConfigurationSection;

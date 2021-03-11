@@ -1,8 +1,8 @@
 package com.backtobedrock.LiteDeathBan.mappers.server;
 
 import com.backtobedrock.LiteDeathBan.LiteDeathBan;
-import com.backtobedrock.LiteDeathBan.domain.ServerData;
-import com.backtobedrock.LiteDeathBan.domain.callbacks.ServerDataCallback;
+import com.backtobedrock.LiteDeathBan.domain.callbacks.IServerDataCallback;
+import com.backtobedrock.LiteDeathBan.domain.data.ServerData;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -34,14 +34,17 @@ public class YAMLServerMapper implements IServerMapper {
 
     @Override
     public void insertServerDataSync(ServerData data) {
-        Bukkit.getScheduler().runTask(this.plugin, () -> {
-            this.insertServerData(data);
-        });
+        this.insertServerData(data);
     }
 
     @Override
-    public void getServerData(ServerDataCallback callback) {
+    public void getServerData(IServerDataCallback callback) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> callback.onQueryDoneServerData(ServerData.deserialize(getConfig())));
+    }
+
+    @Override
+    public ServerData getServerDataSync() {
+        return ServerData.deserialize(getConfig());
     }
 
     @Override

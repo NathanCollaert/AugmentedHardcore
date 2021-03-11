@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public abstract class ICommand {
+public abstract class AbstractCommand {
 
     protected final LiteDeathBan plugin;
     protected final CommandSender cs;
@@ -16,7 +16,7 @@ public abstract class ICommand {
     protected final String[] args;
     protected OfflinePlayer player = null;
 
-    public ICommand(CommandSender cs, String[] args) {
+    public AbstractCommand(CommandSender cs, String[] args) {
         this.plugin = JavaPlugin.getPlugin(LiteDeathBan.class);
         this.cs = cs;
         this.csPlayer = cs instanceof Player ? (Player) cs : null;
@@ -26,8 +26,7 @@ public abstract class ICommand {
     public abstract void run();
 
     protected boolean hasPermission(Command command) {
-        //TODO: make use of permission enum
-        boolean hasPermission = this.cs.hasPermission("litedeathban." + command.getPermission());
+        boolean hasPermission = this.cs.hasPermission(command.getPermission().getPermissionString());
         if (!hasPermission) {
             this.cs.sendMessage("§cYou have no permission to use this command.");
         }
@@ -43,16 +42,15 @@ public abstract class ICommand {
     }
 
     protected boolean hasCorrectAmountOfArguments(Command command) {
-        if ((this.args.length - 1) < command.getMinimumArguments() || (this.args.length - 1) > command.getMaximumArguments()) {
+        if (this.args.length < command.getMinimumArguments() || this.args.length > command.getMaximumArguments()) {
             this.sendUsageMessage(command);
             return false;
         }
         return true;
     }
 
-    @SuppressWarnings("deprecation")
-    protected boolean hasPlayedBefore() {
-        OfflinePlayer player = Bukkit.getOfflinePlayer(this.args[1]);
+    protected boolean hasPlayedBefore(String playername) {
+        @SuppressWarnings("deprecation") OfflinePlayer player = Bukkit.getOfflinePlayer(playername);
         if (!player.hasPlayedBefore()) {
             this.cs.sendMessage(String.format("§c%s has not played on the server before.", player.getName()));
             return false;

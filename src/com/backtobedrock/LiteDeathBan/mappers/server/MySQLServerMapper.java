@@ -1,7 +1,7 @@
 package com.backtobedrock.LiteDeathBan.mappers.server;
 
-import com.backtobedrock.LiteDeathBan.domain.ServerData;
-import com.backtobedrock.LiteDeathBan.domain.callbacks.ServerDataCallback;
+import com.backtobedrock.LiteDeathBan.domain.callbacks.IServerDataCallback;
+import com.backtobedrock.LiteDeathBan.domain.data.ServerData;
 
 public class MySQLServerMapper implements IServerMapper {
 
@@ -20,8 +20,14 @@ public class MySQLServerMapper implements IServerMapper {
     }
 
     @Override
-    public void getServerData(ServerDataCallback callback) {
+    public void getServerData(IServerDataCallback callback) {
         //TODO implement
+    }
+
+    @Override
+    public ServerData getServerDataSync() {
+        //TODO implement
+        return null;
     }
 
     @Override

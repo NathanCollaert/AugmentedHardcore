@@ -1,6 +1,7 @@
-package com.backtobedrock.LiteDeathBan.domain;
+package com.backtobedrock.LiteDeathBan.domain.data;
 
 import com.backtobedrock.LiteDeathBan.LiteDeathBan;
+import com.backtobedrock.LiteDeathBan.domain.Ban;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;

@@ -1,4 +1,4 @@
-package com.backtobedrock.LiteDeathBan.domain.configurationDomain.configurationHelperClasses;
+package com.backtobedrock.LiteDeathBan.domain;
 
 import com.backtobedrock.LiteDeathBan.LiteDeathBan;
 import org.bukkit.configuration.ConfigurationSection;

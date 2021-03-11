@@ -1,8 +1,8 @@
 package com.backtobedrock.LiteDeathBan.repositories;
 
 import com.backtobedrock.LiteDeathBan.LiteDeathBan;
-import com.backtobedrock.LiteDeathBan.domain.ServerData;
-import com.backtobedrock.LiteDeathBan.domain.callbacks.ServerDataCallback;
+import com.backtobedrock.LiteDeathBan.domain.callbacks.IServerDataCallback;
+import com.backtobedrock.LiteDeathBan.domain.data.ServerData;
 import com.backtobedrock.LiteDeathBan.mappers.server.IServerMapper;
 import com.backtobedrock.LiteDeathBan.mappers.server.MySQLServerMapper;
 import com.backtobedrock.LiteDeathBan.mappers.server.YAMLServerMapper;
@@ -20,13 +20,11 @@ public class ServerRepository {
     public ServerRepository() {
         this.plugin = JavaPlugin.getPlugin(LiteDeathBan.class);
         this.initializeMapper();
-        this.getServerData(data -> {
-            this.plugin.getLogger().log(Level.INFO, String.format("Loaded %d ongoing bans.", data.getTotalOngoingBans()));
-        });
+        this.plugin.getLogger().log(Level.INFO, String.format("Loaded %d ongoing bans.", this.getServerDataSync().getTotalOngoingBans()));
     }
 
     private void initializeMapper() {
-        switch (this.plugin.getConfiguration().getDataConfiguration().getStorageType()) {
+        switch (this.plugin.getConfigurations().getDataConfiguration().getStorageType()) {
             case MYSQL:
                 this.mapper = new MySQLServerMapper();
                 break;
@@ -36,11 +34,7 @@ public class ServerRepository {
         }
     }
 
-    public void insertServerData(ServerData data) {
-        this.mapper.insertServerDataAsync(data);
-    }
-
-    public void getServerData(ServerDataCallback callback) {
+    public void getServerData(IServerDataCallback callback) {
         if (this.serverData == null) {
             this.mapper.getServerData(data -> {
                 ServerData sd = data;
@@ -57,11 +51,19 @@ public class ServerRepository {
         }
     }
 
-    public void updateServerData(ServerData data) {
-        this.mapper.updateServerData(data);
+    public ServerData getServerDataSync() {
+        if (this.serverData == null) {
+            ServerData sd = this.mapper.getServerDataSync();
+            if (sd == null) {
+                sd = new ServerData();
+                this.mapper.insertServerDataSync(sd);
+            }
+            this.serverData = sd;
+        }
+        return this.serverData;
     }
 
-    public void deleteServerData() {
-        this.mapper.deleteServerData();
+    public void updateServerData(ServerData data) {
+        this.mapper.updateServerData(data);
     }
 }

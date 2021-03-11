@@ -1,12 +1,12 @@
 package com.backtobedrock.LiteDeathBan.utils;
 
 import com.backtobedrock.LiteDeathBan.LiteDeathBan;
-import com.backtobedrock.LiteDeathBan.domain.enums.DamageCause;
-import com.backtobedrock.LiteDeathBan.domain.enums.DamageCauseType;
-import com.backtobedrock.LiteDeathBan.domain.enums.GrowthType;
-import com.backtobedrock.LiteDeathBan.domain.enums.StorageType;
+import com.backtobedrock.LiteDeathBan.domain.enums.*;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
 import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -71,11 +71,29 @@ public class ConfigUtils {
         }
     }
 
+    public static Material getMaterial(String id, String material) {
+        try {
+            return Material.valueOf(material.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            sendErrorMessage(String.format("%s: %s is not an existing material.", id, material));
+            return null;
+        }
+    }
+
     public static GrowthType getGrowthType(String id, String growthType, GrowthType type) {
         try {
             return GrowthType.valueOf(growthType.toUpperCase());
         } catch (IllegalArgumentException e) {
             sendErrorMessage(String.format("%s: %s is not an existing growth type, default value will be used: %s.", id, growthType, type));
+            return type;
+        }
+    }
+
+    public static BanTimeType getBanTimeType(String id, String banTimeType, BanTimeType type) {
+        try {
+            return BanTimeType.valueOf(banTimeType.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            sendErrorMessage(String.format("%s: %s is not an existing ban time type, default value will be used: %s.", id, banTimeType, type));
             return type;
         }
     }
@@ -86,6 +104,33 @@ public class ConfigUtils {
         } catch (IllegalArgumentException e) {
             sendErrorMessage(String.format("%s: %s is not an existing ban type, default value will be used: %s.", id, banType, type));
             return type;
+        }
+    }
+
+    public static BarStyle getBarStyle(String id, String barStyle, BarStyle type) {
+        try {
+            return BarStyle.valueOf(barStyle.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            sendErrorMessage(String.format("%s: %s is not an existing bar type, default value will be used: %s.", id, barStyle, type));
+            return type;
+        }
+    }
+
+    public static BarColor getBarColor(String id, String barColor, BarColor type) {
+        try {
+            return BarColor.valueOf(barColor.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            sendErrorMessage(String.format("%s: %s is not an existing bar color, default value will be used: %s.", id, barColor, type));
+            return type;
+        }
+    }
+
+    public static NotificationType getNotifcationType(String id, String notificationType) {
+        try {
+            return NotificationType.valueOf(notificationType.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            sendErrorMessage(String.format("%s: %s is not an existing notification type.", id, notificationType));
+            return null;
         }
     }
 

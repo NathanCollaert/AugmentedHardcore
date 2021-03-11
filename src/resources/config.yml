@@ -52,6 +52,12 @@ DisableLosingLivesInWorlds:
 #Life parts can used to gain a full life when enough are collected.
 UseLifeParts: true
 
+#TODO: implement
+#What should the maximum amount of life parts a player can have be?
+#Life parts are not converted to lives when max lives is reached.
+#Minimum is 0. -1 is unlimited.
+MaxLifeParts: 6
+
 #How many life parts does it take to get a full life?
 #Minimum is 1.
 LifePartsPerLife: 3
@@ -65,11 +71,11 @@ LifePartsAtStart: 0
 LifePartsAfterBan: 0
 
 #How many life parts should be lost on death?
-#Minimum is 1, -1 is all life parts.
+#Minimum is 0, -1 is all life parts.
 LifePartsLostPerDeath: 1
 
 #How many life parts should be lost upon death ban?
-#Minimum is 1, -1 is all life parts.
+#Minimum is 0, -1 is all life parts.
 LifePartsLostPerDeathBan: -1
 
 #Should players receive life parts when killing another entity?
@@ -114,8 +120,8 @@ DisableLosingLifePartsInWorlds:
 # +------------------------------------------------------+ #
 ############################################################
 
-#What ban times should the death causes have?
-DeathCauseConfigurations:
+#What ban times should these death causes have?
+BanTimes:
   #Death caused by being in the area when a block explodes.
   BLOCK_EXPLOSION:
     BanTime: 4320
@@ -240,8 +246,12 @@ DeathCauseConfigurations:
   WITHER:
     BanTime: 2880
     DisplayName: "withering away"
-  #Death caused by combat logging
+  #Death caused by combat logging from a monster
   COMBAT_LOG:
+    BanTime: 2880
+    DisplayName: "combat logging"
+  #Death caused by combat logging from a player
+  PLAYER_COMBAT_LOG:
     BanTime: 7200
     DisplayName: "combat logging"
   #Death caused by reviving someone
@@ -253,32 +263,28 @@ DeathCauseConfigurations:
 # -> name/ip
 BanType: name
 
-#What bantime type should be used for calculating the bantime?
+#What ban time type should be used for calculating the bantime?
 #Static:             Above times will be used for bans.
+#BanCount:           The amount of times death banned * 35 will be used for determining the bantime.
+#                    Bantimes will increase the more death banned the player has been.
+#                    Above times will be used as maximum ban time.
 #Playtime:           Playtime will be used for determining the bantime.
-#                    Bantimes will start at 0 but will increase the more playtime the player has.
-#                    Above times will be used as maximum.
+#                    Bantimes will increase the more playtime the player has.
+#                    Above times will be used as maximum ban time.
 #Timesincelastdeath: Time since last death will be used for determining the bantime.
-#                    Bantimes will start at 0 but will increase the longer the player stays alive.
-#                    Every death will reset the bantime back to 0, above times will be used as maximum.
-# -> static/playtime/timesincelastdeath
+#                    Bantimes will increase the longer the player stays alive.
+#                    Every death will reset the bantime back to 0, above times will be used as maximum ban time.
+# -> static/bancount/playtime/timesincelastdeath
 BanTimeType: static
 
-#By how much should the ban time increase each BantimeByPlaytimeInterval?
-#Minimum is 1.
-BanTimeByPlaytimeGrowthIncrease: 10
-
-#At what rate of playtime/time since last death should the ban time increase?
-#In Minutes, minimum is 1
-BanTimeByPlaytimeGrowthInterval: 60
-
 #At what rate should the ban time by playtime grow?
-#Linear is slow overall and will use BantimeByPlaytimeIncrease as a normal number,
-#exponential is slow at start but quickly rises and will use BantimeByPlaytimeIncrease as percent.
+#Linear:      a constant increase in bantime the more bancount/playtime/timesincelastdeath(P) you have (constant increase) [(P/.65) OR MBT]. MBT -> max ban time
+#exponential: a proportional growth to the current bancount/playtime/timesincelastdeath(P) (slow increase at start, rapid increase at the middle/end) [(.65*(P)^(P/MBT+.65)) OR MBT]. MBT -> max ban time
 # -> linear/exponential
 BanTimeByPlaytimeGrowthType: exponential
 
-#TODO: SelfHarmBan
+#Should players be banned if killed by themselves (excluding /kill)?
+SelfHarmBan: true
 
 #Should banning players be disabled in any worlds?
 DisableBanInWorlds:
@@ -296,25 +302,15 @@ DisableBanInWorlds:
 #Should players die and be banned if they log out while in combat with another player?
 PlayerCombatTag: true
 
-#How long should a player be banned for when logging out while combat tagged by other player?
-PlayerCombatTagBanTime: 7200
-
 #Should players die and be banned if they log out while in combat with a monster?
 MonsterCombatTag: false
-
-#How long should a player be banned for when logging out while combat tagged by a monster?
-MonsterCombatTagBanTime: 2880
 
 #Should players be able to combat tag themselves?
 CombatTagSelf: false
 
-#How long should a player be tagged for after combat?
+#How long should a player be combat tagged for?
 #In Seconds, minimum is 1.
 CombatTagTime: 15
-
-#How should the player be notified when tagged in combat?
-# -> chat/bossbar/actionbar/title/none
-CombatTagWarningStyle: bossbar
 
 #Should players tagged in combat be killed on kick?
 CombatTagPlayerKickDeath: false
@@ -332,14 +328,17 @@ DisableCombatTagInWorlds:
 # +------------------------------------------------------+ #
 ############################################################
 
-#Should players be able to give a life of their own to someone else?
+#Should players be able to give a lives of their own to someone else?
 #Players who were previously banned by the plugin will be unbanned if given a life.
-Revive: true
+UseRevive: true
 
-#How long should a player be banned for if the player has 0 lives left after giving a revive?
-#If player is combat tagged, the player will receive PlayerDeathBantime if BantimeOnReviveDeath has a lower value.
-#In minutes, minimum is 1.
-BantimeOnReviveDeath: 7200
+#How many lives should be lost when reviving another player?
+#Minimum is 1
+LivesLostOnReviving: 1
+
+#How many lives should a player gain when revived?
+#Minimum is 1
+LivesGainedOnRevive: 1
 
 #How much time should the revive option go on cooldown for after using it?
 #In minutes, minumum is 0.
@@ -347,10 +346,23 @@ TimeBetweenRevives: 1440
 
 #Should players be able to use the revive option directly on first join?
 #If false, players will be able to use revive after TimeBetweenRevives minutes.
-ReviveOptionOnFirstJoin: false
+ReviveOnFirstJoin: false
 
 #Should reviving be disabled in any worlds?
 DisableReviveInWorlds:
 #- world
 #- world_nether
 #- world_the_end
+
+
+############################################################
+# +------------------------------------------------------+ #
+# |                         GUIs                         | #
+# +------------------------------------------------------+ #
+############################################################
+
+BorderDisplay:
+  Material: "white_stained_glass_pane"
+  Name: " "
+  Lore: " "
+  Amount: 1

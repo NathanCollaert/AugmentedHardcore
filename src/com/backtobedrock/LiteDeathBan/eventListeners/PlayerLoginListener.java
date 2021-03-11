@@ -1,18 +1,10 @@
 package com.backtobedrock.LiteDeathBan.eventListeners;
 
-import com.backtobedrock.LiteDeathBan.LiteDeathBan;
 import com.backtobedrock.LiteDeathBan.domain.Ban;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.plugin.java.JavaPlugin;
 
-public class PlayerLoginListener implements Listener {
-    private final LiteDeathBan plugin;
-
-    public PlayerLoginListener() {
-        this.plugin = JavaPlugin.getPlugin(LiteDeathBan.class);
-    }
+public class PlayerLoginListener extends AbstractEventListener {
 
     @EventHandler
     public void OnPlayerLogin(PlayerLoginEvent e) {

@@ -10,7 +10,14 @@ commands:
   litedeathban:
     aliases:
       - ldb
+  undeathban:
+    aliases:
+      - udb
+  revive:
+    aliases:
+      - rev
 permissions:
+  #BYPASSES
   litedeathban.bypass.ban:
     default: false
   litedeathban.bypass.loselives:
@@ -21,15 +28,23 @@ permissions:
     default: false
   litedeathban.bypass.gainlifeparts.playtime:
     default: false
+  #GAINS
+  litedeathban.gain.revive.death:
+    default: true
+  litedeathban.gain.revive.alive:
+    default: true
+  #COMMANDS
   litedeathban.help:
     default: op
-  litedeathban.unban:
-    default: op
   litedeathban.reload:
+    default: op
+  litedeathban.revive:
     default: op
   litedeathban.setlives:
     default: op
   litedeathban.addlives:
+    default: op
+  litedeathban.undeathban:
     default: op
   litedeathban.addlifeparts:
     default: op

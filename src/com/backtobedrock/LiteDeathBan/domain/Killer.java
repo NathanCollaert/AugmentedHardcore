@@ -6,6 +6,7 @@ import org.bukkit.entity.EntityType;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class Killer {
     private final String name;
@@ -56,15 +57,6 @@ public class Killer {
         return map;
     }
 
-    @Override
-    public String toString() {
-        return "Killer{" +
-                "name='" + name + '\'' +
-                ", displayName='" + displayName + '\'' +
-                ", type=" + type +
-                '}';
-    }
-
     public String getDeathMessage() {
         return this.getDisplayName() == null && this.type != EntityType.PLAYER
                 ? String.format("a %s", this.getName())
@@ -73,11 +65,11 @@ public class Killer {
                 : String.format("%s (%s)", this.getDisplayName(), this.getType().name().substring(0, 1).toUpperCase() + this.getType().name().substring(1).toLowerCase());
     }
 
-    public String getTagMessage() {
-        return this.getDisplayName() == null
-                ? this.name
-                : this.type == EntityType.PLAYER
-                ? this.displayName
-                : String.format("%s (%s)", this.getDisplayName(), this.getType().name().substring(0, 1).toUpperCase() + this.getType().name().substring(1).toLowerCase());
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Killer killer = (Killer) o;
+        return Objects.equals(getName(), killer.getName()) && getType() == killer.getType();
     }
 }

@@ -1,30 +1,34 @@
 package com.backtobedrock.LiteDeathBan.configs;
 
 import com.backtobedrock.LiteDeathBan.LiteDeathBan;
-import com.backtobedrock.LiteDeathBan.domain.configurationDomain.BanTimesConfiguration;
-import com.backtobedrock.LiteDeathBan.domain.configurationDomain.DataConfiguration;
-import com.backtobedrock.LiteDeathBan.domain.configurationDomain.LivesAndLifePartsConfiguration;
+import com.backtobedrock.LiteDeathBan.domain.configurationDomain.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 
-public class Configuration {
+public class Configurations {
     private final LiteDeathBan plugin;
     private final FileConfiguration config;
 
     //configurations
-    private BanTimesConfiguration banTimesConfiguration = null;
-    private LivesAndLifePartsConfiguration livesAndLifePartsConfiguration = null;
     private DataConfiguration dataConfiguration = null;
+    private LivesAndLifePartsConfiguration livesAndLifePartsConfiguration = null;
+    private BanTimesConfiguration banTimesConfiguration = null;
+    private CombatTagConfiguration combatTagConfiguration = null;
+    private ReviveConfiguration reviveConfiguration = null;
+    private GuisConfiguration guisConfiguration = null;
 
-    public Configuration(File configFile) {
+    public Configurations(File configFile) {
         this.plugin = JavaPlugin.getPlugin(LiteDeathBan.class);
         this.config = YamlConfiguration.loadConfiguration(configFile);
         this.getDataConfiguration();
-        this.getBanTimesConfiguration();
         this.getLivesAndLifePartsConfiguration();
+        this.getBanTimesConfiguration();
+        this.getCombatTagConfiguration();
+        this.getReviveConfiguration();
+        this.getGuisConfiguration();
     }
 
     public DataConfiguration getDataConfiguration() {
@@ -55,5 +59,35 @@ public class Configuration {
             }
         }
         return this.livesAndLifePartsConfiguration;
+    }
+
+    public CombatTagConfiguration getCombatTagConfiguration() {
+        if (this.combatTagConfiguration == null) {
+            this.combatTagConfiguration = CombatTagConfiguration.deserialize(this.config);
+            if (this.combatTagConfiguration == null) {
+                this.plugin.getServer().getPluginManager().disablePlugin(this.plugin);
+            }
+        }
+        return this.combatTagConfiguration;
+    }
+
+    public ReviveConfiguration getReviveConfiguration() {
+        if (this.reviveConfiguration == null) {
+            this.reviveConfiguration = ReviveConfiguration.deserialize(this.config);
+            if (this.reviveConfiguration == null) {
+                this.plugin.getServer().getPluginManager().disablePlugin(this.plugin);
+            }
+        }
+        return this.reviveConfiguration;
+    }
+
+    public GuisConfiguration getGuisConfiguration() {
+        if (this.guisConfiguration == null) {
+            this.guisConfiguration = GuisConfiguration.deserialize(this.config);
+            if (this.guisConfiguration == null) {
+                this.plugin.getServer().getPluginManager().disablePlugin(this.plugin);
+            }
+        }
+        return this.guisConfiguration;
     }
 }

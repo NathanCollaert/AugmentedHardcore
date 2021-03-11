@@ -2,7 +2,7 @@ package com.backtobedrock.LiteDeathBan.domain;
 
 import com.backtobedrock.LiteDeathBan.LiteDeathBan;
 import com.backtobedrock.LiteDeathBan.domain.configurationDomain.configurationHelperClasses.BanConfiguration;
-import com.backtobedrock.LiteDeathBan.domain.configurationDomain.configurationHelperClasses.Location;
+import com.backtobedrock.LiteDeathBan.domain.data.PlayerData;
 import com.backtobedrock.LiteDeathBan.domain.enums.DamageCause;
 import com.backtobedrock.LiteDeathBan.domain.enums.DamageCauseType;
 import com.backtobedrock.LiteDeathBan.utils.BanUtils;
@@ -44,7 +44,7 @@ public class Ban {
         this.damageCause = damageCause;
         this.killer = killer;
         this.inCombatWith = inCombatWith;
-        this.banConfiguration = this.plugin.getConfiguration().getBanTimesConfiguration().getBanTimes().get(damageCause.name());
+        this.banConfiguration = this.plugin.getConfigurations().getBanTimesConfiguration().getBanTimes().get(damageCause.name());
         this.location = location;
         this.deathMessage = deathMessage;
         this.banTime = banTime;
@@ -53,13 +53,13 @@ public class Ban {
 
     public static Ban Deserialize(ConfigurationSection section, UUID uuid) {
         LocalDateTime cExpirationDate;
-        DamageCause cDamageCause = ConfigUtils.getDamageCause(section.getString("DamageCause", "VOID"), DamageCause.VOID);
+        DamageCause cDamageCause = ConfigUtils.getDamageCause(section.getString("DamageCause", DamageCause.VOID.name()), DamageCause.VOID);
         Killer cKiller = null;
         Killer cInCombatWith = null;
         Location cLocation = new Location("world", 0, 0, 0);
         String cDeathMessage = section.getString("DeathMessage");
         int cBanTime = section.getInt("BanTime", 0);
-        DamageCauseType cDamageCauseType = ConfigUtils.getDamageCauseType(section.getString("DamageCauseType", "ENVIRONMENT"), DamageCauseType.ENVIRONMENT);
+        DamageCauseType cDamageCauseType = ConfigUtils.getDamageCauseType(section.getString("DamageCauseType", DamageCauseType.ENVIRONMENT.name()), DamageCauseType.ENVIRONMENT);
 
         String sExpirationDate = section.getString("ExpirationDate");
         //if not found, get date from server bans
@@ -110,7 +110,13 @@ public class Ban {
         String expirationDateMessage = MessageUtils.getTimeFromTicks(tickTillExpiration, false, true);
         String banMessage;
         //TODO: get messages from config
-        if (this.killer == null && this.inCombatWith == null) {
+        if (this.damageCause == DamageCause.REVIVE) {
+            banMessage = this.inCombatWith == null
+                    ? String.format("You've successfully revived %s, but at what cost?", this.killer.getDeathMessage())
+                    : String.format("You've successfully revived %s whilst trying to escape %s, but at what cost?", this.killer.getDeathMessage(), this.inCombatWith.getDeathMessage());
+        } else if (this.damageCause == DamageCause.COMBAT_LOG || this.damageCause == DamageCause.PLAYER_COMBAT_LOG) {
+            banMessage = String.format("You've died due to %s whilst trying to escape %s.", this.banConfiguration.getDisplayName(), this.inCombatWith.getDeathMessage());
+        } else if (this.killer == null && this.inCombatWith == null) {
             banMessage = String.format("You've died due to %s.", this.banConfiguration.getDisplayName());
         } else if (this.killer != null && this.inCombatWith == null) {
             banMessage = String.format("You've died to %s.", this.killer.getDeathMessage());
@@ -123,7 +129,7 @@ public class Ban {
     }
 
     public void deathBan(PlayerData data, OfflinePlayer player) {
-        BanList.Type type = data.getIp() == null ? BanList.Type.NAME : this.plugin.getConfiguration().getBanTimesConfiguration().getBanType();
+        BanList.Type type = data.getIp() == null ? BanList.Type.NAME : this.plugin.getConfigurations().getBanTimesConfiguration().getBanType();
         BanList banList = Bukkit.getBanList(type);
         //ban player
         banList.addBan(BanUtils.getBanParameter(data, player, type), "", Timestamp.valueOf(this.getExpirationDate()), "LiteDeathBan");
@@ -161,5 +167,9 @@ public class Ban {
         map.put("DamageCauseType", this.damageCauseType.name());
 
         return map;
+    }
+
+    public Killer getKiller() {
+        return killer;
     }
 }

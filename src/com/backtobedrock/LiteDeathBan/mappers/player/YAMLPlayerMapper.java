@@ -1,8 +1,8 @@
 package com.backtobedrock.LiteDeathBan.mappers.player;
 
 import com.backtobedrock.LiteDeathBan.LiteDeathBan;
-import com.backtobedrock.LiteDeathBan.domain.PlayerData;
-import com.backtobedrock.LiteDeathBan.domain.callbacks.PlayerDataCallback;
+import com.backtobedrock.LiteDeathBan.domain.callbacks.IPlayerDataCallback;
+import com.backtobedrock.LiteDeathBan.domain.data.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -35,14 +35,17 @@ public class YAMLPlayerMapper implements IPlayerMapper {
 
     @Override
     public void insertPlayerDataSync(OfflinePlayer player, PlayerData data) {
-        Bukkit.getScheduler().runTask(this.plugin, () -> {
-            this.insertPlayerData(player, data);
-        });
+        this.insertPlayerData(player, data);
     }
 
     @Override
-    public void getByPlayer(OfflinePlayer player, PlayerDataCallback callback) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> callback.onQueryDonePlayerData(PlayerData.deserialize(getConfig(player), player)));
+    public void getByPlayer(OfflinePlayer player, IPlayerDataCallback callback) {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> callback.onQueryDonePlayerData(PlayerData.deserialize(this.getConfig(player), player)));
+    }
+
+    @Override
+    public PlayerData getByPlayerSync(OfflinePlayer player) {
+        return PlayerData.deserialize(this.getConfig(player), player);
     }
 
     @Override
