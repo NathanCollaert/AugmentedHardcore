@@ -1,15 +1,15 @@
-main: com.backtobedrock.LiteDeathBan.LiteDeathBan
-name: LiteDeathBan
+main: com.backtobedrock.augmentedhardcore.AugmentedHardcore
+name: AugmentedHardcore
 version: ${project.version}
 author: Nathan
 website: www.backtobedrock.com
-prefix: LiteDeathBan
-description: A very customizable and lightweight plugin that bans players on death
+prefix: AugmentedHardcore
+description: A very customizable and lightweight plugin that enhances the hardcore aspect of Minecraft.
 api-version: 1.13
 commands:
-  litedeathban:
+  augmentedhardcore:
     aliases:
-      - ldb
+      - ah
   undeathban:
     aliases:
       - udb
@@ -18,35 +18,45 @@ commands:
       - rev
 permissions:
   #BYPASSES
-  litedeathban.bypass.ban:
+  augmentedhardcore.bypass.ban:
     default: false
-  litedeathban.bypass.loselives:
+  augmentedhardcore.bypass.loselives:
     default: false
-  litedeathban.bypass.loselifeparts:
+  augmentedhardcore.bypass.loselifeparts:
     default: false
-  litedeathban.bypass.gainlifeparts.kill:
+  augmentedhardcore.bypass.gainlifeparts.kill:
     default: false
-  litedeathban.bypass.gainlifeparts.playtime:
+  augmentedhardcore.bypass.gainlifeparts.playtime:
+    default: false
+  augmentedhardcore.bypass.losemaxhealth:
+    default: false
+  augmentedhardcore.bypass.gainmaxhealth.kill:
+    default: false
+  augmentedhardcore.bypass.gainmaxhealth.playtime:
+    default: false
+  augmentedhardcore.bypass.naturalgeneration:
+    default: false
+  augmentedhardcore.bypass.artificialregeneration:
     default: false
   #GAINS
-  litedeathban.gain.revive.death:
+  augmentedhardcore.gain.revive.death:
     default: true
-  litedeathban.gain.revive.alive:
+  augmentedhardcore.gain.revive.alive:
     default: true
   #COMMANDS
-  litedeathban.help:
+  augmentedhardcore.help:
     default: op
-  litedeathban.reload:
+  augmentedhardcore.reload:
     default: op
-  litedeathban.revive:
+  augmentedhardcore.revive:
     default: op
-  litedeathban.setlives:
+  augmentedhardcore.setlives:
     default: op
-  litedeathban.addlives:
+  augmentedhardcore.addlives:
     default: op
-  litedeathban.undeathban:
+  augmentedhardcore.undeathban:
     default: op
-  litedeathban.addlifeparts:
+  augmentedhardcore.addlifeparts:
     default: op
-  litedeathban.setlifeparts:
+  augmentedhardcore.setlifeparts:
     default: op
