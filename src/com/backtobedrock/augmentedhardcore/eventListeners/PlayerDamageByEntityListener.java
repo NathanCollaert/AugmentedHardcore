@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-public class PlayerDamageListener extends AbstractEventListener {
+public class PlayerDamageByEntityListener extends AbstractEventListener {
     @EventHandler
     public void onPlayerDamage(EntityDamageByEntityEvent event) {
         if (event.isCancelled()) {
@@ -20,7 +20,6 @@ public class PlayerDamageListener extends AbstractEventListener {
 
         Player player = (Player) event.getEntity();
 
-        //check if not dead
         if (player.getHealth() <= event.getFinalDamage()) {
             return;
         }
@@ -33,11 +32,14 @@ public class PlayerDamageListener extends AbstractEventListener {
 
         Killer tagger = EventUtils.getDamageEventKiller(event);
 
-        this.plugin.getPlayerRepository().getByPlayer(player).thenAccept(playerData -> playerData.onCombatTag(player, tagger));
+        this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(playerData -> playerData.onCombatTag(player, tagger)).handleAsync((v, t) -> {
+            t.printStackTrace();
+            return null;
+        });
     }
 
     @Override
     public boolean isEnabled() {
-        return (this.plugin.getConfigurations().getCombatTagConfiguration().isPlayerCombatTag() || this.plugin.getConfigurations().getCombatTagConfiguration().isMonsterCombatTag());
+        return this.plugin.getConfigurations().getCombatTagConfiguration().isUseCombatTag();
     }
 }

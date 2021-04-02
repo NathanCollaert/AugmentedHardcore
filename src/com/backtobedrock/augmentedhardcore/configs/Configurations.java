@@ -24,13 +24,6 @@ public class Configurations {
     public Configurations(File configFile) {
         this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
         this.config = YamlConfiguration.loadConfiguration(configFile);
-        this.getDataConfiguration();
-        this.getLivesAndLifePartsConfiguration();
-        this.getBanTimesConfiguration();
-        this.getMaxHealthConfiguration();
-        this.getCombatTagConfiguration();
-        this.getReviveConfiguration();
-        this.getGuisConfiguration();
     }
 
     public DataConfiguration getDataConfiguration() {

@@ -11,16 +11,34 @@ import java.util.Map;
 import java.util.logging.Level;
 
 public class GuisConfiguration {
-    private final Display borderDisplay;
+    private final Display fillerDisplay;
+    private final Display accentDisplay;
     private final Display nextPageDisplay;
     private final Display previousPageDisplay;
     private final Display pageInformationDisplay;
+    private final Display livesAndLifePartsDisplay;
+    private final Display maxHealthDisplay;
+    private final Display reviveDisplay;
+    private final Display lifePartDisplay;
+    private final Display previousBansDisplay;
+    private final Display banDisplay;
+    private final Display confirmationDisplay;
+    private final Display cancellationDisplay;
 
-    public GuisConfiguration(Display borderDisplay, Display nextPageDisplay, Display previousPageDisplay, Display pageInformationDisplay) {
-        this.borderDisplay = borderDisplay;
+    public GuisConfiguration(Display fillerDisplay, Display accentDisplay, Display nextPageDisplay, Display previousPageDisplay, Display pageInformationDisplay, Display livesAndLifePartsDisplay, Display maxHealthDisplay, Display reviveDisplay, Display lifePartDisplay, Display previousBansDisplay, Display banDisplay, Display confirmationDisplay, Display cancellationDisplay) {
+        this.fillerDisplay = fillerDisplay;
+        this.accentDisplay = accentDisplay;
         this.nextPageDisplay = nextPageDisplay;
         this.previousPageDisplay = previousPageDisplay;
         this.pageInformationDisplay = pageInformationDisplay;
+        this.livesAndLifePartsDisplay = livesAndLifePartsDisplay;
+        this.maxHealthDisplay = maxHealthDisplay;
+        this.reviveDisplay = reviveDisplay;
+        this.lifePartDisplay = lifePartDisplay;
+        this.previousBansDisplay = previousBansDisplay;
+        this.banDisplay = banDisplay;
+        this.confirmationDisplay = confirmationDisplay;
+        this.cancellationDisplay = cancellationDisplay;
     }
 
     public static GuisConfiguration deserialize(ConfigurationSection section) {
@@ -28,7 +46,21 @@ public class GuisConfiguration {
 
         Map<String, Display> cDisplays = new HashMap<>();
 
-        for (String e : Arrays.asList("BorderDisplay", "NextPageDisplay", "PreviousPageDisplay", "PageInformationDisplay")) {
+        for (String e : Arrays.asList(
+                "FillerDisplay",
+                "AccentDisplay",
+                "NextPageDisplay",
+                "PreviousPageDisplay",
+                "PageInformationDisplay",
+                "LivesAndLifePartsDisplay",
+                "MaxHealthDisplay",
+                "ReviveDisplay",
+                "LifePartDisplay",
+                "PreviousBansDisplay",
+                "BanDisplay",
+                "ConfirmationDisplay",
+                "CancellationDisplay"
+        )) {
             ConfigurationSection displaySection = section.getConfigurationSection(e);
             if (displaySection != null) {
                 Display display = Display.deserialize(e, displaySection);
@@ -43,15 +75,28 @@ public class GuisConfiguration {
         }
 
         return new GuisConfiguration(
-                cDisplays.get("BorderDisplay"),
+                cDisplays.get("FillerDisplay"),
+                cDisplays.get("AccentDisplay"),
                 cDisplays.get("NextPageDisplay"),
                 cDisplays.get("PreviousPageDisplay"),
-                cDisplays.get("PageInformationDisplay")
+                cDisplays.get("PageInformationDisplay"),
+                cDisplays.get("LivesAndLifePartsDisplay"),
+                cDisplays.get("MaxHealthDisplay"),
+                cDisplays.get("ReviveDisplay"),
+                cDisplays.get("LifePartDisplay"),
+                cDisplays.get("PreviousBansDisplay"),
+                cDisplays.get("BanDisplay"),
+                cDisplays.get("ConfirmationDisplay"),
+                cDisplays.get("CancellationDisplay")
         );
     }
 
-    public Display getBorderDisplay() {
-        return borderDisplay;
+    public Display getFillerDisplay() {
+        return fillerDisplay;
+    }
+
+    public Display getAccentDisplay() {
+        return accentDisplay;
     }
 
     public Display getNextPageDisplay() {
@@ -64,5 +109,37 @@ public class GuisConfiguration {
 
     public Display getPageInformationDisplay() {
         return pageInformationDisplay;
+    }
+
+    public Display getLivesAndLifePartsDisplay() {
+        return livesAndLifePartsDisplay;
+    }
+
+    public Display getMaxHealthDisplay() {
+        return maxHealthDisplay;
+    }
+
+    public Display getReviveDisplay() {
+        return reviveDisplay;
+    }
+
+    public Display getLifePartDisplay() {
+        return lifePartDisplay;
+    }
+
+    public Display getPreviousBansDisplay() {
+        return previousBansDisplay;
+    }
+
+    public Display getBanDisplay() {
+        return banDisplay;
+    }
+
+    public Display getConfirmationDisplay() {
+        return confirmationDisplay;
+    }
+
+    public Display getCancellationDisplay() {
+        return cancellationDisplay;
     }
 }

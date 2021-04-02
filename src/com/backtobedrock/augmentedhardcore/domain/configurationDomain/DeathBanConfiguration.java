@@ -38,25 +38,25 @@ public class DeathBanConfiguration {
         //configurations
         boolean cUseDeathBan = section.getBoolean("UseDeathBan", true);
         Map<String, BanConfiguration> cBanTimes = new HashMap<>();
-        BanList.Type cBanType = cUseDeathBan ? ConfigUtils.getBanType("BanType", section.getString("BanType", BanList.Type.NAME.name()), BanList.Type.NAME) : BanList.Type.NAME;
-        BanTimeType cBanTimeType = cUseDeathBan ? ConfigUtils.getBanTimeType("BanTimeType", section.getString("BanTimeType", BanTimeType.STATIC.name()), BanTimeType.STATIC) : BanTimeType.STATIC;
-        GrowthType cBanTimeByPlaytimeGrowthType = cUseDeathBan ? ConfigUtils.getGrowthType("BanTimeByPlaytimeGrowthType", section.getString("BanTimeByPlaytimeGrowthType", GrowthType.EXPONENTIAL.name()), GrowthType.EXPONENTIAL) : GrowthType.LINEAR;
+        BanList.Type cBanType = ConfigUtils.getBanType("BanType", section.getString("BanType", BanList.Type.NAME.name()), BanList.Type.NAME);
+        BanTimeType cBanTimeType = ConfigUtils.getBanTimeType("BanTimeType", section.getString("BanTimeType", BanTimeType.STATIC.name()), BanTimeType.STATIC);
+        GrowthType cBanTimeByPlaytimeGrowthType = ConfigUtils.getGrowthType("BanTimeByPlaytimeGrowthType", section.getString("BanTimeByPlaytimeGrowthType", GrowthType.EXPONENTIAL.name()), GrowthType.EXPONENTIAL);
         boolean cSelfHarmBan = section.getBoolean("SelfHarmBan", false);
         List<String> cDisableBanInWorlds = ConfigUtils.getWorlds("DisableBanInWorlds", section.getStringList("DisableBanInWorlds"));
 
         //loop over all damage causes
         ConfigurationSection banTimesConfigurations = section.getConfigurationSection("BanTimes");
         if (cUseDeathBan && banTimesConfigurations == null) {
-            plugin.getLogger().log(Level.SEVERE, "There were no ban times configured in the config.yml.");
-            return null;
+            plugin.getLogger().log(Level.WARNING, "There were no ban times configured in the config.yml.");
+        } else if (cUseDeathBan) {
+            Arrays.stream(DamageCause.values()).forEach(e -> {
+                ConfigurationSection damageCauseSection = banTimesConfigurations.getConfigurationSection(e.name());
+                BanConfiguration banConfiguration = new BanConfiguration(e, 0, Collections.emptyList());
+                if (damageCauseSection != null)
+                    banConfiguration = BanConfiguration.deserialize(e, damageCauseSection);
+                cBanTimes.put(e.name(), banConfiguration);
+            });
         }
-        Arrays.stream(DamageCause.values()).forEach(e -> {
-            ConfigurationSection damageCauseSection = banTimesConfigurations.getConfigurationSection(e.name());
-            BanConfiguration banConfiguration = new BanConfiguration(e, 0, Collections.emptyList());
-            if (cUseDeathBan && damageCauseSection != null)
-                banConfiguration = BanConfiguration.deserialize(e, damageCauseSection);
-            cBanTimes.put(e.name(), banConfiguration);
-        });
 
         return new DeathBanConfiguration(
                 cUseDeathBan,
@@ -91,5 +91,9 @@ public class DeathBanConfiguration {
 
     public boolean isSelfHarmBan() {
         return selfHarmBan;
+    }
+
+    public boolean isUseDeathBan() {
+        return useDeathBan;
     }
 }

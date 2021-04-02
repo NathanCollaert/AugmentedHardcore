@@ -46,7 +46,7 @@ public class AugmentedHardcoreCommand extends AbstractCommand {
                     return;
                 }
 
-                this.plugin.getPlayerRepository().getByPlayer(this.player).thenAccept(playerData -> {
+                this.plugin.getPlayerRepository().getByPlayer(this.player).thenAcceptAsync(playerData -> {
                     playerData.increaseLives(this.player, amount);
                     this.sendSuccessMessages(this.player,
                             String.format("§aYou've been given §6%s§a, you now have §6%s§a.", amount + (amount == 1 ? " life" : " lives"), playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives")),
@@ -62,7 +62,7 @@ public class AugmentedHardcoreCommand extends AbstractCommand {
                 if (!this.canGiveLiveOrLifeParts(this.player, amount)) {
                     return;
                 }
-                this.plugin.getPlayerRepository().getByPlayer(this.player).thenAccept(playerData -> {
+                this.plugin.getPlayerRepository().getByPlayer(this.player).thenAcceptAsync(playerData -> {
                     playerData.increaseLifeParts(this.player, amount);
                     this.sendSuccessMessages(this.player,
                             String.format("§aYou've been given §6%s§a, you now have §6%s§a and §6%s§a.", amount + (amount == 1 ? " life part" : " life parts"), playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives"), playerData.getLifeParts() + (playerData.getLifeParts() == 1 ? " life part" : " life parts")),
@@ -78,7 +78,7 @@ public class AugmentedHardcoreCommand extends AbstractCommand {
                 if (!this.canGiveLiveOrLifeParts(this.player, amount)) {
                     return;
                 }
-                this.plugin.getPlayerRepository().getByPlayer(this.player).thenAccept(playerData -> {
+                this.plugin.getPlayerRepository().getByPlayer(this.player).thenAcceptAsync(playerData -> {
                     playerData.setLives(this.player, amount);
                     this.sendSuccessMessages(this.player,
                             String.format("§aYour §6lives§a have been set to §6%d§a.", playerData.getLives()),
@@ -94,7 +94,7 @@ public class AugmentedHardcoreCommand extends AbstractCommand {
                 if (!this.canGiveLiveOrLifeParts(this.player, amount)) {
                     return;
                 }
-                this.plugin.getPlayerRepository().getByPlayer(this.player).thenAccept(playerData -> {
+                this.plugin.getPlayerRepository().getByPlayer(this.player).thenAcceptAsync(playerData -> {
                     playerData.setLifeParts(this.player, amount);
                     this.sendSuccessMessages(this.player,
                             String.format("§aYour §6life parts§a have been set to §6%d§a, giving you §6%s§a and §6%s§a.", amount, playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives"), playerData.getLifeParts() + (playerData.getLifeParts() == 1 ? " life part" : " life parts")),

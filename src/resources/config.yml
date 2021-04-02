@@ -43,7 +43,7 @@ LivesAfterBan: 1
 LivesLostPerDeath: 1
 
 #Should losing lives be disabled in any worlds?
-DisableLosingLivesInWorlds:
+DisableLosingLivesInWorlds: [ ]
 #- world
 #- world_nether
 #- world_the_end
@@ -108,13 +108,13 @@ GetLifePartByPlaytime: false
 PlaytimePerLifePart: 30
 
 #Should getting parts of a life be disabled in any worlds?
-DisableGainingLifePartsInWorlds:
+DisableGainingLifePartsInWorlds: [ ]
 #- world
 #- world_nether
 #- world_the_end
 
 #Should losing parts of a life be disabled in any worlds?
-DisableLosingLifePartsInWorlds:
+DisableLosingLifePartsInWorlds: [ ]
 #- world
 #- world_nether
 #- world_the_end
@@ -130,7 +130,6 @@ DisableLosingLifePartsInWorlds:
 UseDeathBan: true
 
 #What ban times should these death causes have when a player reaches 0 lives?
-#Removing a death cause will result in that death cause having a 0 minute ban time.
 #Bantime:         The ban time in minutes this damage cause will give the player.
 #DisplayMessages: A list of possible ban messages that can be used in the ban reason of a player.
 #                 These ban messages can use ALL placeholders available (if present in the ban cause) in the Ban section of the messages.yml config.
@@ -398,7 +397,7 @@ BanTimeByPlaytimeGrowthType: exponential
 SelfHarmBan: false
 
 #Should banning players be disabled in any worlds?
-DisableBanInWorlds:
+DisableBanInWorlds: [ ]
 #- world
 #- world_nether
 #- world_the_end
@@ -411,22 +410,18 @@ DisableBanInWorlds:
 ############################################################
 
 #Should the plugin use the max health system configured below?
-UseMaxHealth: true
-
-#How many half hearts should a player start with when first joining the server after the plugin was installed?
-#In half hearts, minimum is 1, maximum is 2048 (hearts will not display health over 1024 but are still there)
-MaxHealthAtStart: 20
+UseMaxHealth: false
 
 #What should the highest amount of half hearts be that a player is able to get?
-#In half hearts, minimum is 1, maximum is 2048 (hearts will not display health over 1024 but are still there)
+#In half hearts, minimum is 1, maximum is 2048 (Minecraft will not display health over 1024 but it's still there)
 MaxHealth: 20
 
 #What should the lowest amount of half hearts be that a player is able to get?
-#In half hearts, minimum is 1, maximum is 2048 (hearts will not display health over 1024 but are still there)
+#In half hearts, minimum is 1, maximum is 2048 (Minecraft will not display health over 1024 but it's still there)
 MinHealth: 6
 
 #How many half hearts should a player respawn with after a death ban?
-#In half hearts, minimum is 1, maximum is 2048, -1 to keep the current amount (hearts will not display health over 1024 but are still there)
+#In half hearts, minimum is 1, maximum is 2048, -1 to keep the current amount (Minecraft will not display health over 1024 but it's still there)
 MaxHealthAfterBan: 20
 
 #With how many half hearts should the max health drop per death?
@@ -454,13 +449,13 @@ GetMaxHealthByPlaytime: false
 PlaytimePerHalfHeart: 30
 
 #Should losing max health be disabled in any world?
-DisableLosingMaxHealthInWorlds:
+DisableLosingMaxHealthInWorlds: [ ]
 #- world
 #- world_nether
 #- world_the_end
 
 #Should gaining max health be disabled in any world?
-DisableGainingMaxHealthInWorlds:
+DisableGainingMaxHealthInWorlds: [ ]
 #- world
 #- world_nether
 #- world_the_end
@@ -471,11 +466,6 @@ DisableGainingMaxHealthInWorlds:
 # |                  Health Regeneration                 | #
 # +------------------------------------------------------+ #
 ############################################################
-
-#Setting this configuration to true will disable the following health regeneration:
-#- When a player regains health from regenerating due to Peaceful mode (difficulty=0)
-#- When a player regains health from regenerating due to their hunger being satisfied
-DisableNaturalRegeneration: false
 
 #Setting this configuration to true will disable the following health regeneration:
 #- When a player regains health from eating consumables
@@ -491,7 +481,7 @@ DisableArtificialRegeneration: false
 ############################################################
 
 #Should players die and be banned if they log out while in combat with another player?
-PlayerCombatTag: true
+PlayerCombatTag: false
 
 #Should players die and be banned if they log out while in combat with a monster?
 MonsterCombatTag: false
@@ -507,7 +497,7 @@ CombatTagTime: 15
 CombatTagPlayerKickDeath: false
 
 #Should combat tagging be disabled in any worlds?
-DisableCombatTagInWorlds:
+DisableCombatTagInWorlds: [ ]
 #- world
 #- world_nether
 #- world_the_end
@@ -521,7 +511,7 @@ DisableCombatTagInWorlds:
 
 #Should players be able to give a lives of their own to someone else?
 #Players who were previously banned by the plugin will be unbanned if given a life.
-UseRevive: true
+UseRevive: false
 
 #How many lives should be lost when reviving another player?
 #Minimum is 1
@@ -540,7 +530,7 @@ TimeBetweenRevives: 1440
 ReviveOnFirstJoin: false
 
 #Should reviving be disabled in any worlds?
-DisableReviveInWorlds:
+DisableReviveInWorlds: [ ]
 #- world
 #- world_nether
 #- world_the_end
@@ -554,27 +544,34 @@ DisableReviveInWorlds:
 
 #======================--- GENERAL ---======================
 
-#What should the border item for GUI's look like?
-BorderDisplay:
-  Material: "white_stained_glass_pane"
+#What should the filler item for GUI's look like?
+FillerDisplay:
+  Material: "gray_stained_glass_pane"
   Name: " "
-  Lore: " "
+  Lore: [ ]
+  Amount: 1
+
+#What should the accent item for GUI's look like?
+AccentDisplay:
+  Material: "light_blue_stained_glass_pane"
+  Name: " "
+  Lore: [ ]
   Amount: 1
 
 #What should the next button for paged GUI's look like?
 NextPageDisplay:
-  Material: "stone_button"
+  Material: "arrow"
   #Placeholders: %current_page% - %total_pages% - %next_page%
   Name: "Next Page >>"
-  Lore: " "
+  Lore: [ ]
   Amount: 1
 
 #What should the next button for paged GUI's look like?
 PreviousPageDisplay:
-  Material: "stone_button"
+  Material: "arrow"
   #Placeholders: %current_page% - %total_pages% - %previous_page%
   Name: "<< Previous Page"
-  Lore: " "
+  Lore: [ ]
   Amount: 1
 
 #What should the page information for paged GUI's look like?
@@ -582,9 +579,100 @@ PageInformationDisplay:
   Material: "paper"
   #Placeholders: %current_page% - %total_pages%
   Name: "%current_page% / %total_pages%"
-  Lore: " "
+  Lore: [ ]
+  Amount: 1
+
+
+#=======================--- INFO ---========================
+
+#What should the lives and life parts button look like?
+#Placeholders: %lives_number% - %lives% - %life_parts_number% - %life_parts%
+LivesAndLifePartsDisplay:
+  Material: "turtle_egg"
+  Name: "Lives and Life Parts info"
+  Lore:
+    - "You currently have %lives%."
+    - "You currently have %life_parts%."
+  Amount: 1
+
+#What should the max health button look like?
+#Placeholders: %max_health% - %min_health% - %current_max_health% - %time_till_next_max_health_long% - %time_till_next_max_health_short% - %time_till_next_max_health_digital%
+MaxHealthDisplay:
+  Material: "gold_nugget"
+  Name: "Max Health info"
+  Lore:
+    - "You will gain an extra half heart in %time_till_max_health_short%."
+    - "You currently have %current_max_health%."
+    - "The maximum amount of max health you can get is %max_health%."
+    - "The minimum amount of max health you can get is %min_health%."
+  Amount: 1
+
+#What should the revive button look like?
+ReviveDisplay:
+  Material: "totem_of_undying"
+  Name: "Is there someone you'd like to revive?"
+  Lore:
+    - "Click to revive someone."
+  Amount: 1
+
+#What should the life part button look like?
+#Placeholders: %max_life_parts% - %life_parts% - %time_till_next_life_part_long% - %time_till_next_life_part_short% - %time_till_next_life_part_digital%
+LifePartDisplay:
+  Material: "iron_nugget"
+  Name: "Life Parts info"
+  Lore:
+    - "You will gain an extra life part in %time_till_next_life_part_short%."
+    - "You currently have %life_parts%."
+    - "The maximum amount of life parts you can get is %max_life_parts%."
+  Amount: 1
+
+#What should the previous bans button look like?
+#Placeholders: %total_bans%
+PreviousBansDisplay:
+  Material: "skeleton_skull"
+  Name: "Previous bans (%total_bans%)"
+  Lore:
+    - "Find out what you were banned for previously!"
+  Amount: 1
+
+
+#=======================--- BANS ---========================
+
+#What should the ban buttons look like?
+#Placeholders: %ban_number% - %ban_start_date% - %ban_time_long% - %ban_time_short% - %ban_time_digital%
+# - %ban_expiration_date% - %ban_damage_cause% - %ban_damage_cause_type% - %ban_killer% - %ban_in_combat_with%
+# - %ban_location% - %ban_death_message%
+BanDisplay:
+  Material: "conduit"
+  Name: "Ban %ban_number% (%ban_start_date%)"
+  Lore:
+    - "Ban Time: %ban_time_long%."
+    - "Expiration Date: %ban_expiration_date%."
+    - "Damage Cause: %ban_damage_cause%."
+    - "Damage Cause Type: %ban_damage_cause_type%."
+    - "Killer: %ban_killer%."
+    - "In Combat With: %ban_in_combat_with%."
+    - "Location: %ban_location%."
+    - "Death Message: %ban_death_message%."
   Amount: 1
 
 
 #======================--- REVIVE ---=======================
 
+#What should the confirmation revive button look like?
+#Placeholders: %player%
+ConfirmationDisplay:
+  Material: "emerald_block"
+  Name: "Confirm revive"
+  Lore:
+    - "Click to revive %player%"
+  Amount: 1
+
+#What should the cancellation revive button look like?
+#Placeholders: %player%
+CancellationDisplay:
+  Material: "barrier"
+  Name: "Cancel revive"
+  Lore:
+    - "Click to cancel the revive."
+  Amount: 1

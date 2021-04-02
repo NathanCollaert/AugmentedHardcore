@@ -28,14 +28,14 @@
 # %medium_expiration_date% - Expiration date of servers timezone in medium format E.g: Jun 15, 2015, 9:03 CEST.
 # %long_expiration_date% - Expiration date of servers timezone in long format E.g: Saturday Jun 15, 2015 at 9:03:01 CEST.
 
-#Ban message when banned due to a death containing no killer and not in combat with someone.
+#Ban message when banned due to a death containing no killer and not in combat with something.
 EnvironmentBanMessage: "&c&lYou've Died\n\n&rYou %damage_cause_message_random% causing you to be banned.\nYou will be unbanned in &e%long_ban_time_left%&r."
 
 #Ban message when banned due to a death containing no killer but in combat with a player/monster.
 #Placeholders: %in_combat_with%
 EnvironmentWhileInCombatBanMessage: "&c&lYou've Died\n\n&rYou %damage_cause_message_random% whilst trying to escape &b%in_combat_with%&r causing you to be banned.\nYou will be unbanned in &e%long_ban_time_left%&r."
 
-#Ban message when banned due to a death containing a killer and not in combat with someone else.
+#Ban message when banned due to a death containing a killer and not in combat with something.
 #Placeholders: %killer%
 EntityBanMessage: "&c&lYou've Died\n\n&rYou %damage_cause_message_random% by &b%killer%&r causing you to be banned.\nYou will be unbanned in &e%long_ban_time_left%&r."
 
@@ -54,43 +54,6 @@ ReviveWhileInCombatBanMessage: "&c&lYou've Died\n\n&rYou have successfully reviv
 #Ban message when banned due to combat logging.
 #Placeholders: %combat_tagger%
 CombatLogBanMessage: "&c&lYou've Died\n\n&rYou have logged out while in combat with &b%combat_tagger%&r causing you to die and be banned.\nYou will be unbanned in &e%long_ban_time_left%&r."
-
-
-############################################################
-# +------------------------------------------------------+ #
-# |                        Lives                         | #
-# +------------------------------------------------------+ #
-############################################################
-
-#Send to player when player respawns.
-#Leave empty to disable.
-#%playername%/%total_lives%/%max_lives%
-OnPlayerRespawn: "You have &6&l%total_lives% out of %max_lives%&r lives left, use them wisely!"
-
-#Shown in tab menu footer per player.
-#Leave empty to disable.
-#%playername%/%total_lives%/%max_lives%/%total_parts%/%parts_needed_for_life%
-TabMenuFooter: "Lives : &6%total_lives%/%max_lives% &r| &6%total_parts%/%parts_needed_for_life% &r: Parts"
-
-#Send to player when he/she receives an extra life.
-#Leave empty to disable.
-#%playername%/%lives_received%/%total_lives%/%max_lives%/%parts_received%/%parts_needed_for_life%
-OnExtraLife: "You have received %lives_received% lives and %parts_received% parts."
-
-#Send to all players when a player receives an extra life.
-#Leave empty to disable.
-#%playername%/%lives_received%/%total_lives%/%max_lives%/%parts_received%/%parts_needed_for_life%
-OnExtraLifeBroadcast: ""
-
-#Send to player when he/she reaches the maximum amount of lives.
-#Leave empty to disable.
-#%playername%/%lives_received%/%total_lives%/%max_lives%/%parts_received%/%parts_needed_for_life%
-OnMaxLives: "You have achieved the maximum amount of lives possible!"
-
-#Send to all players when a player reaches the maximum amount of lives.
-#Leave empty to disable.
-#%playername%/%lives_received%/%total_lives%/%max_lives%/%parts_received%/%parts_needed_for_life%
-OnMaxLivesBroadcast: ""
 
 
 ############################################################
@@ -135,25 +98,3 @@ CombatTagNotifications:
       SubtitleStart: "You have been combat tagged by &c&l%combat_tagger%&r."
       TitleEnd: "Combat Tagged"
       SubtitleEnd: "Your combat tag with &c&l%combat_tagger%&r ran out."
-
-
-############################################################
-# +------------------------------------------------------+ #
-# |                      Life Parts                      | #
-# +------------------------------------------------------+ #
-############################################################
-
-#Send to player when he/she receives an extra life part.
-#Leave empty to disable.
-#%playername%/%total_parts%/%parts_received%/%parts_needed_for_life%
-OnExtraPart: "You have achieved %total_parts%/%parts_needed_for_life% parts of a life."
-
-#Send to all players when a player receives an extra life part.
-#Leave empty to disable.
-#%playername%/%total_parts%/%parts_received%/%parts_needed_for_life%
-OnExtraPartBroadcast: ""
-
-#Send to player if PartsLostUponDeath: true and player dies.
-#Leave empty to disable.
-#%playername%/%parts_needed_for_life%
-OnPartsLostCauseDeath: "You have lost all of your life parts."

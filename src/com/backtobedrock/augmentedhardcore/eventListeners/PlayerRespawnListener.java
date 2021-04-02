@@ -7,9 +7,12 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 public class PlayerRespawnListener extends AbstractEventListener {
 
     @EventHandler
-    public void OnPlayerRespawn(PlayerRespawnEvent e) {
-        Player player = e.getPlayer();
-        this.plugin.getPlayerRepository().getByPlayer(player).thenAccept(playerData -> playerData.onRespawn(player));
+    public void OnPlayerRespawn(PlayerRespawnEvent event) {
+        Player player = event.getPlayer();
+        this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(playerData -> playerData.onRespawn(player)).handleAsync((v, t) -> {
+            t.printStackTrace();
+            return null;
+        });
     }
 
     @Override

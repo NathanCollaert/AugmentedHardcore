@@ -130,7 +130,7 @@ public class EventUtils {
         try {
             return DamageCause.valueOf(finalDamageCause);
         } catch (IllegalArgumentException exception) {
-            plugin.getLogger().log(Level.SEVERE, String.format("%s was not a known damage type, please report this to the plugin author for an update.", finalDamageCause));
+            plugin.getLogger().log(Level.SEVERE, String.format("%s was not a known damage type, please report this to the plugin author for more information.", finalDamageCause));
             return null;
         }
     }

@@ -18,11 +18,14 @@ public class EntityDeathListener extends AbstractEventListener {
 
         Player player = (Player) entityDamageByEntityEvent.getDamager();
 
-        this.plugin.getPlayerRepository().getByPlayer(player).thenAccept(playerData -> playerData.onEntityKill(player, event.getEntity().getType()));
+        this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(playerData -> playerData.onEntityKill(player, event.getEntity().getType())).handleAsync((v, t) -> {
+            t.printStackTrace();
+            return null;
+        });
     }
 
     @Override
     public boolean isEnabled() {
-        return (this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().isLifePartsOnKill() || this.plugin.getConfigurations().getMaxHealthConfiguration().isUseMaxHealth());
+        return ((this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().isUseLifeParts() && this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().isLifePartsOnKill()) || (this.plugin.getConfigurations().getMaxHealthConfiguration().isUseMaxHealth() && this.plugin.getConfigurations().getMaxHealthConfiguration().isMaxHealthIncreaseOnKill()));
     }
 }

@@ -24,17 +24,19 @@ public class Ban {
     private final AugmentedHardcore plugin;
 
     //serializable
+    private final LocalDateTime startDate;
+    private final int banTime;
     private final LocalDateTime expirationDate;
     private final DamageCause damageCause;
+    private final DamageCauseType damageCauseType;
     private final Killer killer;
     private final Killer inCombatWith;
     private final Location location;
     private final String deathMessage;
-    private final int banTime;
-    private final DamageCauseType damageCauseType;
 
-    public Ban(LocalDateTime expirationDate, DamageCause damageCause, Killer killer, Killer inCombatWith, Location location, String deathMessage, int banTime, DamageCauseType damageCauseType) {
+    public Ban(LocalDateTime startDate, LocalDateTime expirationDate, DamageCause damageCause, Killer killer, Killer inCombatWith, Location location, String deathMessage, int banTime, DamageCauseType damageCauseType) {
         this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
+        this.startDate = startDate;
         this.expirationDate = expirationDate;
         this.damageCause = damageCause;
         this.killer = killer;
@@ -46,6 +48,7 @@ public class Ban {
     }
 
     public static Ban Deserialize(ConfigurationSection section, UUID uuid) {
+        LocalDateTime cStartDate = LocalDateTime.parse(section.getString("StartDate", LocalDateTime.MIN.toString()));
         LocalDateTime cExpirationDate;
         DamageCause cDamageCause = ConfigUtils.getDamageCause(section.getString("DamageCause", DamageCause.VOID.name()), DamageCause.VOID);
         Killer cKiller = null;
@@ -94,7 +97,7 @@ public class Ban {
             cInCombatWith = Killer.Deserialize(killerSection);
         }
 
-        return new Ban(cExpirationDate, cDamageCause, cKiller, cInCombatWith, cLocation, cDeathMessage, cBanTime, cDamageCauseType);
+        return new Ban(cStartDate, cExpirationDate, cDamageCause, cKiller, cInCombatWith, cLocation, cDeathMessage, cBanTime, cDamageCauseType);
     }
 
     public String getBanMessage() {
@@ -156,6 +159,7 @@ public class Ban {
         locationMap.put("z", this.location.getZ());
 
         map.put("DamageCause", this.damageCause.name());
+        map.put("StartDate", this.startDate.toString());
         map.put("ExpirationDate", this.expirationDate.toString());
         map.put("Killer", this.killer == null ? null : this.killer.serialize());
         map.put("InCombatWith", this.inCombatWith == null ? null : this.inCombatWith.serialize());
@@ -165,6 +169,30 @@ public class Ban {
         map.put("DamageCauseType", this.damageCauseType.name());
 
         return map;
+    }
+
+    public LocalDateTime getStartDate() {
+        return startDate;
+    }
+
+    public DamageCause getDamageCause() {
+        return damageCause;
+    }
+
+    public Killer getInCombatWith() {
+        return inCombatWith;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public String getDeathMessage() {
+        return deathMessage;
+    }
+
+    public DamageCauseType getDamageCauseType() {
+        return damageCauseType;
     }
 
     public Killer getKiller() {

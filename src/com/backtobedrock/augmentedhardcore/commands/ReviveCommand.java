@@ -4,10 +4,13 @@ import com.backtobedrock.augmentedhardcore.domain.data.PlayerData;
 import com.backtobedrock.augmentedhardcore.domain.data.ServerData;
 import com.backtobedrock.augmentedhardcore.domain.enums.Command;
 import com.backtobedrock.augmentedhardcore.guis.ReviveGui;
-import org.bukkit.Bukkit;
+import com.backtobedrock.augmentedhardcore.utils.PlayerUtils;
 import org.bukkit.command.CommandSender;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ReviveCommand extends AbstractCommand {
     public ReviveCommand(CommandSender cs, String[] args) {
@@ -35,11 +38,11 @@ public class ReviveCommand extends AbstractCommand {
         CompletableFuture<PlayerData> revivingFuture = this.plugin.getPlayerRepository().getByPlayer(this.player);
         CompletableFuture<ServerData> serverFuture = this.plugin.getServerRepository().getServerData();
 
-        reviverFuture.thenCompose(reviverData -> revivingFuture.thenCompose(revivingData -> serverFuture.thenAccept(serverData -> {
-            if (!reviverData.checkRevivePermissions(this.csPlayer, this.player))
-                return;
+        List<?> combined = Stream.of(reviverFuture, revivingFuture, serverFuture).map(CompletableFuture::join).collect(Collectors.toList());
 
-            Bukkit.getScheduler().runTask(plugin, () -> this.csPlayer.openInventory(new ReviveGui(this.csPlayer, reviverData, this.player, revivingData, serverData).getInventory()));
-        })));
+        if (!((PlayerData) combined.get(0)).checkRevivePermissions(this.csPlayer, this.player))
+            return;
+
+        PlayerUtils.openInventory(this.csPlayer, new ReviveGui(this.csPlayer, ((PlayerData) combined.get(0)), this.player, ((PlayerData) combined.get(1)), ((ServerData) combined.get(2))).getInventory());
     }
 }

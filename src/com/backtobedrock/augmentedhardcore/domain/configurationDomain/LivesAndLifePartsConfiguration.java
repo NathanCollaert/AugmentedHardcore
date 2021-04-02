@@ -1,13 +1,15 @@
 package com.backtobedrock.augmentedhardcore.domain.configurationDomain;
 
+import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.utils.ConfigUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
+import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 public class LivesAndLifePartsConfiguration {
     //lives
@@ -82,26 +84,30 @@ public class LivesAndLifePartsConfiguration {
     public static LivesAndLifePartsConfiguration deserialize(ConfigurationSection section) {
         //lives
         boolean cUseLives = section.getBoolean("UseLives", true);
-        int cMaxLives = cUseLives ? ConfigUtils.checkMin("MaxLives", section.getInt("MaxLives", 5), 1) : 1;
-        int cLivesAtStart = cUseLives ? ConfigUtils.checkMin("LivesAtStart", section.getInt("LivesAtStart", 1), 1) : 1;
-        int cLivesAfterBan = cUseLives ? ConfigUtils.checkMin("LivesAfterBan", section.getInt("LivesAfterBan", 1), 1) : 1;
-        int cLivesLostPerDeath = cUseLives ? ConfigUtils.checkMin("LivesLostPerDeath", section.getInt("LivesLostPerDeath", 1), 1) : 1;
-        List<String> cDisableLosingLivesInWorlds = cUseLives ? ConfigUtils.getWorlds("DisableLosingLivesInWorlds", section.getStringList("DisableLosingLivesInWorlds")) : new ArrayList<>();
+        int cMaxLives = ConfigUtils.checkMin("MaxLives", section.getInt("MaxLives", 5), 1);
+        int cLivesAtStart = ConfigUtils.checkMin("LivesAtStart", section.getInt("LivesAtStart", 1), 1);
+        int cLivesAfterBan = ConfigUtils.checkMin("LivesAfterBan", section.getInt("LivesAfterBan", 1), 1);
+        int cLivesLostPerDeath = ConfigUtils.checkMin("LivesLostPerDeath", section.getInt("LivesLostPerDeath", 1), 1);
+        List<String> cDisableLosingLivesInWorlds = ConfigUtils.getWorlds("DisableLosingLivesInWorlds", section.getStringList("DisableLosingLivesInWorlds"));
 
         //life parts
-        boolean cUseLifeParts = cUseLives && section.getBoolean("UseLifeParts", true);
-        int cMaxLifeParts = cUseLifeParts ? ConfigUtils.checkMin("MaxLifeParts", section.getInt("MaxLifeParts", 6), 0) : 0;
-        int cLifePartsPerLife = cUseLifeParts ? ConfigUtils.checkMin("LifePartsPerLife", section.getInt("LifePartsPerLife"), 1) : 0;
-        int cLifePartsAtStart = cUseLifeParts ? ConfigUtils.checkMin("LifePartsAtStart", section.getInt("LifePartsAtStart"), 0) : 0;
-        int cLifePartsAfterBan = cUseLifeParts ? ConfigUtils.checkMin("LifePartsAfterBan", section.getInt("LifePartsAfterBan"), -1) : 0;
-        int cLifePartsLostPerDeath = cUseLifeParts ? ConfigUtils.checkMin("LifePartsLostPerDeath", section.getInt("LifePartsLostPerDeath", 1), -1) : 0;
-        int cLifePartsLostPerDeathBan = cUseLifeParts ? ConfigUtils.checkMin("LifePartsLostPerDeathBan", section.getInt("LifePartsLostPerDeathBan", -1), -1) : 0;
-        boolean cLifePartsOnKill = cUseLifeParts && section.getBoolean("LifePartsOnKill");
+        boolean cUseLifeParts = section.getBoolean("UseLifeParts", true);
+        int cMaxLifeParts = ConfigUtils.checkMin("MaxLifeParts", section.getInt("MaxLifeParts", 6), 0);
+        int cLifePartsPerLife = ConfigUtils.checkMin("LifePartsPerLife", section.getInt("LifePartsPerLife"), 1);
+        int cLifePartsAtStart = ConfigUtils.checkMin("LifePartsAtStart", section.getInt("LifePartsAtStart"), 0);
+        int cLifePartsAfterBan = ConfigUtils.checkMin("LifePartsAfterBan", section.getInt("LifePartsAfterBan"), -1);
+        int cLifePartsLostPerDeath = ConfigUtils.checkMin("LifePartsLostPerDeath", section.getInt("LifePartsLostPerDeath", 1), -1);
+        int cLifePartsLostPerDeathBan = ConfigUtils.checkMin("LifePartsLostPerDeathBan", section.getInt("LifePartsLostPerDeathBan", -1), -1);
+        boolean cLifePartsOnKill = section.getBoolean("LifePartsOnKill");
         Map<EntityType, Integer> cLifePartsPerKill = new HashMap<>();
-        boolean cGetLifePartsByPlaytime = cUseLifeParts && section.getBoolean("GetLifePartByPlaytime", false);
+        boolean cGetLifePartsByPlaytime = section.getBoolean("GetLifePartByPlaytime", false);
         int cPlaytimePerLifePart = ConfigUtils.checkMin("PlaytimePerLifePart", section.getInt("PlaytimePerLifePart", 30), 1);
-        List<String> cDisableGainingLifePartsInWorlds = cUseLifeParts ? ConfigUtils.getWorlds("DisableGainingLifePartsInWorlds", section.getStringList("DisableGainingLifePartsInWorlds")) : new ArrayList<>();
-        List<String> cDisableLosingLifePartsInWorlds = cUseLifeParts ? ConfigUtils.getWorlds("DisableLosingLifePartsInWorlds", section.getStringList("DisableLosingLifePartsInWorlds")) : new ArrayList<>();
+        List<String> cDisableGainingLifePartsInWorlds = ConfigUtils.getWorlds("DisableGainingLifePartsInWorlds", section.getStringList("DisableGainingLifePartsInWorlds"));
+        List<String> cDisableLosingLifePartsInWorlds = ConfigUtils.getWorlds("DisableLosingLifePartsInWorlds", section.getStringList("DisableLosingLifePartsInWorlds"));
+
+        if (cUseLifeParts && !cUseLives) {
+            JavaPlugin.getPlugin(AugmentedHardcore.class).getLogger().log(Level.WARNING, "Life parts are enabled without having lives enabled.");
+        }
 
         //if cLifePartsLostPerDeath or cLifePartsLostPerDeathBan == -1 then set to max Integer.
         if (cLifePartsLostPerDeath == -1) {
@@ -149,7 +155,7 @@ public class LivesAndLifePartsConfiguration {
                 cLifePartsOnKill,
                 cLifePartsPerKill,
                 cGetLifePartsByPlaytime,
-                cPlaytimePerLifePart * 60,
+                cPlaytimePerLifePart * 1200,
                 cDisableGainingLifePartsInWorlds,
                 cDisableLosingLifePartsInWorlds
         );

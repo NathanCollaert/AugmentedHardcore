@@ -51,11 +51,10 @@ public abstract class AbstractCommand {
 
     protected boolean hasPlayedBefore(String playername) {
         @SuppressWarnings("deprecation") OfflinePlayer player = Bukkit.getOfflinePlayer(playername);
-        //TODO: uncomment
-//        if (!player.hasPlayedBefore()) {
-//            this.cs.sendMessage(String.format("§c%s has not played on the server before.", player.getName()));
-//            return false;
-//        }
+        if (!player.hasPlayedBefore()) {
+            this.cs.sendMessage(String.format("§c%s has not played on the server before.", player.getName()));
+            return false;
+        }
         this.player = player;
         return true;
     }

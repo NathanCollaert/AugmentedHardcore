@@ -10,45 +10,45 @@ import java.util.Map;
 
 public class MaxHealthConfiguration {
     private final boolean useMaxHealth;
-    private final double maxHealthAtStart;
     private final double maxHealth;
     private final double minHealth;
     private final double maxHealthAfterBan;
     private final double maxHealthDecreasePerDeath;
     private final boolean maxHealthIncreaseOnKill;
     private final Map<EntityType, Double> maxHealthIncreasePerKill;
+    private final boolean getMaxHealthByPlaytime;
+    private final int playtimePerHalfHeart;
     private final List<String> disableLosingMaxHealthInWorlds;
     private final List<String> disableGainingMaxHealthInWorlds;
-    private final boolean disableNaturalRegeneration;
     private final boolean disableArtificialRegeneration;
 
-    public MaxHealthConfiguration(boolean useMaxHealth, double maxHealthAtStart, double maxHealth, double minHealth, double maxHealthAfterBan, double maxHealthDecreasePerDeath, boolean maxHealthIncreaseOnKill, Map<EntityType, Double> maxHealthIncreasePerKill, List<String> disableLosingMaxHealthInWorlds, List<String> disableGainingMaxHealthInWorlds, boolean disableNaturalRegeneration, boolean disableArtificialRegeneration) {
+    public MaxHealthConfiguration(boolean useMaxHealth, double maxHealth, double minHealth, double maxHealthAfterBan, double maxHealthDecreasePerDeath, boolean maxHealthIncreaseOnKill, Map<EntityType, Double> maxHealthIncreasePerKill, boolean getMaxHealthByPlaytime, int playtimePerHalfHeart, List<String> disableLosingMaxHealthInWorlds, List<String> disableGainingMaxHealthInWorlds, boolean disableArtificialRegeneration) {
         this.useMaxHealth = useMaxHealth;
-        this.maxHealthAtStart = maxHealthAtStart;
         this.maxHealth = maxHealth;
         this.minHealth = minHealth;
         this.maxHealthAfterBan = maxHealthAfterBan;
         this.maxHealthDecreasePerDeath = maxHealthDecreasePerDeath;
         this.maxHealthIncreaseOnKill = maxHealthIncreaseOnKill;
         this.maxHealthIncreasePerKill = maxHealthIncreasePerKill;
+        this.getMaxHealthByPlaytime = getMaxHealthByPlaytime;
+        this.playtimePerHalfHeart = playtimePerHalfHeart;
         this.disableLosingMaxHealthInWorlds = disableLosingMaxHealthInWorlds;
         this.disableGainingMaxHealthInWorlds = disableGainingMaxHealthInWorlds;
-        this.disableNaturalRegeneration = disableNaturalRegeneration;
         this.disableArtificialRegeneration = disableArtificialRegeneration;
     }
 
     public static MaxHealthConfiguration deserialize(ConfigurationSection section) {
         boolean cUseMaxHealth = section.getBoolean("UseMaxHealth", true);
-        double cMaxHealthAtStart = cUseMaxHealth ? ConfigUtils.checkMinMax("MaxHealthAtStart", section.getDouble("MaxHealthAtStart", 20), 1, 2048) : 20;
-        double cMaxHealth = cUseMaxHealth ? ConfigUtils.checkMinMax("MaxHealth", section.getDouble("MaxHealth", 20), 1, 2048) : 20;
-        double cMinHealth = cUseMaxHealth ? ConfigUtils.checkMinMax("MinHealth", section.getDouble("MinHealth", 6), 1, 2048) : 20;
-        double cMaxHealthAfterBan = cUseMaxHealth ? section.getDouble("MaxHealthAfterBan", 20) == -1 ? -1 : ConfigUtils.checkMinMax("MaxHealthAfterBan", section.getDouble("MaxHealthAfterBan", 20), -1, 2048) : 20;
-        double cMaxHealthDecreasePerDeath = cUseMaxHealth ? ConfigUtils.checkMinMax("MaxHealthDecreasePerDeath", section.getDouble("MaxHealthDecreasePerDeath", 2), 1, 2048) : 0;
+        double cMaxHealth = ConfigUtils.checkMinMax("MaxHealth", section.getDouble("MaxHealth", 20), 1, 2048);
+        double cMinHealth = ConfigUtils.checkMinMax("MinHealth", section.getDouble("MinHealth", 6), 1, 2048);
+        double cMaxHealthAfterBan = section.getDouble("MaxHealthAfterBan", 20) == -1 ? -1 : ConfigUtils.checkMinMax("MaxHealthAfterBan", section.getDouble("MaxHealthAfterBan", 20), -1, 2048);
+        double cMaxHealthDecreasePerDeath = ConfigUtils.checkMinMax("MaxHealthDecreasePerDeath", section.getDouble("MaxHealthDecreasePerDeath", 2), 1, 2048);
         boolean cMaxHealthIncreaseOnKill = section.getBoolean("MaxHealthIncreaseOnKill", true);
         Map<EntityType, Double> cMaxHealthIncreasePerKill = new HashMap<>();
+        boolean cGetMaxHealthByPlaytime = section.getBoolean("GetMaxHealthByPlaytime", false);
+        int cPlaytimePerHalfHeart = ConfigUtils.checkMin("PlaytimePerHalfHeart", section.getInt("PlaytimePerHalfHeart", 30), 1);
         List<String> cDisableLosingMaxHealthInWorlds = ConfigUtils.getWorlds("DisableLosingMaxHealthInWorlds", section.getStringList("DisableLosingMaxHealthInWorlds"));
         List<String> cDisableGainingMaxHealthInWorlds = ConfigUtils.getWorlds("DisableGainingMaxHealthInWorlds", section.getStringList("DisableGainingMaxHealthInWorlds"));
-        boolean cDisableNaturalRegeneration = section.getBoolean("DisableNaturalRegeneration", false);
         boolean cDisableArtificialRegeneration = section.getBoolean("DisableArtificialRegeneration", false);
 
         //cMaxHealthIncreasePerKill
@@ -64,27 +64,23 @@ public class MaxHealthConfiguration {
             });
         }
 
-        if (cMaxHealthAtStart == -10 || cMaxHealth == -10 || cMinHealth == -10 || cMaxHealthAfterBan == -10 || cMaxHealthDecreasePerDeath == -10)
+        if (cMaxHealth == -10 || cMinHealth == -10 || cMaxHealthAfterBan == -10 || cMaxHealthDecreasePerDeath == -10)
             return null;
 
         return new MaxHealthConfiguration(
                 cUseMaxHealth,
-                cMaxHealthAtStart,
                 cMaxHealth,
                 cMinHealth,
                 cMaxHealthAfterBan,
                 cMaxHealthDecreasePerDeath,
                 cMaxHealthIncreaseOnKill,
                 cMaxHealthIncreasePerKill,
+                cGetMaxHealthByPlaytime,
+                cPlaytimePerHalfHeart * 1200,
                 cDisableLosingMaxHealthInWorlds,
                 cDisableGainingMaxHealthInWorlds,
-                cDisableNaturalRegeneration,
                 cDisableArtificialRegeneration
         );
-    }
-
-    public boolean isDisableNaturalRegeneration() {
-        return disableNaturalRegeneration;
     }
 
     public boolean isDisableArtificialRegeneration() {
@@ -93,10 +89,6 @@ public class MaxHealthConfiguration {
 
     public boolean isUseMaxHealth() {
         return useMaxHealth;
-    }
-
-    public double getMaxHealthAtStart() {
-        return maxHealthAtStart;
     }
 
     public double getMaxHealth() {
@@ -129,5 +121,13 @@ public class MaxHealthConfiguration {
 
     public List<String> getDisableGainingMaxHealthInWorlds() {
         return disableGainingMaxHealthInWorlds;
+    }
+
+    public boolean isGetMaxHealthByPlaytime() {
+        return getMaxHealthByPlaytime;
+    }
+
+    public int getPlaytimePerHalfHeart() {
+        return playtimePerHalfHeart;
     }
 }

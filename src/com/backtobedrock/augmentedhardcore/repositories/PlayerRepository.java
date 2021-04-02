@@ -2,9 +2,7 @@ package com.backtobedrock.augmentedhardcore.repositories;
 
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.data.PlayerData;
-import com.backtobedrock.augmentedhardcore.domain.enums.StorageType;
 import com.backtobedrock.augmentedhardcore.mappers.player.IPlayerMapper;
-import com.backtobedrock.augmentedhardcore.mappers.player.MySQLPlayerMapper;
 import com.backtobedrock.augmentedhardcore.mappers.player.YAMLPlayerMapper;
 import com.backtobedrock.augmentedhardcore.runnables.ClearCache;
 import org.bukkit.Bukkit;
@@ -31,15 +29,16 @@ public class PlayerRepository {
 
     public void onReload() {
         this.initializeMapper();
-        this.playerCache.forEach((key, value) -> value.onReload(Bukkit.getPlayer(key)));
+        this.playerCache.forEach((key, value) -> value.onReload(Bukkit.getOfflinePlayer(key)));
     }
 
     private void initializeMapper() {
-        if (this.plugin.getConfigurations().getDataConfiguration().getStorageType() == StorageType.MYSQL) {
-            this.mapper = new MySQLPlayerMapper();
-        } else {
-            this.mapper = new YAMLPlayerMapper();
-        }
+        this.mapper = new YAMLPlayerMapper();
+//        if (this.plugin.getConfigurations().getDataConfiguration().getStorageType() == StorageType.MYSQL) {
+//            this.mapper = new MySQLPlayerMapper();
+//        } else {
+//            this.mapper = new YAMLPlayerMapper();
+//        }
     }
 
     public void insertPlayerDataAsync(OfflinePlayer player, PlayerData data) {
@@ -48,9 +47,17 @@ public class PlayerRepository {
 
     public CompletableFuture<PlayerData> getByPlayer(OfflinePlayer player) {
         if (!this.playerCache.containsKey(player.getUniqueId())) {
-            return this.mapper.getByPlayer(player).thenApply(playerData -> this.getFromDataAndCache(player, playerData));
+            return this.mapper.getByPlayer(player).thenApplyAsync(playerData -> this.getFromDataAndCache(player, playerData));
         } else {
-            return CompletableFuture.supplyAsync(() -> player).thenApply(this::getFromCache);
+            return CompletableFuture.supplyAsync(() -> player).thenApplyAsync(this::getFromCache);
+        }
+    }
+
+    public PlayerData getByPlayerSync(OfflinePlayer player) {
+        if (!this.playerCache.containsKey(player.getUniqueId())) {
+            return this.getFromDataAndCache(player, this.mapper.getByPlayerSync(player));
+        } else {
+            return this.getFromCache(player);
         }
     }
 
@@ -62,8 +69,9 @@ public class PlayerRepository {
         }
         this.playerCache.put(player.getUniqueId(), playerData);
 
-        if (!player.isOnline())
+        if (!player.isOnline()) {
             new ClearCache(player).runTaskLater(this.plugin, 6000);
+        }
 
         return this.getFromCache(player);
     }

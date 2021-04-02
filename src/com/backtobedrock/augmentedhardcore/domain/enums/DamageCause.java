@@ -219,4 +219,9 @@ public enum DamageCause {
     public int getDefaultBantime() {
         return defaultBantime;
     }
+
+    @Override
+    public String toString() {
+        return this.name().toLowerCase().replaceAll("_", " ");
+    }
 }

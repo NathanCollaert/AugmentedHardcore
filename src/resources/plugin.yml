@@ -6,6 +6,7 @@ website: www.backtobedrock.com
 prefix: AugmentedHardcore
 description: A very customizable and lightweight plugin that enhances the hardcore aspect of Minecraft.
 api-version: 1.13
+softdepend: [ PlaceholderAPI ]
 commands:
   augmentedhardcore:
     aliases:
@@ -33,8 +34,6 @@ permissions:
   augmentedhardcore.bypass.gainmaxhealth.kill:
     default: false
   augmentedhardcore.bypass.gainmaxhealth.playtime:
-    default: false
-  augmentedhardcore.bypass.naturalgeneration:
     default: false
   augmentedhardcore.bypass.artificialregeneration:
     default: false

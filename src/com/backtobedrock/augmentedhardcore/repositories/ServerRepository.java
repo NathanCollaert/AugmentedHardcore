@@ -2,9 +2,7 @@ package com.backtobedrock.augmentedhardcore.repositories;
 
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.data.ServerData;
-import com.backtobedrock.augmentedhardcore.domain.enums.StorageType;
 import com.backtobedrock.augmentedhardcore.mappers.server.IServerMapper;
-import com.backtobedrock.augmentedhardcore.mappers.server.MySQLServerMapper;
 import com.backtobedrock.augmentedhardcore.mappers.server.YAMLServerMapper;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -28,11 +26,12 @@ public class ServerRepository {
     }
 
     private void initializeMapper() {
-        if (this.plugin.getConfigurations().getDataConfiguration().getStorageType() == StorageType.MYSQL) {
-            this.mapper = new MySQLServerMapper();
-        } else {
-            this.mapper = new YAMLServerMapper();
-        }
+        this.mapper = new YAMLServerMapper();
+//        if (this.plugin.getConfigurations().getDataConfiguration().getStorageType() == StorageType.MYSQL) {
+//            this.mapper = new MySQLServerMapper();
+//        } else {
+//            this.mapper = new YAMLServerMapper();
+//        }
     }
 
     public CompletableFuture<ServerData> getServerData() {

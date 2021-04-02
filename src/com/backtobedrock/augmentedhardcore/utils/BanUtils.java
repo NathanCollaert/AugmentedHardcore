@@ -33,7 +33,7 @@ public class BanUtils {
         CompletableFuture<PlayerData> playerFuture = plugin.getPlayerRepository().getByPlayer(player);
         CompletableFuture<ServerData> serverFuture = plugin.getServerRepository().getServerData();
 
-        serverFuture.thenAcceptBoth(playerFuture, (serverData, playerData) -> {
+        serverFuture.thenAcceptBothAsync(playerFuture, (serverData, playerData) -> {
             if (!serverData.isDeathBanned(player)) {
                 return;
             }
@@ -52,7 +52,8 @@ public class BanUtils {
 
     public static Ban getBan(Player player, PlayerData playerData, DamageCause damageCause, Killer killer, Killer inCombatWith, String deathMessage, DamageCauseType type) {
         DeathBanConfiguration config = JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getBanTimesConfiguration();
-        int banTime = config.getBanTimeType().getBantime(player, playerData, config.getBanTimes().get(damageCause.name()).getBanTime());
-        return new Ban(LocalDateTime.now().plusMinutes(banTime), damageCause, killer, inCombatWith, new Location(player.getLocation().getWorld().getName(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ()), deathMessage, banTime, type);
+        int rawBanTime = config.getBanTimes().get(damageCause.name()) == null ? 0 : config.getBanTimes().get(damageCause.name()).getBanTime();
+        int banTime = config.getBanTimeType().getBantime(player, playerData, rawBanTime);
+        return new Ban(LocalDateTime.now(), LocalDateTime.now().plusMinutes(banTime), damageCause, killer, inCombatWith, new Location(player.getLocation().getWorld().getName(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ()), deathMessage, banTime, type);
     }
 }

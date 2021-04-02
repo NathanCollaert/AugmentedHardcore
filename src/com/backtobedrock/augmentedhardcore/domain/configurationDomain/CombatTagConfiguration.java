@@ -13,12 +13,14 @@ public class CombatTagConfiguration {
     private final boolean combatTagPlayerKickDeath;
     private final List<String> disableCombatTagInWorlds;
 
-    public CombatTagConfiguration(boolean playerCombatTag,
-                                  boolean monsterCombatTag,
-                                  boolean combatTagSelf,
-                                  int combatTagTime,
-                                  boolean combatTagPlayerKickDeath,
-                                  List<String> disableCombatTagInWorlds) {
+    public CombatTagConfiguration(
+            boolean playerCombatTag,
+            boolean monsterCombatTag,
+            boolean combatTagSelf,
+            int combatTagTime,
+            boolean combatTagPlayerKickDeath,
+            List<String> disableCombatTagInWorlds
+    ) {
         this.playerCombatTag = playerCombatTag;
         this.monsterCombatTag = monsterCombatTag;
         this.combatTagSelf = combatTagSelf;
@@ -39,7 +41,8 @@ public class CombatTagConfiguration {
             return null;
         }
 
-        return new CombatTagConfiguration(cPlayerCombatTag,
+        return new CombatTagConfiguration(
+                cPlayerCombatTag,
                 cMonsterCombatTag,
                 cCombatTagSelf,
                 cCombatTagTime,
@@ -58,6 +61,10 @@ public class CombatTagConfiguration {
 
     public boolean isCombatTagSelf() {
         return combatTagSelf;
+    }
+
+    public boolean isUseCombatTag() {
+        return (this.isPlayerCombatTag() || this.isMonsterCombatTag());
     }
 
     public int getCombatTagTime() {

@@ -18,6 +18,12 @@ public class YAMLPlayerMapper implements IPlayerMapper {
 
     public YAMLPlayerMapper() {
         this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
+
+        //create userdata folder if none existent
+        File udFile = new File(this.plugin.getDataFolder() + "/userdata");
+        if (udFile.mkdirs()) {
+            this.plugin.getLogger().log(Level.INFO, "Creating {0}.", udFile.getAbsolutePath());
+        }
     }
 
     private void insertPlayerData(OfflinePlayer player, PlayerData data) {

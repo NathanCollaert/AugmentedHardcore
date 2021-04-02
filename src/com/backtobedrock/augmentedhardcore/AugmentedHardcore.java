@@ -8,6 +8,9 @@ import com.backtobedrock.augmentedhardcore.eventListeners.*;
 import com.backtobedrock.augmentedhardcore.repositories.PlayerRepository;
 import com.backtobedrock.augmentedhardcore.repositories.ServerRepository;
 import com.backtobedrock.augmentedhardcore.utils.Metrics;
+import com.backtobedrock.augmentedhardcore.utils.PlaceholderUtils;
+import com.backtobedrock.augmentedhardcore.utils.UpdateUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.HandlerList;
@@ -15,6 +18,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +43,12 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
         this.initialize();
 
         //bstats metrics
-        Metrics metrics = new Metrics(this, 5655);
+        Metrics metrics = new Metrics(this, 10843);
+
+        //PAPI
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new PlaceholderUtils().register();
+        }
 
         super.onEnable();
     }
@@ -47,9 +57,12 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
     public void onDisable() {
         this.stopping = true;
 
-        ServerData serverData = this.getServerRepository().getServerDataSync();
-        if (serverData != null)
-            this.getServerRepository().updateServerData(serverData);
+        if (this.getServerRepository() != null) {
+            ServerData serverData = this.getServerRepository().getServerDataSync();
+            if (serverData != null) {
+                this.getServerRepository().updateServerData(serverData);
+            }
+        }
 
         super.onDisable();
     }
@@ -60,12 +73,6 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
     }
 
     public void initialize() {
-        //create userdata folder if none existent
-        File udFile = new File(this.getDataFolder() + "/userdata");
-        if (udFile.mkdirs()) {
-            this.getLogger().log(Level.INFO, "Creating {0}.", udFile.getAbsolutePath());
-        }
-
         //get config.yml and make if none existent
         File configFile = new File(this.getDataFolder(), "config.yml");
         if (!configFile.exists()) {
@@ -81,6 +88,19 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
         }
 
         //initialize configurations
+        if (this.configurations == null) {
+            try {
+                File copy = new File(this.getDataFolder(), "config.old.yml");
+                if (copy.exists()) {
+                    copy.delete();
+                }
+                Files.copy(configFile.toPath(), copy.toPath());
+                UpdateUtils.update(this, "config.yml", configFile, Arrays.asList("LifePartsPerKill", "MaxHealthIncreasePerKill"));
+                configFile = new File(this.getDataFolder(), "config.yml");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         this.configurations = new Configurations(configFile);
         this.messages = new Messages(messagesFile);
         //initialize commands
@@ -99,21 +119,31 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
     }
 
     private void registerListeners() {
-        Arrays.asList(new InventoryClickListener(), new EntityDeathListener(), new PlayerDamageListener(), new PlayerDeathListener(), new PlayerJoinListener(), new PlayerKickListener(), new PlayerLoginListener(), new PlayerQuitListener(), new PlayerRegainHealthListener(), new PlayerRespawnListener())
-                .forEach(e ->
-                        {
-                            if (this.activeEventListeners.containsKey(e.getClass())) {
-                                AbstractEventListener listener = this.activeEventListeners.get(e.getClass());
-                                if (!listener.isEnabled()) {
-                                    HandlerList.unregisterAll(listener);
-                                    this.activeEventListeners.remove(listener.getClass());
-                                }
-                            } else if (e.isEnabled()) {
-                                getServer().getPluginManager().registerEvents(e, this);
-                                this.activeEventListeners.put(e.getClass(), e);
-                            }
+        Arrays.asList(
+                new InventoryClickListener(),
+                new EntityDeathListener(),
+                new PlayerDamageByEntityListener(),
+                new PlayerDeathListener(),
+                new PlayerJoinListener(),
+                new PlayerKickListener(),
+                new PlayerLoginListener(),
+                new PlayerQuitListener(),
+                new PlayerRegainHealthListener(),
+                new PlayerRespawnListener()
+        ).forEach(e ->
+                {
+                    if (this.activeEventListeners.containsKey(e.getClass())) {
+                        AbstractEventListener listener = this.activeEventListeners.get(e.getClass());
+                        if (!listener.isEnabled()) {
+                            HandlerList.unregisterAll(listener);
+                            this.activeEventListeners.remove(listener.getClass());
                         }
-                );
+                    } else if (e.isEnabled()) {
+                        getServer().getPluginManager().registerEvents(e, this);
+                        this.activeEventListeners.put(e.getClass(), e);
+                    }
+                }
+        );
     }
 
     public Configurations getConfigurations() {

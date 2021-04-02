@@ -1,17 +1,20 @@
 package com.backtobedrock.augmentedhardcore.domain.enums;
 
+import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public enum Command {
     AUGMENTEDHARDCORE(null, null, null, null, null),
-    HELP(Permission.HELP, AUGMENTEDHARDCORE, Collections.emptyList(), Collections.emptyList(), "List of LiteDeathBan commands"),
+    HELP(Permission.HELP, AUGMENTEDHARDCORE, Collections.emptyList(), Collections.emptyList(), "List of " + JavaPlugin.getPlugin(AugmentedHardcore.class).getDescription().getName() + " commands"),
     ADDLIVES(Permission.ADDLIVES, AUGMENTEDHARDCORE, Arrays.asList("player", "amount"), Collections.emptyList(), "Add lives to a player"),
     ADDLIFEPARTS(Permission.ADDLIFEPARTS, AUGMENTEDHARDCORE, Arrays.asList("player", "amount"), Collections.emptyList(), "Add life parts to a player"),
     SETLIVES(Permission.SETLIVES, AUGMENTEDHARDCORE, Arrays.asList("player", "amount"), Collections.emptyList(), "Set the lives of a player"),
     SETLIFEPARTS(Permission.SETLIFEPARTS, AUGMENTEDHARDCORE, Arrays.asList("player", "amount"), Collections.emptyList(), "Set the life parts of a player"),
-    RELOAD(Permission.RELOAD, AUGMENTEDHARDCORE, Collections.emptyList(), Collections.emptyList(), "Reload LiteDeathBan"),
+    RELOAD(Permission.RELOAD, AUGMENTEDHARDCORE, Collections.emptyList(), Collections.emptyList(), "Reload " + JavaPlugin.getPlugin(AugmentedHardcore.class).getDescription().getName()),
     UNDEATHBAN(Permission.UNDEATHBAN, null, Collections.singletonList("player"), Collections.emptyList(), "Unban a player that was death banned"),
     REVIVE(Permission.REVIVE, null, Collections.singletonList("player"), Collections.emptyList(), "Give a life of yours to someone else");
 

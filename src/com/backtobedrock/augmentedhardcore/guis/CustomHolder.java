@@ -14,7 +14,7 @@ public class CustomHolder implements InventoryHolder {
 
     private final int size;
     private final int rowAmount;
-    private String title;
+    private final String title;
     private Inventory inventory = null;
 
     public CustomHolder(int size, boolean hasBorder, String title) {

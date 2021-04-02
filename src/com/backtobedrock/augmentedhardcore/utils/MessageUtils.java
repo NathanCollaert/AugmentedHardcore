@@ -3,6 +3,11 @@ package com.backtobedrock.augmentedhardcore.utils;
 import java.util.concurrent.TimeUnit;
 
 public class MessageUtils {
+
+    public static int timeUnitToTicks(int time, TimeUnit unit) {
+        return (int) unit.toSeconds(time) * 20;
+    }
+
     public static String getTimeFromTicks(int amount, boolean digital, boolean longVersion) {
         int timeInTicks = amount;
         StringBuilder sb = new StringBuilder();

@@ -29,9 +29,10 @@ public class UnDeathBanCommand extends AbstractCommand {
         CompletableFuture<PlayerData> playerFuture = this.plugin.getPlayerRepository().getByPlayer(this.player);
         CompletableFuture<ServerData> serverFuture = this.plugin.getServerRepository().getServerData();
 
-        playerFuture.thenAcceptBoth(serverFuture, (playerData, serverData) -> {
-            if (playerData.unDeathBan(this.cs, serverData, this.player, false))
+        playerFuture.thenAcceptBothAsync(serverFuture, (playerData, serverData) -> {
+            if (playerData.unDeathBan(this.cs, serverData, this.player, false)) {
                 this.cs.sendMessage(String.format("§a%s has successfully been unbanned from a death ban.", this.player.getName()));
+            }
         });
     }
 }

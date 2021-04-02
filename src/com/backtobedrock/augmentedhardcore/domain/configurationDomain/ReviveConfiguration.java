@@ -1,10 +1,12 @@
 package com.backtobedrock.augmentedhardcore.domain.configurationDomain;
 
+import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.utils.ConfigUtils;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 public class ReviveConfiguration {
     private final boolean useRevive;
@@ -25,11 +27,16 @@ public class ReviveConfiguration {
 
     public static ReviveConfiguration deserialize(ConfigurationSection section) {
         boolean cUseRevive = section.getBoolean("UseRevive", true);
-        int cLivesLostOnReviving = cUseRevive ? ConfigUtils.checkMin("LivesLostOnReviving", section.getInt("LivesLostOnReviving", 1), 1) : 0;
-        int cLivesGainedOnRevive = cUseRevive ? ConfigUtils.checkMin("LivesGainedOnRevive", section.getInt("LivesGainedOnRevive", 1), 1) : 0;
-        int cTimeBetweenRevives = cUseRevive ? ConfigUtils.checkMin("TimeBetweenRevives", section.getInt("TimeBetweenRevives", 1440), 0) : 0;
+        int cLivesLostOnReviving = ConfigUtils.checkMin("LivesLostOnReviving", section.getInt("LivesLostOnReviving", 1), 1);
+        int cLivesGainedOnRevive = ConfigUtils.checkMin("LivesGainedOnRevive", section.getInt("LivesGainedOnRevive", 1), 1);
+        int cTimeBetweenRevives = ConfigUtils.checkMin("TimeBetweenRevives", section.getInt("TimeBetweenRevives", 1440), 0);
         boolean cReviveOnFirstJoin = section.getBoolean("ReviveOnFirstJoin", false);
-        List<String> cDisableReviveInWorlds = cUseRevive ? ConfigUtils.getWorlds("DisableReviveInWorlds", section.getStringList("DisableReviveInWorlds")) : new ArrayList<>();
+        List<String> cDisableReviveInWorlds = ConfigUtils.getWorlds("DisableReviveInWorlds", section.getStringList("DisableReviveInWorlds"));
+
+        if (cUseRevive && !JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().isUseLives()) {
+            JavaPlugin.getPlugin(AugmentedHardcore.class).getLogger().log(Level.SEVERE, "Reviving cannot be enabled without enabling lives.");
+            cUseRevive = false;
+        }
 
         if (cTimeBetweenRevives == -10 || cLivesLostOnReviving == -10 || cLivesGainedOnRevive == -10) {
             return null;
