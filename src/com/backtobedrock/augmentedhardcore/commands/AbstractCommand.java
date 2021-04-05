@@ -2,6 +2,7 @@ package com.backtobedrock.augmentedhardcore.commands;
 
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.enums.Command;
+import com.backtobedrock.augmentedhardcore.domain.enums.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -26,7 +27,11 @@ public abstract class AbstractCommand {
     public abstract void run();
 
     protected boolean hasPermission(Command command) {
-        boolean hasPermission = this.cs.hasPermission(command.getPermission().getPermissionString());
+        return this.hasPermission(command.getPermission());
+    }
+
+    protected boolean hasPermission(Permission permission) {
+        boolean hasPermission = this.cs.hasPermission(permission.getPermissionString());
         if (!hasPermission) {
             this.cs.sendMessage("§cYou have no permission to use this command.");
         }

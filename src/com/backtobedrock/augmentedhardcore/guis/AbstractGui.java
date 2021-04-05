@@ -34,6 +34,17 @@ public abstract class AbstractGui {
         }
     }
 
+    protected void setAccentColor(List<Integer> positions) {
+        positions.forEach(e -> this.customHolder.setIcon(e, new Icon(this.plugin.getConfigurations().getGuisConfiguration().getAccentDisplay().getItem(), Collections.emptyList())));
+    }
+
+    protected void setIcon(int position, Icon icon, boolean update) {
+        this.customHolder.setIcon(position, icon);
+        if (update) {
+            this.customHolder.updateIcon(position);
+        }
+    }
+
     protected abstract void setData();
 
     public Inventory getInventory() {

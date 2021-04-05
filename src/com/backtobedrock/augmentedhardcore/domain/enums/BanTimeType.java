@@ -13,7 +13,7 @@ public enum BanTimeType {
     TIMESINCELASTDEATH;
 
     public int getBantime(Player player, PlayerData playerData, int max) {
-        GrowthType growthType = JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getBanTimesConfiguration().getBanTimeByPlaytimeGrowthType();
+        GrowthType growthType = JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getDeathBanConfiguration().getBanTimeByPlaytimeGrowthType();
         switch (this) {
             case STATIC:
                 return max;

@@ -38,7 +38,7 @@ public class BanUtils {
                 return;
             }
 
-            BanList.Type type = playerData.getIp() == null ? BanList.Type.NAME : plugin.getConfigurations().getBanTimesConfiguration().getBanType();
+            BanList.Type type = playerData.getIp() == null ? BanList.Type.NAME : plugin.getConfigurations().getDeathBanConfiguration().getBanType();
             BanList banList = Bukkit.getBanList(type);
             String banParameter = getBanParameter(playerData, player, type);
             if (!banList.isBanned(banParameter)) {
@@ -51,7 +51,7 @@ public class BanUtils {
     }
 
     public static Ban getBan(Player player, PlayerData playerData, DamageCause damageCause, Killer killer, Killer inCombatWith, String deathMessage, DamageCauseType type) {
-        DeathBanConfiguration config = JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getBanTimesConfiguration();
+        DeathBanConfiguration config = JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getDeathBanConfiguration();
         int rawBanTime = config.getBanTimes().get(damageCause.name()) == null ? 0 : config.getBanTimes().get(damageCause.name()).getBanTime();
         int banTime = config.getBanTimeType().getBantime(player, playerData, rawBanTime);
         return new Ban(LocalDateTime.now(), LocalDateTime.now().plusMinutes(banTime), damageCause, killer, inCombatWith, new Location(player.getLocation().getWorld().getName(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ()), deathMessage, banTime, type);

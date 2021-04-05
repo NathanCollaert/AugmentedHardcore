@@ -1,7 +1,11 @@
 package com.backtobedrock.augmentedhardcore.commands;
 
 import com.backtobedrock.augmentedhardcore.domain.enums.Command;
+import com.backtobedrock.augmentedhardcore.domain.enums.Permission;
+import com.backtobedrock.augmentedhardcore.guis.AbstractGui;
+import com.backtobedrock.augmentedhardcore.guis.PlayerInfoGui;
 import com.backtobedrock.augmentedhardcore.utils.CommandUtils;
+import com.backtobedrock.augmentedhardcore.utils.PlayerUtils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -106,6 +110,35 @@ public class AugmentedHardcoreCommand extends AbstractCommand {
                 this.plugin.initialize();
                 this.cs.sendMessage("§aAugmentedHardcore has successfully been reloaded.");
                 break;
+            case MYSTATS:
+                if (this.args.length > 1) {
+                    if (!this.isPlayer()) {
+                        return;
+                    }
+
+                    if (!this.hasPermission(Permission.MYSTATS_OTHER)) {
+                        return;
+                    }
+
+                    if (!this.hasPlayedBefore(this.args[2])) {
+                        return;
+                    }
+
+                    this.plugin.getPlayerRepository().getByPlayer(this.player).thenAcceptAsync(playerData -> {
+                        AbstractGui gui = new PlayerInfoGui(this.player, playerData);
+                        PlayerUtils.openInventory(this.csPlayer, gui.getInventory());
+                    });
+                } else {
+                    if (!this.isPlayer()) {
+                        return;
+                    }
+
+                    this.plugin.getPlayerRepository().getByPlayer(this.csPlayer).thenAcceptAsync(playerData -> {
+                        AbstractGui gui = new PlayerInfoGui(this.csPlayer, playerData);
+                        PlayerUtils.openInventory(this.csPlayer, gui.getInventory());
+                    });
+                }
+                break;
             default:
                 this.sendHelpMessage();
         }
@@ -117,7 +150,7 @@ public class AugmentedHardcoreCommand extends AbstractCommand {
         helpMessage.add("§8§m----------§6 Augmented Hardcore §fHelp §8§m----------");
         Arrays.stream(Command.values()).filter(e -> e.getPermission() != null).forEach(e -> helpMessage.add(e.getFancyVersion()));
         helpMessage.add("§8§m------------------------------------------");
-        cs.sendMessage(helpMessage.toArray(new String[0]));
+        this.cs.sendMessage(helpMessage.toArray(new String[0]));
     }
 
     private boolean canGiveLiveOrLifeParts(OfflinePlayer player, int amount) {

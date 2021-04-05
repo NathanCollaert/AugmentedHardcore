@@ -601,7 +601,7 @@ MaxHealthDisplay:
   Material: "gold_nugget"
   Name: "Max Health info"
   Lore:
-    - "You will gain an extra half heart in %time_till_max_health_short%."
+    - "You will gain an extra half heart in %time_till_next_max_health_short%."
     - "You currently have %current_max_health%."
     - "The maximum amount of max health you can get is %max_health%."
     - "The minimum amount of max health you can get is %min_health%."
@@ -616,7 +616,7 @@ ReviveDisplay:
   Amount: 1
 
 #What should the life part button look like?
-#Placeholders: %max_life_parts% - %life_parts% - %time_till_next_life_part_long% - %time_till_next_life_part_short% - %time_till_next_life_part_digital%
+#Placeholders: %max_life_parts% - %life_parts_number% - %life_parts% - %time_till_next_life_part_long% - %time_till_next_life_part_short% - %time_till_next_life_part_digital%
 LifePartDisplay:
   Material: "iron_nugget"
   Name: "Life Parts info"
@@ -639,12 +639,12 @@ PreviousBansDisplay:
 #=======================--- BANS ---========================
 
 #What should the ban buttons look like?
-#Placeholders: %ban_number% - %ban_start_date% - %ban_time_long% - %ban_time_short% - %ban_time_digital%
-# - %ban_expiration_date% - %ban_damage_cause% - %ban_damage_cause_type% - %ban_killer% - %ban_in_combat_with%
-# - %ban_location% - %ban_death_message%
+#Placeholders: %ban_number% - %ban_start_date_long% - %ban_start_date_medium% - %ban_start_date_short% - %ban_time_long%
+# - %ban_time_short% - %ban_time_digital% - %ban_expiration_date_long% - %ban_expiration_date_medium% - %ban_expiration_date_short%
+# - %ban_damage_cause% - %ban_damage_cause_type% - %ban_killer% - %ban_in_combat_with% - %ban_location% - %ban_death_message%
 BanDisplay:
   Material: "conduit"
-  Name: "Ban %ban_number% (%ban_start_date%)"
+  Name: "Ban #%ban_number% (%ban_start_date%)"
   Lore:
     - "Ban Time: %ban_time_long%."
     - "Expiration Date: %ban_expiration_date%."

@@ -27,6 +27,7 @@ public class ServerRepository {
 
     private void initializeMapper() {
         this.mapper = new YAMLServerMapper();
+        //TODO: uncomment
 //        if (this.plugin.getConfigurations().getDataConfiguration().getStorageType() == StorageType.MYSQL) {
 //            this.mapper = new MySQLServerMapper();
 //        } else {

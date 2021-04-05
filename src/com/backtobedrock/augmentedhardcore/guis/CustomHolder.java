@@ -14,10 +14,12 @@ public class CustomHolder implements InventoryHolder {
 
     private final int size;
     private final int rowAmount;
+    private int currentRow = 1;
     private final String title;
     private Inventory inventory = null;
 
     public CustomHolder(int size, boolean hasBorder, String title) {
+        size = Math.max(1, size);
         int amount = hasBorder ? (int) (Math.ceil((double) size / 7) * 9) + 18 : (int) (Math.ceil((double) size / 9) * 9);
         this.size = Math.min(amount, 54);
         this.rowAmount = this.getSize() / 9;
@@ -37,48 +39,49 @@ public class CustomHolder implements InventoryHolder {
         }
     }
 
-    public void addRow(List<Icon> icons, int row) {
+    public void addRow(List<Icon> icons) {
         switch (icons.size()) {
             case 1:
-                this.icons.put((row * 9) + 4, icons.get(0));
+                this.icons.put((this.currentRow * 9) + 4, icons.get(0));
                 break;
             case 2:
                 int[] slots2 = {3, 5};
                 for (int i = 0; i < icons.size(); i++) {
-                    this.icons.put((row * 9) + slots2[i], icons.get(i));
+                    this.icons.put((this.currentRow * 9) + slots2[i], icons.get(i));
                 }
                 break;
             case 3:
                 int[] slots3 = {2, 4, 6};
                 for (int i = 0; i < icons.size(); i++) {
-                    this.icons.put((row * 9) + slots3[i], icons.get(i));
+                    this.icons.put((this.currentRow * 9) + slots3[i], icons.get(i));
                 }
                 break;
             case 4:
                 int[] slots4 = {1, 3, 5, 7};
                 for (int i = 0; i < icons.size(); i++) {
-                    this.icons.put((row * 9) + slots4[i], icons.get(i));
+                    this.icons.put((this.currentRow * 9) + slots4[i], icons.get(i));
                 }
                 break;
             case 5:
                 int[] slots5 = {1, 2, 3, 5, 7};
                 for (int i = 0; i < icons.size(); i++) {
-                    this.icons.put((row * 9) + slots5[i], icons.get(i));
+                    this.icons.put((this.currentRow * 9) + slots5[i], icons.get(i));
                 }
                 break;
             case 6:
                 int[] slots6 = {1, 2, 3, 4, 5, 7};
                 for (int i = 0; i < icons.size(); i++) {
-                    this.icons.put((row * 9) + slots6[i], icons.get(i));
+                    this.icons.put((this.currentRow * 9) + slots6[i], icons.get(i));
                 }
                 break;
             case 7:
                 int[] slots7 = {1, 2, 3, 4, 5, 6, 7};
                 for (int i = 0; i < icons.size(); i++) {
-                    this.icons.put((row * 9) + slots7[i], icons.get(i));
+                    this.icons.put((this.currentRow * 9) + slots7[i], icons.get(i));
                 }
                 break;
         }
+        this.currentRow++;
     }
 
     public Icon getIcon(int position) {

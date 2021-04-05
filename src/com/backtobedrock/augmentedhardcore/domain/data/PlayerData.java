@@ -277,7 +277,7 @@ public class PlayerData {
     }
 
     private void ban(Player player, PlayerDeathEvent event) {
-        if (!this.plugin.getConfigurations().getBanTimesConfiguration().isUseDeathBan()) {
+        if (!this.plugin.getConfigurations().getDeathBanConfiguration().isUseDeathBan()) {
             return;
         }
 
@@ -286,7 +286,7 @@ public class PlayerData {
             return;
 
         //check if in disabled world
-        if (this.plugin.getConfigurations().getBanTimesConfiguration().getDisableBanInWorlds().contains(player.getWorld().getName().toLowerCase()))
+        if (this.plugin.getConfigurations().getDeathBanConfiguration().getDisableBanInWorlds().contains(player.getWorld().getName().toLowerCase()))
             return;
 
         EntityDamageEvent damageEvent = event.getEntity().getLastDamageCause();
@@ -308,7 +308,7 @@ public class PlayerData {
         Ban ban = BanUtils.getBan(player, this, cause, killer, tagger, event.getDeathMessage(), EventUtils.getDamageCauseTypeFromEntityDamageEvent(damageEvent));
 
         //check if not killed due to self harm if disabled
-        if (!this.plugin.getConfigurations().getBanTimesConfiguration().isSelfHarmBan() && ban.getKiller() != null && ban.getKiller().getName().equals(player.getName()))
+        if (!this.plugin.getConfigurations().getDeathBanConfiguration().isSelfHarmBan() && ban.getKiller() != null && ban.getKiller().getName().equals(player.getName()))
             return;
 
         //ban player
@@ -328,12 +328,16 @@ public class PlayerData {
     }
 
     public void onRespawn(Player player) {
-        if (this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().isUseLives() && this.lives == 0) {
-            this.setLives(player, this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getLivesAfterBan());
-
-            if (this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getLifePartsAfterBan() != -1) {
-                this.setLifeParts(player, this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getLifePartsAfterBan());
+        if (this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().isUseLives()) {
+            if (this.lives != 0) {
+                return;
             }
+
+            this.setLives(player, this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getLivesAfterBan());
+        }
+
+        if (this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getLifePartsAfterBan() != -1) {
+            this.setLifeParts(player, this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getLifePartsAfterBan());
         }
 
         if (this.plugin.getConfigurations().getMaxHealthConfiguration().isUseMaxHealth() && this.plugin.getConfigurations().getMaxHealthConfiguration().getMaxHealthAfterBan() != -1) {
@@ -406,7 +410,7 @@ public class PlayerData {
     }
 
     public boolean isBanned(OfflinePlayer player) {
-        BanList.Type type = this.getIp() == null ? BanList.Type.NAME : this.plugin.getConfigurations().getBanTimesConfiguration().getBanType();
+        BanList.Type type = this.getIp() == null ? BanList.Type.NAME : this.plugin.getConfigurations().getDeathBanConfiguration().getBanType();
         BanList banList = Bukkit.getBanList(type);
         return banList.isBanned(BanUtils.getBanParameter(this, player, type));
     }
@@ -634,8 +638,8 @@ public class PlayerData {
         return this.getReviveCooldownLeftInTicks() > 0;
     }
 
-    public int getReviveCooldownLeftInTicks() {
-        return Math.max(MessageUtils.timeUnitToTicks((int) (this.reviveCooldown - new Date().getTime()), TimeUnit.MILLISECONDS), 0);
+    public long getReviveCooldownLeftInTicks() {
+        return Math.max(MessageUtils.timeUnitToTicks(this.reviveCooldown - new Date().getTime(), TimeUnit.MILLISECONDS), 0L);
     }
 
     public void onRevive(OfflinePlayer reviving, Player reviver) {

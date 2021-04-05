@@ -10,8 +10,8 @@ public class PlayerLoginListener extends AbstractEventListener {
     @EventHandler
     public void OnPlayerLogin(PlayerLoginEvent e) {
         ServerData serverData = this.plugin.getServerRepository().getServerDataSync();
-
         Ban ban = serverData.getBan(e.getPlayer());
+
         if (e.getResult() == PlayerLoginEvent.Result.KICK_BANNED && ban != null) {
             e.setKickMessage(ban.getBanMessage());
         }

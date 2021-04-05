@@ -1,5 +1,8 @@
 package com.backtobedrock.augmentedhardcore.domain.enums;
 
+import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
+import org.bukkit.plugin.java.JavaPlugin;
+
 public enum Permission {
     //COMMANDS
     HELP,
@@ -15,6 +18,9 @@ public enum Permission {
     ADDMAXLIVES,
     REMOVEMAXLIVES,
     SETMAXLIVES,
+    DEATHBANS_OTHER,
+    MYSTATS,
+    MYSTATS_OTHER,
     //BYPASSES
     BYPASS_LOSELIVES,
     BYPASS_LOSELIFEPARTS,
@@ -30,6 +36,6 @@ public enum Permission {
     GAIN_REVIVE_ALIVE;
 
     public String getPermissionString() {
-        return "augmentedhardcore." + this.name().replaceAll("_", ".").toLowerCase();
+        return JavaPlugin.getPlugin(AugmentedHardcore.class).getDescription().getName() + "." + this.name().replaceAll("_", ".").toLowerCase();
     }
 }

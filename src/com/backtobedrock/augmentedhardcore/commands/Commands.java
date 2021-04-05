@@ -7,6 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.StringUtil;
 
@@ -53,18 +54,12 @@ public class Commands implements TabCompleter {
             case "augmentedhardcore":
                 switch (args.length) {
                     case 1:
-                        StringUtil.copyPartialMatches(args[0].toLowerCase(), Arrays.asList("help", "addlives", "addlifeparts", "setlives", "setlifeparts", "reload"), completions);
+                        StringUtil.copyPartialMatches(args[0].toLowerCase(), Arrays.asList("help", "addlives", "addlifeparts", "setlives", "setlifeparts", "reload", "mystats"), completions);
                         Collections.sort(completions);
                         break;
                     case 2:
-                        if (Arrays.asList("addlives", "addlifeparts", "setlives", "setlifeparts").contains(args[0])) {
+                        if (Arrays.asList("addlives", "addlifeparts", "setlives", "setlifeparts", "mystats").contains(args[0])) {
                             StringUtil.copyPartialMatches(args[1].toLowerCase(), Arrays.stream(Bukkit.getOfflinePlayers()).map(OfflinePlayer::getName).collect(Collectors.toList()), completions);
-                            Collections.sort(completions);
-                        }
-                        break;
-                    case 3:
-                        if (Arrays.asList("addlives", "addlifeparts", "setlives", "setlifeparts").contains(args[0])) {
-                            StringUtil.copyPartialMatches(args[0].toLowerCase(), Arrays.asList("1", "2", "5", "10", "50", "100"), completions);
                             Collections.sort(completions);
                         }
                         break;
@@ -72,7 +67,7 @@ public class Commands implements TabCompleter {
                 break;
             case "revive":
                 if (args.length == 1) {
-                    StringUtil.copyPartialMatches(args[0].toLowerCase(), Arrays.stream(Bukkit.getOfflinePlayers()).map(OfflinePlayer::getName).collect(Collectors.toList()), completions);
+                    StringUtil.copyPartialMatches(args[0].toLowerCase(), Bukkit.getServer().getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()), completions);
                     Collections.sort(completions);
                 }
                 break;

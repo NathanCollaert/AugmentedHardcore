@@ -49,6 +49,8 @@ permissions:
     default: op
   augmentedhardcore.revive:
     default: op
+  augmentedhardcore.mystats:
+    default: op
   augmentedhardcore.setlives:
     default: op
   augmentedhardcore.addlives:
@@ -58,4 +60,6 @@ permissions:
   augmentedhardcore.addlifeparts:
     default: op
   augmentedhardcore.setlifeparts:
+    default: op
+  augmentedhardcore.mystats.other:
     default: op

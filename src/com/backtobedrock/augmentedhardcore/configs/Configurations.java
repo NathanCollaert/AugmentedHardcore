@@ -46,12 +46,9 @@ public class Configurations {
         return this.livesAndLifePartsConfiguration;
     }
 
-    public DeathBanConfiguration getBanTimesConfiguration() {
+    public DeathBanConfiguration getDeathBanConfiguration() {
         if (this.deathBanConfiguration == null) {
             this.deathBanConfiguration = DeathBanConfiguration.deserialize(this.config);
-            if (this.deathBanConfiguration == null) {
-                this.plugin.getServer().getPluginManager().disablePlugin(this.plugin);
-            }
         }
         return this.deathBanConfiguration;
     }
