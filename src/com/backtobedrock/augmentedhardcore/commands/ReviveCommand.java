@@ -34,15 +34,6 @@ public class ReviveCommand extends AbstractCommand {
             return;
         }
 
-        CompletableFuture<PlayerData> reviverFuture = this.plugin.getPlayerRepository().getByPlayer(this.csPlayer);
-        CompletableFuture<PlayerData> revivingFuture = this.plugin.getPlayerRepository().getByPlayer(this.player);
-        CompletableFuture<ServerData> serverFuture = this.plugin.getServerRepository().getServerData();
-
-        List<?> combined = Stream.of(reviverFuture, revivingFuture, serverFuture).map(CompletableFuture::join).collect(Collectors.toList());
-
-        if (!((PlayerData) combined.get(0)).checkRevivePermissions(this.csPlayer, this.player))
-            return;
-
-        PlayerUtils.openInventory(this.csPlayer, new ReviveGui(this.csPlayer, ((PlayerData) combined.get(0)), this.player, ((PlayerData) combined.get(1)), ((ServerData) combined.get(2))).getInventory());
+        this.plugin.getPlayerRepository().getByPlayer(this.player).thenAccept(revivingData -> PlayerUtils.openInventory(this.csPlayer, new ReviveGui(this.player, revivingData, this.csPlayer).getInventory()));
     }
 }

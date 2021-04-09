@@ -21,7 +21,7 @@ public class ServerRepository {
         this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
         this.initializeMapper();
         this.getServerData().thenAccept(serverData -> {
-            this.plugin.getLogger().log(Level.INFO, String.format("Loaded %d ongoing death %s.", serverData.getTotalOngoingBans(), serverData.getTotalOngoingBans() > 1 ? "bans" : "ban"));
+            this.plugin.getLogger().log(Level.INFO, String.format("Loaded %d ongoing death %s.", serverData.getTotalOngoingBans(), serverData.getTotalOngoingBans() != 1 ? "bans" : "ban"));
         });
     }
 

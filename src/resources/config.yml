@@ -558,6 +558,14 @@ AccentDisplay:
   Lore: [ ]
   Amount: 1
 
+#What should the loading item for GUI's look like?
+LoadingDisplay:
+  Material: "orange_stained_glass_pane"
+  Name: "Loading, please wait.."
+  Lore:
+    - "This item is currently being loaded."
+  Amount: 1
+
 #What should the next button for paged GUI's look like?
 NextPageDisplay:
   Material: "arrow"

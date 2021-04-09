@@ -7,6 +7,7 @@ import com.backtobedrock.augmentedhardcore.guis.clickActions.ConfirmReviveClickA
 import com.backtobedrock.augmentedhardcore.utils.InventoryUtils;
 import com.backtobedrock.augmentedhardcore.utils.MessageUtils;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -15,12 +16,14 @@ import java.util.concurrent.TimeUnit;
 
 public class ReviveGui extends AbstractGui {
     private final OfflinePlayer reviving;
+    private final Player reviver;
     private final PlayerData revivingData;
     private final Map<String, String> placeholders;
 
-    public ReviveGui(OfflinePlayer reviving, PlayerData revivingData) {
+    public ReviveGui(OfflinePlayer reviving, PlayerData revivingData, Player reviver) {
         super(new CustomHolder(54, true, String.format("Reviving %s", reviving.getName())));
         this.reviving = reviving;
+        this.reviver = reviver;
         this.revivingData = revivingData;
         this.placeholders = new HashMap<String, String>() {{
             put("%player%", reviving.getName());
@@ -31,8 +34,8 @@ public class ReviveGui extends AbstractGui {
     @Override
     public void setData() {
         this.updateCancellation(false);
-        this.updatePlayerHead(false);
-        this.updateConfirmation(false);
+        this.updatePlayerHead(true);
+        this.updateConfirmation(true);
         this.setAccentColor(Arrays.asList(3, 4, 5, 10, 11, 12, 14, 15, 16, 21, 22, 23));
         this.fillGui(Arrays.asList(37, 39, 41, 43));
     }
@@ -42,18 +45,22 @@ public class ReviveGui extends AbstractGui {
     }
 
     public void updatePlayerHead(boolean update) {
-        List<String> lore = new ArrayList<>();
-        lore.add(String.format("%s current statistics:", this.reviving.getName()));
-        lore.add(String.format("    • Lives left: %d", this.revivingData.getLives()));
-        if (this.revivingData.isBanned(this.reviving)) {
-            Ban ban = serverData.getBan(this.reviving);
-            if (ban != null)
-                lore.add(String.format("    • Death banned for another: %s", MessageUtils.getTimeFromTicks(MessageUtils.timeUnitToTicks(ChronoUnit.SECONDS.between(LocalDateTime.now(), ban.getExpirationDate()), TimeUnit.SECONDS), false, false)));
-        }
-        this.setIcon(13, new Icon(InventoryUtils.createPlayerSkull(this.reviving.getName(), lore, this.reviving), Collections.emptyList()), update);
+        this.setIcon(13, new Icon(this.plugin.getConfigurations().getGuisConfiguration().getLoadingDisplay().getItem(), Collections.emptyList()), false);
+        this.plugin.getServerRepository().getServerData().thenAccept(serverData -> {
+            List<String> lore = new ArrayList<>();
+            lore.add(String.format("%s current statistics:", this.reviving.getName()));
+            lore.add(String.format("    • Lives left: %d", this.revivingData.getLives()));
+            if (this.revivingData.isBanned(this.reviving)) {
+                Ban ban = serverData.getBan(this.reviving);
+                if (ban != null)
+                    lore.add(String.format("    • Death banned for another: %s", MessageUtils.getTimeFromTicks(MessageUtils.timeUnitToTicks(ChronoUnit.SECONDS.between(LocalDateTime.now(), ban.getExpirationDate()), TimeUnit.SECONDS), false, false)));
+            }
+            this.setIcon(13, new Icon(InventoryUtils.createPlayerSkull(this.reviving.getName(), lore, this.reviving), Collections.emptyList()), update);
+        });
     }
 
     public void updateConfirmation(boolean update) {
-        this.setIcon(42, new Icon(MessageUtils.replaceItemNameAndLorePlaceholders(this.plugin.getConfigurations().getGuisConfiguration().getConfirmationDisplay().getItem(), this.placeholders), Collections.singletonList(new ConfirmReviveClickAction(this.reviver, this.reviverData, this.reviving, this.revivingData))), update);
+        this.setIcon(42, new Icon(this.plugin.getConfigurations().getGuisConfiguration().getLoadingDisplay().getItem(), Collections.emptyList()), false);
+        this.plugin.getPlayerRepository().getByPlayer(reviver).thenAccept(reviverData -> this.setIcon(42, new Icon(MessageUtils.replaceItemNameAndLorePlaceholders(this.plugin.getConfigurations().getGuisConfiguration().getConfirmationDisplay().getItem(), this.placeholders), Collections.singletonList(new ConfirmReviveClickAction(this.reviver, reviverData, this.reviving, this.revivingData))), update));
     }
 }

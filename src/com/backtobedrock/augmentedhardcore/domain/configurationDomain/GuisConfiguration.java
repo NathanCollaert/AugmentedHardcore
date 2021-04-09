@@ -13,6 +13,7 @@ import java.util.logging.Level;
 public class GuisConfiguration {
     private final Display fillerDisplay;
     private final Display accentDisplay;
+    private final Display loadingDisplay;
     private final Display nextPageDisplay;
     private final Display previousPageDisplay;
     private final Display pageInformationDisplay;
@@ -25,9 +26,10 @@ public class GuisConfiguration {
     private final Display confirmationDisplay;
     private final Display cancellationDisplay;
 
-    public GuisConfiguration(Display fillerDisplay, Display accentDisplay, Display nextPageDisplay, Display previousPageDisplay, Display pageInformationDisplay, Display livesAndLifePartsDisplay, Display maxHealthDisplay, Display reviveDisplay, Display lifePartDisplay, Display previousBansDisplay, Display banDisplay, Display confirmationDisplay, Display cancellationDisplay) {
+    public GuisConfiguration(Display fillerDisplay, Display accentDisplay, Display loadingDisplay, Display nextPageDisplay, Display previousPageDisplay, Display pageInformationDisplay, Display livesAndLifePartsDisplay, Display maxHealthDisplay, Display reviveDisplay, Display lifePartDisplay, Display previousBansDisplay, Display banDisplay, Display confirmationDisplay, Display cancellationDisplay) {
         this.fillerDisplay = fillerDisplay;
         this.accentDisplay = accentDisplay;
+        this.loadingDisplay = loadingDisplay;
         this.nextPageDisplay = nextPageDisplay;
         this.previousPageDisplay = previousPageDisplay;
         this.pageInformationDisplay = pageInformationDisplay;
@@ -49,6 +51,7 @@ public class GuisConfiguration {
         for (String e : Arrays.asList(
                 "FillerDisplay",
                 "AccentDisplay",
+                "LoadingDisplay",
                 "NextPageDisplay",
                 "PreviousPageDisplay",
                 "PageInformationDisplay",
@@ -77,6 +80,7 @@ public class GuisConfiguration {
         return new GuisConfiguration(
                 cDisplays.get("FillerDisplay"),
                 cDisplays.get("AccentDisplay"),
+                cDisplays.get("LoadingDisplay"),
                 cDisplays.get("NextPageDisplay"),
                 cDisplays.get("PreviousPageDisplay"),
                 cDisplays.get("PageInformationDisplay"),
@@ -141,5 +145,9 @@ public class GuisConfiguration {
 
     public Display getCancellationDisplay() {
         return cancellationDisplay;
+    }
+
+    public Display getLoadingDisplay() {
+        return loadingDisplay;
     }
 }

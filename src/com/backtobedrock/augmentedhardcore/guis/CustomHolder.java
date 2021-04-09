@@ -110,7 +110,8 @@ public class CustomHolder implements InventoryHolder {
     }
 
     public void updateIcon(int position) {
-        if (this.icons.containsKey(position))
+        if (this.inventory != null && this.icons.containsKey(position)) {
             this.getInventory().setItem(position, this.icons.get(position).itemStack);
+        }
     }
 }
