@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/AugmentedHardcore.iml" filepath="$PROJECT_DIR$/AugmentedHardcore.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/AugmentedHardcore.iml" filepath="$PROJECT_DIR$/.idea/AugmentedHardcore.iml" />
     </modules>
   </component>
 </project>

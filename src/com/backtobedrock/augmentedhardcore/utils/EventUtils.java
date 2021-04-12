@@ -115,8 +115,8 @@ public class EventUtils {
             DamageCause cause = causeIsPlayer ? DamageCause.PLAYER_COMBAT_LOG : DamageCause.COMBAT_LOG;
 
             //return which bantime is highest
-            int bantime = plugin.getConfigurations().getDeathBanConfiguration().getBanTimes().get(cause.name()).getBanTime();
-            return plugin.getConfigurations().getDeathBanConfiguration().getBanTimes().get(DamageCause.REVIVE.name()).getBanTime() > bantime
+            int bantime = plugin.getConfigurations().getDeathBanConfiguration().getBanTimes().get(cause).getBanTime();
+            return plugin.getConfigurations().getDeathBanConfiguration().getBanTimes().get(DamageCause.REVIVE).getBanTime() > bantime
                     ? DamageCause.REVIVE
                     : cause;
         } else if (playerData.isCombatLogged()) {

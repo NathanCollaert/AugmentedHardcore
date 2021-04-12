@@ -15,14 +15,14 @@ import java.util.logging.Level;
 
 public class DeathBanConfiguration {
     private final boolean useDeathBan;
-    private final Map<String, BanConfiguration> banTimes;
+    private final EnumMap<DamageCause, BanConfiguration> banTimes;
     private final BanList.Type banType;
     private final BanTimeType banTimeType;
     private final GrowthType banTimeByPlaytimeGrowthType;
     private final boolean selfHarmBan;
     private final List<String> disableBanInWorlds;
 
-    public DeathBanConfiguration(boolean useDeathBan, Map<String, BanConfiguration> banTimes, BanList.Type banType, BanTimeType banTimeType, GrowthType banTimeByPlaytimeGrowthType, boolean selfHarmBan, List<String> disableBanInWorlds) {
+    public DeathBanConfiguration(boolean useDeathBan, EnumMap<DamageCause, BanConfiguration> banTimes, BanList.Type banType, BanTimeType banTimeType, GrowthType banTimeByPlaytimeGrowthType, boolean selfHarmBan, List<String> disableBanInWorlds) {
         this.useDeathBan = useDeathBan;
         this.banTimes = banTimes;
         this.banType = banType;
@@ -37,7 +37,7 @@ public class DeathBanConfiguration {
 
         //configurations
         boolean cUseDeathBan = section.getBoolean("UseDeathBan", true);
-        Map<String, BanConfiguration> cBanTimes = new HashMap<>();
+        EnumMap<DamageCause, BanConfiguration> cBanTimes = new EnumMap<>(DamageCause.class);
         BanList.Type cBanType = ConfigUtils.getBanType("BanType", section.getString("BanType", BanList.Type.NAME.name()), BanList.Type.NAME);
         BanTimeType cBanTimeType = ConfigUtils.getBanTimeType("BanTimeType", section.getString("BanTimeType", BanTimeType.STATIC.name()), BanTimeType.STATIC);
         GrowthType cBanTimeByPlaytimeGrowthType = ConfigUtils.getGrowthType("BanTimeByPlaytimeGrowthType", section.getString("BanTimeByPlaytimeGrowthType", GrowthType.EXPONENTIAL.name()), GrowthType.EXPONENTIAL);
@@ -51,10 +51,11 @@ public class DeathBanConfiguration {
         } else if (cUseDeathBan) {
             Arrays.stream(DamageCause.values()).forEach(e -> {
                 ConfigurationSection damageCauseSection = banTimesConfigurations.getConfigurationSection(e.name());
-                BanConfiguration banConfiguration = new BanConfiguration(e, 0, Collections.emptyList());
-                if (damageCauseSection != null)
+                BanConfiguration banConfiguration = new BanConfiguration(0, Collections.emptyList());
+                if (damageCauseSection != null) {
                     banConfiguration = BanConfiguration.deserialize(e, damageCauseSection);
-                cBanTimes.put(e.name(), banConfiguration);
+                }
+                cBanTimes.put(e, banConfiguration);
             });
         }
 
@@ -69,7 +70,7 @@ public class DeathBanConfiguration {
         );
     }
 
-    public Map<String, BanConfiguration> getBanTimes() {
+    public EnumMap<DamageCause, BanConfiguration> getBanTimes() {
         return banTimes;
     }
 

@@ -7,9 +7,9 @@ import java.util.concurrent.CompletableFuture;
 
 public interface IPlayerMapper {
     //Create
-    void insertPlayerDataAsync(OfflinePlayer player, PlayerData data);
+    void insertPlayerDataAsync(PlayerData data);
 
-    void insertPlayerDataSync(OfflinePlayer player, PlayerData data);
+    void insertPlayerDataSync(PlayerData data);
 
     //Read
     CompletableFuture<PlayerData> getByPlayer(OfflinePlayer player);
@@ -17,7 +17,7 @@ public interface IPlayerMapper {
     PlayerData getByPlayerSync(OfflinePlayer player);
 
     //Update
-    void updatePlayerData(OfflinePlayer player, PlayerData data);
+    void updatePlayerData(PlayerData data);
 
     //Delete
     void deletePlayerData(OfflinePlayer player);

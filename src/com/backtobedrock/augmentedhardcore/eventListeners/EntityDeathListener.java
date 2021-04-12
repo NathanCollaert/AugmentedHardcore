@@ -9,19 +9,16 @@ public class EntityDeathListener extends AbstractEventListener {
 
     @EventHandler
     public void onEntityKill(EntityDeathEvent event) {
-        if (!(event.getEntity().getLastDamageCause() instanceof EntityDamageByEntityEvent))
+        if (!(event.getEntity().getLastDamageCause() instanceof EntityDamageByEntityEvent)) {
             return;
+        }
 
         EntityDamageByEntityEvent entityDamageByEntityEvent = (EntityDamageByEntityEvent) event.getEntity().getLastDamageCause();
-        if (!(entityDamageByEntityEvent.getDamager() instanceof Player))
+        if (!(entityDamageByEntityEvent.getDamager() instanceof Player)) {
             return;
+        }
 
-        Player player = (Player) entityDamageByEntityEvent.getDamager();
-
-        this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(playerData -> playerData.onEntityKill(player, event.getEntity().getType())).handleAsync((v, t) -> {
-            t.printStackTrace();
-            return null;
-        });
+        this.plugin.getPlayerRepository().getByPlayer((Player) entityDamageByEntityEvent.getDamager()).thenAcceptAsync(playerData -> playerData.onEntityKill(event.getEntity().getType()));
     }
 
     @Override

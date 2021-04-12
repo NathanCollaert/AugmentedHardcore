@@ -18,7 +18,7 @@ public class ClearCache extends BukkitRunnable {
     @Override
     public void run() {
         if (!this.player.isOnline()) {
-            this.plugin.getPlayerRepository().removeFromPlayerCache(player);
+            this.plugin.getPlayerRepository().removeFromPlayerCache(this.player);
         }
     }
 }

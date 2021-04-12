@@ -2,24 +2,18 @@ package com.backtobedrock.augmentedhardcore.domain;
 
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.configurationDomain.configurationHelperClasses.BanConfiguration;
-import com.backtobedrock.augmentedhardcore.domain.data.PlayerData;
 import com.backtobedrock.augmentedhardcore.domain.enums.DamageCause;
 import com.backtobedrock.augmentedhardcore.domain.enums.DamageCauseType;
-import com.backtobedrock.augmentedhardcore.utils.BanUtils;
 import com.backtobedrock.augmentedhardcore.utils.ConfigUtils;
 import com.backtobedrock.augmentedhardcore.utils.MessageUtils;
-import org.bukkit.BanEntry;
-import org.bukkit.BanList;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class Ban {
@@ -49,9 +43,9 @@ public class Ban {
         this.damageCauseType = damageCauseType;
     }
 
-    public static Ban Deserialize(ConfigurationSection section, UUID uuid) {
+    public static Ban Deserialize(ConfigurationSection section) {
         LocalDateTime cStartDate = LocalDateTime.parse(section.getString("StartDate", LocalDateTime.MIN.toString()));
-        LocalDateTime cExpirationDate;
+        LocalDateTime cExpirationDate = LocalDateTime.parse(section.getString("ExpirationDate"));
         DamageCause cDamageCause = ConfigUtils.getDamageCause(section.getString("DamageCause", DamageCause.VOID.name()), DamageCause.VOID);
         Killer cKiller = null;
         Killer cInCombatWith = null;
@@ -59,29 +53,6 @@ public class Ban {
         String cDeathMessage = section.getString("DeathMessage");
         int cBanTime = section.getInt("BanTime", 0);
         DamageCauseType cDamageCauseType = ConfigUtils.getDamageCauseType(section.getString("DamageCauseType", DamageCauseType.ENVIRONMENT.name()), DamageCauseType.ENVIRONMENT);
-
-        String sExpirationDate = section.getString("ExpirationDate");
-        //if not found, get date from server bans
-        if (sExpirationDate == null) {
-            Player player = Bukkit.getPlayer(uuid);
-            if (player != null && Bukkit.getBanList(BanList.Type.NAME).isBanned(player.getName())) {
-                BanEntry banEntry = Bukkit.getBanList(BanList.Type.NAME).getBanEntry(player.getName());
-                if (banEntry != null) {
-                    Date banDate = banEntry.getExpiration();
-                    if (banDate != null) {
-                        cExpirationDate = new Timestamp(banDate.getTime()).toLocalDateTime();
-                    } else {
-                        return null;
-                    }
-                } else {
-                    return null;
-                }
-            } else {
-                return null;
-            }
-        } else {
-            cExpirationDate = LocalDateTime.parse(sExpirationDate);
-        }
 
         ConfigurationSection locationSection = section.getConfigurationSection("Location");
         if (locationSection != null) {
@@ -107,39 +78,28 @@ public class Ban {
         if (this.damageCause == DamageCause.REVIVE) {
             if (this.inCombatWith == null) {
                 //Revive
-                banMessage = this.placeholdersReplacements(this.plugin.getMessages().getReviveBanMessage());
+                banMessage = MessageUtils.replacePlaceholders(this.plugin.getMessages().getReviveBanMessage(), this.getPlaceholdersReplacements());
             } else {
                 //Revive while in combat
-                banMessage = this.placeholdersReplacements(this.plugin.getMessages().getReviveWhileInCombatBanMessage());
+                banMessage = MessageUtils.replacePlaceholders(this.plugin.getMessages().getReviveWhileInCombatBanMessage(), this.getPlaceholdersReplacements());
             }
         } else if (this.damageCause == DamageCause.COMBAT_LOG || this.damageCause == DamageCause.PLAYER_COMBAT_LOG) {
             //Combat log
-            banMessage = this.placeholdersReplacements(this.plugin.getMessages().getCombatLogBanMessage());
+            banMessage = MessageUtils.replacePlaceholders(this.plugin.getMessages().getCombatLogBanMessage(), this.getPlaceholdersReplacements());
         } else if (this.killer == null && this.inCombatWith == null) {
             //Environment
-            banMessage = this.placeholdersReplacements(this.plugin.getMessages().getEnvironmentBanMessage());
+            banMessage = MessageUtils.replacePlaceholders(this.plugin.getMessages().getEnvironmentBanMessage(), this.getPlaceholdersReplacements());
         } else if (this.killer != null && this.inCombatWith == null) {
             //Entity
-            banMessage = this.placeholdersReplacements(this.plugin.getMessages().getEntityBanMessage());
+            banMessage = MessageUtils.replacePlaceholders(this.plugin.getMessages().getEntityBanMessage(), this.getPlaceholdersReplacements());
         } else if (this.killer == null) {
             //Environment while in combat
-            banMessage = this.placeholdersReplacements(this.plugin.getMessages().getEntityWhileInCombatBanMessage());
+            banMessage = MessageUtils.replacePlaceholders(this.plugin.getMessages().getEntityWhileInCombatBanMessage(), this.getPlaceholdersReplacements());
         } else {
             //Entity while in combat
-            banMessage = this.placeholdersReplacements(this.plugin.getMessages().getEntityWhileInCombatBanMessage());
+            banMessage = MessageUtils.replacePlaceholders(this.plugin.getMessages().getEntityWhileInCombatBanMessage(), this.getPlaceholdersReplacements());
         }
         return banMessage;
-    }
-
-    public void deathBan(PlayerData data, OfflinePlayer player) {
-        BanList.Type type = data.getIp() == null ? BanList.Type.NAME : this.plugin.getConfigurations().getDeathBanConfiguration().getBanType();
-        BanList banList = Bukkit.getBanList(type);
-        //ban player
-        banList.addBan(BanUtils.getBanParameter(data, player, type), "", Timestamp.valueOf(this.getExpirationDate()), this.plugin.getDescription().getName());
-
-        if (player.isOnline()) {
-            Bukkit.getScheduler().runTask(this.plugin, () -> ((Player) player).kickPlayer(this.getBanMessage()));
-        }
     }
 
     public LocalDateTime getExpirationDate() {
@@ -172,81 +132,54 @@ public class Ban {
         return map;
     }
 
-    public LocalDateTime getStartDate() {
-        return startDate;
-    }
-
-    public DamageCause getDamageCause() {
-        return damageCause;
-    }
-
-    public Killer getInCombatWith() {
-        return inCombatWith;
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public String getDeathMessage() {
-        return deathMessage;
-    }
-
-    public DamageCauseType getDamageCauseType() {
-        return damageCauseType;
-    }
-
     public Killer getKiller() {
         return killer;
     }
 
-    public String placeholdersReplacements(String message) {
+    public Map<String, String> getPlaceholdersReplacements() {
         Map<String, String> placeholders = new HashMap<>();
 
+        String damageCauseString = "-";
+        String damageCauseMessage = "-";
         if (this.damageCause != null) {
-            placeholders.put("raw_damage_cause", this.damageCause.toString());
-            BanConfiguration banConfiguration = this.plugin.getConfigurations().getDeathBanConfiguration().getBanTimes().get(this.damageCause.name());
+            damageCauseString = this.damageCause.toString();
+            BanConfiguration banConfiguration = this.plugin.getConfigurations().getDeathBanConfiguration().getBanTimes().get(this.damageCause);
             Random random = new Random();
-            placeholders.put("damage_cause_message_random", banConfiguration.getDisplayMessages().get(random.nextInt(banConfiguration.getDisplayMessages().size())));
+            damageCauseMessage = banConfiguration.getDisplayMessages().get(random.nextInt(banConfiguration.getDisplayMessages().size()));
         }
+        placeholders.put("ban_damage_cause_random_message", damageCauseMessage);
+        placeholders.put("ban_damage_cause", damageCauseString);
 
-        if (this.damageCauseType != null) {
-            placeholders.put("damage_cause_type", this.damageCauseType.toString());
-        }
+        placeholders.put("ban_damage_cause_type", this.damageCauseType != null ? this.damageCauseType.toString() : "-");
 
-        if (this.location != null) {
-            placeholders.put("location", this.location.toString());
-        }
+        placeholders.put("ban_location", this.location != null ? this.location.toString() : "-");
 
-        if (this.deathMessage != null) {
-            placeholders.put("death_message", this.deathMessage);
-        }
+        placeholders.put("ban_death_message", this.deathMessage != null ? this.deathMessage : "-");
 
-        if (this.deathMessage != null) {
-            placeholders.put("death_message_stripped", this.deathMessage.substring(this.deathMessage.indexOf(" ")));
-        }
+        placeholders.put("ban_death_message_stripped", this.deathMessage != null && !this.deathMessage.equalsIgnoreCase("") ? this.deathMessage.substring(this.deathMessage.indexOf(" ")) : "-");
 
-        if (this.expirationDate != null) {
-            long ticksTillExpiration = MessageUtils.timeUnitToTicks(ChronoUnit.SECONDS.between(LocalDateTime.now(), this.expirationDate), TimeUnit.SECONDS);
-            placeholders.put("short_ban_time_left", MessageUtils.getTimeFromTicks(ticksTillExpiration, false, false));
-            placeholders.put("long_ban_time_left", MessageUtils.getTimeFromTicks(ticksTillExpiration, false, true));
-            placeholders.put("digital_ban_time_left", MessageUtils.getTimeFromTicks(ticksTillExpiration, true, false));
-            placeholders.put("short_expiration_date", MessageUtils.SHORT_FORMATTER.format(this.expirationDate));
-            placeholders.put("medium_expiration_date", MessageUtils.MEDIUM_FORMATTER.format(this.expirationDate));
-            placeholders.put("long_expiration_date", MessageUtils.LONG_FORMATTER.format(this.expirationDate));
-        }
+        placeholders.put("ban_start_date_long", this.startDate != null ? MessageUtils.LONG_FORMATTER.format(this.startDate) : "-");
+        placeholders.put("ban_start_date_medium", this.startDate != null ? MessageUtils.MEDIUM_FORMATTER.format(this.startDate) : "-");
+        placeholders.put("ban_start_date_short", this.startDate != null ? MessageUtils.SHORT_FORMATTER.format(this.startDate) : "-");
 
-        if (killer != null) {
-            placeholders.put("killer", this.killer.getFormattedName());
-            placeholders.put("combat_tagger", this.inCombatWith == null ? this.killer.getFormattedName() : this.inCombatWith.getFormattedName());
-        }
+        long ticksTillExpiration = MessageUtils.timeUnitToTicks(ChronoUnit.SECONDS.between(LocalDateTime.now(), this.expirationDate), TimeUnit.SECONDS);
+        placeholders.put("ban_time_left_long", MessageUtils.getTimeFromTicks(ticksTillExpiration, false, true));
+        placeholders.put("ban_time_left_short", MessageUtils.getTimeFromTicks(ticksTillExpiration, false, false));
+        placeholders.put("ban_time_left_digital", MessageUtils.getTimeFromTicks(ticksTillExpiration, true, false));
+        placeholders.put("ban_expiration_date_long", MessageUtils.LONG_FORMATTER.format(this.expirationDate));
+        placeholders.put("ban_expiration_date_medium", MessageUtils.MEDIUM_FORMATTER.format(this.expirationDate));
+        placeholders.put("ban_expiration_date_short", MessageUtils.SHORT_FORMATTER.format(this.expirationDate));
 
-        if (this.inCombatWith != null) {
-            placeholders.put("in_combat_with", this.inCombatWith.getFormattedName());
-        }
+        placeholders.put("ban_killer", this.killer != null ? this.killer.getFormattedName() : "-");
+        placeholders.put("ban_combat_tagger", this.killer != null ? this.inCombatWith == null ? this.killer.getFormattedName() : this.inCombatWith.getFormattedName() : "-");
 
-        placeholders.put("raw_ban_time", Integer.toString(this.banTime));
+        placeholders.put("ban_in_combat_with", this.inCombatWith != null ? this.inCombatWith.getFormattedName() : "-");
 
-        return MessageUtils.replacePlaceholders(message, placeholders);
+        ticksTillExpiration = MessageUtils.timeUnitToTicks(this.banTime, TimeUnit.MINUTES);
+        placeholders.put("ban_time_long", MessageUtils.getTimeFromTicks(ticksTillExpiration, false, true));
+        placeholders.put("ban_time_short", MessageUtils.getTimeFromTicks(ticksTillExpiration, false, false));
+        placeholders.put("ban_time_digital", MessageUtils.getTimeFromTicks(ticksTillExpiration, true, false));
+
+        return placeholders;
     }
 }

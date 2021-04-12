@@ -16,12 +16,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,7 +69,7 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
     }
 
     @Override
-    public boolean onCommand(CommandSender cs, Command cmnd, String alias, String[] args) {
+    public boolean onCommand(@NotNull CommandSender cs, @NotNull Command cmnd, @NotNull String alias, String[] args) {
         return this.commands.onCommand(cs, cmnd, alias, args);
     }
 

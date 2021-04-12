@@ -7,12 +7,12 @@ import java.util.concurrent.CompletableFuture;
 
 public class MySQLPlayerMapper implements IPlayerMapper {
     @Override
-    public void insertPlayerDataAsync(OfflinePlayer player, PlayerData data) {
+    public void insertPlayerDataAsync(PlayerData data) {
         //TODO: implement
     }
 
     @Override
-    public void insertPlayerDataSync(OfflinePlayer player, PlayerData data) {
+    public void insertPlayerDataSync(PlayerData data) {
         //TODO: implement
     }
 
@@ -29,7 +29,7 @@ public class MySQLPlayerMapper implements IPlayerMapper {
     }
 
     @Override
-    public void updatePlayerData(OfflinePlayer player, PlayerData data) {
+    public void updatePlayerData(PlayerData data) {
         //TODO: implement
     }
 

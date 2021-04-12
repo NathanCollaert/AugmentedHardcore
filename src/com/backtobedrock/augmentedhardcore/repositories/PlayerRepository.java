@@ -5,7 +5,6 @@ import com.backtobedrock.augmentedhardcore.domain.data.PlayerData;
 import com.backtobedrock.augmentedhardcore.mappers.player.IPlayerMapper;
 import com.backtobedrock.augmentedhardcore.mappers.player.YAMLPlayerMapper;
 import com.backtobedrock.augmentedhardcore.runnables.ClearCache;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -29,7 +28,7 @@ public class PlayerRepository {
 
     public void onReload() {
         this.initializeMapper();
-        this.playerCache.forEach((key, value) -> value.onReload(Bukkit.getOfflinePlayer(key)));
+        this.playerCache.values().forEach(PlayerData::onReload);
     }
 
     private void initializeMapper() {
@@ -42,8 +41,8 @@ public class PlayerRepository {
 //        }
     }
 
-    public void insertPlayerDataAsync(OfflinePlayer player, PlayerData data) {
-        this.mapper.insertPlayerDataAsync(player, data);
+    public void insertPlayerDataAsync(PlayerData data) {
+        this.mapper.insertPlayerDataAsync(data);
     }
 
     public CompletableFuture<PlayerData> getByPlayer(OfflinePlayer player) {
@@ -66,7 +65,7 @@ public class PlayerRepository {
         if (playerData == null) {
             playerData = new PlayerData(player);
             if (player.hasPlayedBefore())
-                this.insertPlayerDataAsync(player, playerData);
+                this.insertPlayerDataAsync(playerData);
         }
         this.playerCache.put(player.getUniqueId(), playerData);
 
@@ -81,8 +80,8 @@ public class PlayerRepository {
         return this.playerCache.get(player.getUniqueId());
     }
 
-    public void updatePlayerData(OfflinePlayer player, PlayerData data) {
-        this.mapper.updatePlayerData(player, data);
+    public void updatePlayerData(PlayerData data) {
+        this.mapper.updatePlayerData(data);
     }
 
     public void deletePlayerData(OfflinePlayer player) {

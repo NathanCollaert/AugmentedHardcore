@@ -1,29 +1,33 @@
 package com.backtobedrock.augmentedhardcore.guis;
 
+import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class CustomHolder implements InventoryHolder {
+    private final AugmentedHardcore plugin;
 
-    private final Map<Integer, Icon> icons = new HashMap<>();
-
+    private final String title;
     private final int size;
     private final int rowAmount;
     private int currentRow = 1;
-    private final String title;
+    private final Map<Integer, Icon> icons = new HashMap<>();
     private Inventory inventory = null;
 
-    public CustomHolder(int size, boolean hasBorder, String title) {
+    public CustomHolder(int size, String title) {
+        this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
         size = Math.max(1, size);
-        int amount = hasBorder ? (int) (Math.ceil((double) size / 7) * 9) + 18 : (int) (Math.ceil((double) size / 9) * 9);
-        this.size = Math.min(amount, 54);
-        this.rowAmount = this.getSize() / 9;
         this.title = title;
+        this.size = Math.min((int) (Math.ceil((double) size / 7) * 9) + 18, 54);
+        this.rowAmount = this.getSize() / 9;
     }
 
     public void setIcon(int position, Icon icon) {
@@ -69,7 +73,7 @@ public class CustomHolder implements InventoryHolder {
                 }
                 break;
             case 6:
-                int[] slots6 = {1, 2, 3, 4, 5, 7};
+                int[] slots6 = {1, 2, 3, 5, 6, 7};
                 for (int i = 0; i < icons.size(); i++) {
                     this.icons.put((this.currentRow * 9) + slots6[i], icons.get(i));
                 }
@@ -96,8 +100,13 @@ public class CustomHolder implements InventoryHolder {
         return rowAmount;
     }
 
-    public void clearContent() {
+    public void reset() {
         this.icons.clear();
+        this.currentRow = 1;
+    }
+
+    public void setCurrentRow(int currentRow) {
+        this.currentRow = currentRow;
     }
 
     @Override
@@ -112,6 +121,15 @@ public class CustomHolder implements InventoryHolder {
     public void updateIcon(int position) {
         if (this.inventory != null && this.icons.containsKey(position)) {
             this.getInventory().setItem(position, this.icons.get(position).itemStack);
+        }
+    }
+
+    public void updateInvent() {
+        if (this.inventory != null) {
+            for (int i = 0; i < this.size; i++) {
+                Icon icon = this.icons.get(i);
+                this.getInventory().setItem(i, icon == null ? new ItemStack(Material.AIR) : icon.itemStack);
+            }
         }
     }
 }

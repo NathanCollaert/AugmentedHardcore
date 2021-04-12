@@ -4,7 +4,7 @@ import com.backtobedrock.augmentedhardcore.utils.ConfigUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,14 +15,14 @@ public class MaxHealthConfiguration {
     private final double maxHealthAfterBan;
     private final double maxHealthDecreasePerDeath;
     private final boolean maxHealthIncreaseOnKill;
-    private final Map<EntityType, Double> maxHealthIncreasePerKill;
+    private final EnumMap<EntityType, Double> maxHealthIncreasePerKill;
     private final boolean getMaxHealthByPlaytime;
     private final int playtimePerHalfHeart;
     private final List<String> disableLosingMaxHealthInWorlds;
     private final List<String> disableGainingMaxHealthInWorlds;
     private final boolean disableArtificialRegeneration;
 
-    public MaxHealthConfiguration(boolean useMaxHealth, double maxHealth, double minHealth, double maxHealthAfterBan, double maxHealthDecreasePerDeath, boolean maxHealthIncreaseOnKill, Map<EntityType, Double> maxHealthIncreasePerKill, boolean getMaxHealthByPlaytime, int playtimePerHalfHeart, List<String> disableLosingMaxHealthInWorlds, List<String> disableGainingMaxHealthInWorlds, boolean disableArtificialRegeneration) {
+    public MaxHealthConfiguration(boolean useMaxHealth, double maxHealth, double minHealth, double maxHealthAfterBan, double maxHealthDecreasePerDeath, boolean maxHealthIncreaseOnKill, EnumMap<EntityType, Double> maxHealthIncreasePerKill, boolean getMaxHealthByPlaytime, int playtimePerHalfHeart, List<String> disableLosingMaxHealthInWorlds, List<String> disableGainingMaxHealthInWorlds, boolean disableArtificialRegeneration) {
         this.useMaxHealth = useMaxHealth;
         this.maxHealth = maxHealth;
         this.minHealth = minHealth;
@@ -44,7 +44,7 @@ public class MaxHealthConfiguration {
         double cMaxHealthAfterBan = section.getDouble("MaxHealthAfterBan", 20) == -1 ? -1 : ConfigUtils.checkMinMax("MaxHealthAfterBan", section.getDouble("MaxHealthAfterBan", 20), -1, 2048);
         double cMaxHealthDecreasePerDeath = ConfigUtils.checkMinMax("MaxHealthDecreasePerDeath", section.getDouble("MaxHealthDecreasePerDeath", 2), 1, 2048);
         boolean cMaxHealthIncreaseOnKill = section.getBoolean("MaxHealthIncreaseOnKill", true);
-        Map<EntityType, Double> cMaxHealthIncreasePerKill = new HashMap<>();
+        EnumMap<EntityType, Double> cMaxHealthIncreasePerKill = new EnumMap<>(EntityType.class);
         boolean cGetMaxHealthByPlaytime = section.getBoolean("GetMaxHealthByPlaytime", false);
         int cPlaytimePerHalfHeart = ConfigUtils.checkMin("PlaytimePerHalfHeart", section.getInt("PlaytimePerHalfHeart", 30), 1);
         List<String> cDisableLosingMaxHealthInWorlds = ConfigUtils.getWorlds("DisableLosingMaxHealthInWorlds", section.getStringList("DisableLosingMaxHealthInWorlds"));
@@ -111,7 +111,7 @@ public class MaxHealthConfiguration {
         return maxHealthIncreaseOnKill;
     }
 
-    public Map<EntityType, Double> getMaxHealthIncreasePerKill() {
+    public EnumMap<EntityType, Double> getMaxHealthIncreasePerKill() {
         return maxHealthIncreasePerKill;
     }
 

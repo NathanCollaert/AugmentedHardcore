@@ -9,7 +9,7 @@ public class PlayerQuitListener extends AbstractEventListener {
     @EventHandler
     public void OnPlayerQuit(PlayerQuitEvent e) {
         Player player = e.getPlayer();
-        this.plugin.getPlayerRepository().getByPlayerSync(player).onLeave(player);
+        this.plugin.getPlayerRepository().getByPlayerSync(player).onLeave();
     }
 
     @Override

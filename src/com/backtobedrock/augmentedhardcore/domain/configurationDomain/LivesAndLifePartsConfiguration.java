@@ -6,7 +6,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -29,7 +29,7 @@ public class LivesAndLifePartsConfiguration {
     private final int lifePartsLostPerDeath;
     private final int lifePartsLostPerDeathBan;
     private final boolean lifePartsOnKill;
-    private final Map<EntityType, Integer> lifePartsPerKill;
+    private final EnumMap<EntityType, Integer> lifePartsPerKill;
     private final boolean getLifePartsByPlaytime;
     private final int playtimePerLifePart;
     private final List<String> disableGainingLifePartsInWorlds;
@@ -52,7 +52,7 @@ public class LivesAndLifePartsConfiguration {
             int lifePartsLostPerDeath,
             int lifePartsLostPerDeathBan,
             boolean lifePartsOnKill,
-            Map<EntityType, Integer> lifePartsPerKill,
+            EnumMap<EntityType, Integer> lifePartsPerKill,
             boolean getLifePartsByPlaytime,
             int playtimePerLifePart,
             List<String> disableGainingLifePartsInWorlds,
@@ -99,7 +99,7 @@ public class LivesAndLifePartsConfiguration {
         int cLifePartsLostPerDeath = ConfigUtils.checkMin("LifePartsLostPerDeath", section.getInt("LifePartsLostPerDeath", 1), -1);
         int cLifePartsLostPerDeathBan = ConfigUtils.checkMin("LifePartsLostPerDeathBan", section.getInt("LifePartsLostPerDeathBan", -1), -1);
         boolean cLifePartsOnKill = section.getBoolean("LifePartsOnKill");
-        Map<EntityType, Integer> cLifePartsPerKill = new HashMap<>();
+        EnumMap<EntityType, Integer> cLifePartsPerKill = new EnumMap<>(EntityType.class);
         boolean cGetLifePartsByPlaytime = section.getBoolean("GetLifePartByPlaytime", false);
         int cPlaytimePerLifePart = ConfigUtils.checkMin("PlaytimePerLifePart", section.getInt("PlaytimePerLifePart", 30), 1);
         List<String> cDisableGainingLifePartsInWorlds = ConfigUtils.getWorlds("DisableGainingLifePartsInWorlds", section.getStringList("DisableGainingLifePartsInWorlds"));
@@ -225,7 +225,7 @@ public class LivesAndLifePartsConfiguration {
         return lifePartsLostPerDeathBan;
     }
 
-    public Map<EntityType, Integer> getLifePartsPerKill() {
+    public EnumMap<EntityType, Integer> getLifePartsPerKill() {
         return lifePartsPerKill;
     }
 

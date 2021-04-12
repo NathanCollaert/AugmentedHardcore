@@ -14,7 +14,6 @@ public abstract class AbstractGui {
     public AbstractGui(CustomHolder customHolder) {
         this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
         this.customHolder = customHolder;
-        this.initialize();
     }
 
     protected void initialize() {

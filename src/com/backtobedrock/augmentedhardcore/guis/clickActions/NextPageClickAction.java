@@ -14,7 +14,6 @@ public class NextPageClickAction extends AbstractClickAction {
     @Override
     public void execute(Player player) {
         this.paginatedGui.nextPage();
-        this.paginatedGui.initialize();
         Bukkit.getScheduler().runTask(this.plugin, () -> player.openInventory(this.paginatedGui.getInventory()));
     }
 }

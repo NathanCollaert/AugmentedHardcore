@@ -21,15 +21,13 @@ import java.util.stream.Collectors;
 public class UpdateUtils {
 
     public static void getVersion(int resourceId, final Consumer<String> consumer) {
-        Bukkit.getScheduler().runTaskAsynchronously(JavaPlugin.getPlugin(AugmentedHardcore.class), () -> {
-            try (InputStream inputStream = new URL("https://api.spigotmc.org/legacy/update.php?resource=" + resourceId).openStream(); Scanner scanner = new Scanner(inputStream)) {
-                if (scanner.hasNext()) {
-                    consumer.accept(scanner.next());
-                }
-            } catch (IOException exception) {
-                Bukkit.getLogger().log(Level.INFO, "Cannot look for updates: {0}", exception.getMessage());
+        try (InputStream inputStream = new URL("https://api.spigotmc.org/legacy/update.php?resource=" + resourceId).openStream(); Scanner scanner = new Scanner(inputStream)) {
+            if (scanner.hasNext()) {
+                consumer.accept(scanner.next());
             }
-        });
+        } catch (IOException exception) {
+            Bukkit.getLogger().log(Level.INFO, "Cannot look for updates: {0}", exception.getMessage());
+        }
     }
 
     public static void update(Plugin plugin, String resourceName, File toUpdate, List<String> ignoredSections) {

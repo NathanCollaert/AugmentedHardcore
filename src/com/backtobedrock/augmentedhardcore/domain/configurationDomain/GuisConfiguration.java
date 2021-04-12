@@ -14,9 +14,11 @@ public class GuisConfiguration {
     private final Display fillerDisplay;
     private final Display accentDisplay;
     private final Display loadingDisplay;
+    private final Display notAvailableDisplay;
     private final Display nextPageDisplay;
     private final Display previousPageDisplay;
     private final Display pageInformationDisplay;
+    private final Display previousGuiDisplay;
     private final Display livesAndLifePartsDisplay;
     private final Display maxHealthDisplay;
     private final Display reviveDisplay;
@@ -26,13 +28,15 @@ public class GuisConfiguration {
     private final Display confirmationDisplay;
     private final Display cancellationDisplay;
 
-    public GuisConfiguration(Display fillerDisplay, Display accentDisplay, Display loadingDisplay, Display nextPageDisplay, Display previousPageDisplay, Display pageInformationDisplay, Display livesAndLifePartsDisplay, Display maxHealthDisplay, Display reviveDisplay, Display lifePartDisplay, Display previousBansDisplay, Display banDisplay, Display confirmationDisplay, Display cancellationDisplay) {
+    public GuisConfiguration(Display fillerDisplay, Display accentDisplay, Display loadingDisplay, Display notAvailableDisplay, Display nextPageDisplay, Display previousPageDisplay, Display pageInformationDisplay, Display previousGuiDisplay, Display livesAndLifePartsDisplay, Display maxHealthDisplay, Display reviveDisplay, Display lifePartDisplay, Display previousBansDisplay, Display banDisplay, Display confirmationDisplay, Display cancellationDisplay) {
         this.fillerDisplay = fillerDisplay;
         this.accentDisplay = accentDisplay;
         this.loadingDisplay = loadingDisplay;
+        this.notAvailableDisplay = notAvailableDisplay;
         this.nextPageDisplay = nextPageDisplay;
         this.previousPageDisplay = previousPageDisplay;
         this.pageInformationDisplay = pageInformationDisplay;
+        this.previousGuiDisplay = previousGuiDisplay;
         this.livesAndLifePartsDisplay = livesAndLifePartsDisplay;
         this.maxHealthDisplay = maxHealthDisplay;
         this.reviveDisplay = reviveDisplay;
@@ -52,9 +56,11 @@ public class GuisConfiguration {
                 "FillerDisplay",
                 "AccentDisplay",
                 "LoadingDisplay",
+                "NotAvailableDisplay",
                 "NextPageDisplay",
                 "PreviousPageDisplay",
                 "PageInformationDisplay",
+                "PreviousGuiDisplay",
                 "LivesAndLifePartsDisplay",
                 "MaxHealthDisplay",
                 "ReviveDisplay",
@@ -81,9 +87,11 @@ public class GuisConfiguration {
                 cDisplays.get("FillerDisplay"),
                 cDisplays.get("AccentDisplay"),
                 cDisplays.get("LoadingDisplay"),
+                cDisplays.get("NotAvailableDisplay"),
                 cDisplays.get("NextPageDisplay"),
                 cDisplays.get("PreviousPageDisplay"),
                 cDisplays.get("PageInformationDisplay"),
+                cDisplays.get("PreviousGuiDisplay"),
                 cDisplays.get("LivesAndLifePartsDisplay"),
                 cDisplays.get("MaxHealthDisplay"),
                 cDisplays.get("ReviveDisplay"),
@@ -149,5 +157,13 @@ public class GuisConfiguration {
 
     public Display getLoadingDisplay() {
         return loadingDisplay;
+    }
+
+    public Display getNotAvailableDisplay() {
+        return notAvailableDisplay;
+    }
+
+    public Display getPreviousGuiDisplay() {
+        return previousGuiDisplay;
     }
 }

@@ -10,12 +10,10 @@ import java.util.List;
 import java.util.logging.Level;
 
 public class BanConfiguration {
-    private final DamageCause damageCause;
     private final int banTime;
     private final List<String> displayMessages;
 
-    public BanConfiguration(DamageCause damageCause, int banTime, List<String> displayMessages) {
-        this.damageCause = damageCause;
+    public BanConfiguration(int banTime, List<String> displayMessages) {
         this.banTime = banTime;
         this.displayMessages = displayMessages;
     }
@@ -36,11 +34,7 @@ public class BanConfiguration {
             plugin.getLogger().log(Level.SEVERE, String.format("DeathCauseConfigurations: %s didn't have a correct BanTime configured and default value will be used: %d.", cause.name(), cause.getDefaultBantime()));
         }
 
-        return new BanConfiguration(cause, cBanTime, cDisplayMessages);
-    }
-
-    public DamageCause getDamageCause() {
-        return damageCause;
+        return new BanConfiguration(cBanTime, cDisplayMessages);
     }
 
     public int getBanTime() {

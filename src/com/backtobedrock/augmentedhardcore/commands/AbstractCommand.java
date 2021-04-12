@@ -9,18 +9,19 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.concurrent.CompletableFuture;
+
 public abstract class AbstractCommand {
 
     protected final AugmentedHardcore plugin;
     protected final CommandSender cs;
-    protected final Player csPlayer;
     protected final String[] args;
-    protected OfflinePlayer player = null;
+    protected Player sender = null;
+    protected OfflinePlayer target = null;
 
     public AbstractCommand(CommandSender cs, String[] args) {
         this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
         this.cs = cs;
-        this.csPlayer = cs instanceof Player ? (Player) cs : null;
         this.args = args;
     }
 
@@ -31,19 +32,20 @@ public abstract class AbstractCommand {
     }
 
     protected boolean hasPermission(Permission permission) {
-        boolean hasPermission = this.cs.hasPermission(permission.getPermissionString());
-        if (!hasPermission) {
+        if (!this.cs.hasPermission(permission.getPermissionString())) {
             this.cs.sendMessage("§cYou have no permission to use this command.");
+            return false;
         }
-        return hasPermission;
+        return true;
     }
 
     protected boolean isPlayer() {
-        boolean isPlayer = this.csPlayer != null;
-        if (!isPlayer) {
+        if (!(this.cs instanceof Player)) {
             this.cs.sendMessage("§cYou will need to log in to use this command.");
+            return false;
         }
-        return isPlayer;
+        this.sender = (Player) cs;
+        return true;
     }
 
     protected boolean hasCorrectAmountOfArguments(Command command) {
@@ -54,14 +56,16 @@ public abstract class AbstractCommand {
         return true;
     }
 
-    protected boolean hasPlayedBefore(String playername) {
-        @SuppressWarnings("deprecation") OfflinePlayer player = Bukkit.getOfflinePlayer(playername);
-        if (!player.hasPlayedBefore()) {
-            this.cs.sendMessage(String.format("§c%s has not played on the server before.", player.getName()));
-            return false;
-        }
-        this.player = player;
-        return true;
+    protected CompletableFuture<Boolean> hasPlayedBefore(String playerName) {
+        return CompletableFuture.supplyAsync(() -> {
+            @SuppressWarnings("deprecation") OfflinePlayer player = Bukkit.getOfflinePlayer(playerName);
+            if (!player.hasPlayedBefore()) {
+                this.cs.sendMessage(String.format("§c%s has not played on the server before.", player.getName()));
+                return false;
+            }
+            this.target = player;
+            return true;
+        });
     }
 
     public void sendUsageMessage(Command command) {

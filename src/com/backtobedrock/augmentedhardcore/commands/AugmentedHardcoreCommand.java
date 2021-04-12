@@ -2,7 +2,6 @@ package com.backtobedrock.augmentedhardcore.commands;
 
 import com.backtobedrock.augmentedhardcore.domain.enums.Command;
 import com.backtobedrock.augmentedhardcore.domain.enums.Permission;
-import com.backtobedrock.augmentedhardcore.guis.AbstractGui;
 import com.backtobedrock.augmentedhardcore.guis.PlayerInfoGui;
 import com.backtobedrock.augmentedhardcore.utils.CommandUtils;
 import com.backtobedrock.augmentedhardcore.utils.PlayerUtils;
@@ -38,72 +37,97 @@ public class AugmentedHardcoreCommand extends AbstractCommand {
         if (!this.hasCorrectAmountOfArguments(command))
             return;
 
-        final int amount;
         switch (command) {
             case ADDLIVES:
-                if (!this.hasPlayedBefore(this.args[1])) {
+                int amount = CommandUtils.getPositiveNumberFromString(this.cs, this.args[2]);
+                if (amount == -1) {
                     return;
                 }
 
-                amount = CommandUtils.getPositiveNumberFromString(this.cs, this.args[2]);
-                if (!this.canGiveLiveOrLifeParts(this.player, amount)) {
-                    return;
-                }
+                this.hasPlayedBefore(this.args[1]).thenAcceptAsync(bool -> {
+                    if (!bool) {
+                        return;
+                    }
 
-                this.plugin.getPlayerRepository().getByPlayer(this.player).thenAcceptAsync(playerData -> {
-                    playerData.increaseLives(this.player, amount);
-                    this.sendSuccessMessages(this.player,
-                            String.format("§aYou've been given §6%s§a, you now have §6%s§a.", amount + (amount == 1 ? " life" : " lives"), playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives")),
-                            String.format("§aYou successfully gave §6%s§a, §6%s§a now has §6%s§a.", amount + (amount == 1 ? " life" : " lives"), this.player.getName(), playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives"))
-                    );
+                    this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(playerData -> {
+                        playerData.increaseLives(amount);
+
+                        this.sendSuccessMessages(target,
+                                String.format("§aYou've been given §6%s§a, you now have §6%s§a.", amount + (amount == 1 ? " life" : " lives"), playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives")),
+                                String.format("§aYou successfully gave §6%s§a, §6%s§a now has §6%s§a.", amount + (amount == 1 ? " life" : " lives"), this.args[1], playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives"))
+                        );
+
+                        this.plugin.getPlayerRepository().updatePlayerData(playerData);
+                    });
                 });
                 break;
             case ADDLIFEPARTS:
-                if (!this.hasPlayedBefore(this.args[1])) {
-                    return;
-                }
                 amount = CommandUtils.getPositiveNumberFromString(this.cs, this.args[2]);
-                if (!this.canGiveLiveOrLifeParts(this.player, amount)) {
+                if (amount == -1) {
                     return;
                 }
-                this.plugin.getPlayerRepository().getByPlayer(this.player).thenAcceptAsync(playerData -> {
-                    playerData.increaseLifeParts(this.player, amount);
-                    this.sendSuccessMessages(this.player,
-                            String.format("§aYou've been given §6%s§a, you now have §6%s§a and §6%s§a.", amount + (amount == 1 ? " life part" : " life parts"), playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives"), playerData.getLifeParts() + (playerData.getLifeParts() == 1 ? " life part" : " life parts")),
-                            String.format("§aYou successfully gave §6%s§a, §6%s§a now has §6%s§a and §6%s§a.", amount + (amount == 1 ? " life part" : " life parts"), this.player.getName(), playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives"), playerData.getLifeParts() + (playerData.getLifeParts() == 1 ? " life part" : " life parts"))
-                    );
+
+                this.hasPlayedBefore(this.args[1]).thenAcceptAsync(bool -> {
+                    if (!bool) {
+                        return;
+                    }
+
+                    this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(playerData -> {
+                        playerData.increaseLifeParts(amount);
+
+                        this.sendSuccessMessages(target,
+                                String.format("§aYou've been given §6%s§a, you now have §6%s§a and §6%s§a.", amount + (amount == 1 ? " life part" : " life parts"), playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives"), playerData.getLifeParts() + (playerData.getLifeParts() == 1 ? " life part" : " life parts")),
+                                String.format("§aYou successfully gave §6%s§a, §6%s§a now has §6%s§a and §6%s§a.", amount + (amount == 1 ? " life part" : " life parts"), this.args[1], playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives"), playerData.getLifeParts() + (playerData.getLifeParts() == 1 ? " life part" : " life parts"))
+                        );
+
+                        this.plugin.getPlayerRepository().updatePlayerData(playerData);
+                    });
                 });
                 break;
             case SETLIVES:
-                if (!this.hasPlayedBefore(this.args[1])) {
-                    return;
-                }
                 amount = CommandUtils.getPositiveNumberFromString(this.cs, this.args[2]);
-                if (!this.canGiveLiveOrLifeParts(this.player, amount)) {
+                if (amount == -1) {
                     return;
                 }
-                this.plugin.getPlayerRepository().getByPlayer(this.player).thenAcceptAsync(playerData -> {
-                    playerData.setLives(this.player, amount);
-                    this.sendSuccessMessages(this.player,
-                            String.format("§aYour §6lives§a have been set to §6%d§a.", playerData.getLives()),
-                            String.format("§aYou successfully set the §6lives§a of §6%s§a to §6%d§a.", this.player.getName(), playerData.getLives())
-                    );
+
+                this.hasPlayedBefore(this.args[1]).thenAcceptAsync(bool -> {
+                    if (!bool) {
+                        return;
+                    }
+
+                    this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(playerData -> {
+                        playerData.setLives(amount);
+
+                        this.sendSuccessMessages(target,
+                                String.format("§aYour §6lives§a have been set to §6%d§a.", playerData.getLives()),
+                                String.format("§aYou successfully set the §6lives§a of §6%s§a to §6%d§a.", this.args[1], playerData.getLives())
+                        );
+
+                        this.plugin.getPlayerRepository().updatePlayerData(playerData);
+                    });
                 });
                 break;
             case SETLIFEPARTS:
-                if (!this.hasPlayedBefore(this.args[1])) {
-                    return;
-                }
                 amount = CommandUtils.getPositiveNumberFromString(this.cs, this.args[2]);
-                if (!this.canGiveLiveOrLifeParts(this.player, amount)) {
+                if (amount == -1) {
                     return;
                 }
-                this.plugin.getPlayerRepository().getByPlayer(this.player).thenAcceptAsync(playerData -> {
-                    playerData.setLifeParts(this.player, amount);
-                    this.sendSuccessMessages(this.player,
-                            String.format("§aYour §6life parts§a have been set to §6%d§a, giving you §6%s§a and §6%s§a.", amount, playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives"), playerData.getLifeParts() + (playerData.getLifeParts() == 1 ? " life part" : " life parts")),
-                            String.format("§aYou successfully set the §6life parts§a of §6%s§a to §6%d§a, §6%s§a now has §6%s§a and §6%s§a.", this.player.getName(), amount, this.player.getName(), playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives"), playerData.getLifeParts() + (playerData.getLifeParts() == 1 ? " life part" : " life parts"))
-                    );
+
+                this.hasPlayedBefore(this.args[1]).thenAcceptAsync(bool -> {
+                    if (!bool) {
+                        return;
+                    }
+
+                    this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(playerData -> {
+                        playerData.setLifeParts(amount);
+
+                        this.sendSuccessMessages(target,
+                                String.format("§aYour §6life parts§a have been set to §6%d§a, giving you §6%s§a and §6%s§a.", amount, playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives"), playerData.getLifeParts() + (playerData.getLifeParts() == 1 ? " life part" : " life parts")),
+                                String.format("§aYou successfully set the §6life parts§a of §6%s§a to §6%d§a, §6%s§a now has §6%s§a and §6%s§a.", this.args[1], amount, this.args[1], playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives"), playerData.getLifeParts() + (playerData.getLifeParts() == 1 ? " life part" : " life parts"))
+                        );
+
+                        this.plugin.getPlayerRepository().updatePlayerData(playerData);
+                    });
                 });
                 break;
             case RELOAD:
@@ -120,23 +144,19 @@ public class AugmentedHardcoreCommand extends AbstractCommand {
                         return;
                     }
 
-                    if (!this.hasPlayedBefore(this.args[2])) {
-                        return;
-                    }
+                    this.hasPlayedBefore(this.args[1]).thenAcceptAsync(bool -> {
+                        if (!bool) {
+                            return;
+                        }
 
-                    this.plugin.getPlayerRepository().getByPlayer(this.player).thenAcceptAsync(playerData -> {
-                        AbstractGui gui = new PlayerInfoGui(this.player, playerData);
-                        PlayerUtils.openInventory(this.csPlayer, gui.getInventory());
+                        this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(playerData -> PlayerUtils.openInventory(this.sender, new PlayerInfoGui(this.sender, playerData).getInventory()));
                     });
                 } else {
                     if (!this.isPlayer()) {
                         return;
                     }
 
-                    this.plugin.getPlayerRepository().getByPlayer(this.csPlayer).thenAcceptAsync(playerData -> {
-                        AbstractGui gui = new PlayerInfoGui(this.csPlayer, playerData);
-                        PlayerUtils.openInventory(this.csPlayer, gui.getInventory());
-                    });
+                    this.plugin.getPlayerRepository().getByPlayer(this.sender).thenAcceptAsync(playerData -> PlayerUtils.openInventory(this.sender, new PlayerInfoGui(this.sender, playerData).getInventory()));
                 }
                 break;
             default:
@@ -153,19 +173,12 @@ public class AugmentedHardcoreCommand extends AbstractCommand {
         this.cs.sendMessage(helpMessage.toArray(new String[0]));
     }
 
-    private boolean canGiveLiveOrLifeParts(OfflinePlayer player, int amount) {
-        if (player == null) {
-            return false;
-        }
-        return amount != -1;
-    }
-
     private void sendSuccessMessages(OfflinePlayer player, String receiverSuccessMessage, String senderSuccessMessage) {
-        if (player.isOnline()) {
-            ((Player) player).sendMessage(receiverSuccessMessage);
-        }
-        if (this.csPlayer == null || this.csPlayer.getUniqueId() != player.getUniqueId()) {
+        if (this.sender == null || (player != null && this.sender.getUniqueId() != player.getUniqueId())) {
             this.cs.sendMessage(senderSuccessMessage);
+        }
+        if (player != null) {
+            ((Player) player).sendMessage(receiverSuccessMessage);
         }
     }
 }

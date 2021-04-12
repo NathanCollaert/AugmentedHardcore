@@ -12,10 +12,7 @@ public class PlayerKickListener extends AbstractEventListener {
             return;
         }
 
-        this.plugin.getPlayerRepository().getByPlayer(event.getPlayer()).thenAcceptAsync(PlayerData::onKick).handleAsync((v, t) -> {
-            t.printStackTrace();
-            return null;
-        });
+        this.plugin.getPlayerRepository().getByPlayer(event.getPlayer()).thenAcceptAsync(PlayerData::onKick);
     }
 
     @Override

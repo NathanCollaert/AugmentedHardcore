@@ -41,11 +41,13 @@ public class ServerData {
                 //get ban
                 ConfigurationSection banSection = ongoingBanSection.getConfigurationSection(e);
                 Ban ban = null;
-                if (banSection != null)
-                    ban = Ban.Deserialize(banSection, uuid);
+                if (banSection != null) {
+                    ban = Ban.Deserialize(banSection);
+                }
                 //if exists, put in map
-                if (ban != null)
+                if (ban != null) {
                     cOngoingBans.put(uuid, ban);
+                }
             });
         }
 

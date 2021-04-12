@@ -26,22 +26,22 @@ public class YAMLPlayerMapper implements IPlayerMapper {
         }
     }
 
-    private void insertPlayerData(OfflinePlayer player, PlayerData data) {
-        FileConfiguration config = this.getConfig(player);
+    private void insertPlayerData(PlayerData data) {
+        FileConfiguration config = this.getConfig(data.getPlayer());
         data.serialize().forEach(config::set);
-        this.saveConfig(player, config);
+        this.saveConfig(data.getPlayer(), config);
     }
 
     @Override
-    public void insertPlayerDataAsync(OfflinePlayer player, PlayerData data) {
+    public void insertPlayerDataAsync(PlayerData data) {
         Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-            this.insertPlayerData(player, data);
+            this.insertPlayerData(data);
         });
     }
 
     @Override
-    public void insertPlayerDataSync(OfflinePlayer player, PlayerData data) {
-        this.insertPlayerData(player, data);
+    public void insertPlayerDataSync(PlayerData data) {
+        this.insertPlayerData(data);
     }
 
     @Override
@@ -55,11 +55,11 @@ public class YAMLPlayerMapper implements IPlayerMapper {
     }
 
     @Override
-    public void updatePlayerData(OfflinePlayer player, PlayerData data) {
+    public void updatePlayerData(PlayerData data) {
         if (this.plugin.isStopping()) {
-            this.insertPlayerDataSync(player, data);
+            this.insertPlayerDataSync(data);
         } else {
-            this.insertPlayerDataAsync(player, data);
+            this.insertPlayerDataAsync(data);
         }
     }
 

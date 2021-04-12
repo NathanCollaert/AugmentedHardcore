@@ -14,46 +14,51 @@
 ############################################################
 
 #All ban messages may use the following placeholders:
-# %raw_damage_cause% - The raw damage cause that caused the ban E.g: block explosion.
-# %damage_cause_message_random% - A random display message configured in config.yml of the damage cause that caused this ban.
-# %damage_cause_type% - The damage cause type that caused the ban (block, entity, environment).
-# %location% - The location of the player while being banned E.g: x:150, y:50, z:150 (world_name).
-# %death_message% - The vanilla ban message shown to players E.g: player was shot by <player/mob>.
-# %death_message_stripped% - The vanilla ban message shown to players without the player name E.g: was shot by <player/mob>.
-# %raw_ban_time% -  Raw ban time in minutes E.g: 4200.
-# %short_ban_time_left% - Ban time left in short format E.g: 1d, 20h, 30m, 40s.
-# %long_ban_time_left% - Ban time left in long format E.g: 1 day, 20 hours, 30 minutes, 40 seconds.
-# %digital_ban_time_left% - Ban time left in digital format E.g: 1:20:30:40.
-# %short_expiration_date% - Expiration date of servers timezone in short format E.g: 6/15/15, 9:03 CEST.
-# %medium_expiration_date% - Expiration date of servers timezone in medium format E.g: Jun 15, 2015, 9:03 CEST.
-# %long_expiration_date% - Expiration date of servers timezone in long format E.g: Saturday Jun 15, 2015 at 9:03:01 CEST.
+# %ban_damage_cause% - The raw damage cause that caused the ban E.g: block explosion.
+# %ban_damage_cause_random_message% - A random display message configured in config.yml of the damage cause that caused this ban.
+# %ban_damage_cause_type% - The damage cause type that caused the ban (block, entity, environment).
+# %ban_location% - The location of the player while being banned E.g: x:150, y:50, z:150 (world_name).
+# %ban_death_message% - The vanilla ban message shown to players E.g: player was shot by <player/mob>.
+# %ban_death_message_stripped% - The vanilla ban message shown to players without the player name E.g: was shot by <player/mob>.
+# %ban_time_long% - Ban time in long format E.g: 1 day, 20 hours, 30 minutes, 40 seconds.
+# %ban_time_short% - Ban time in short format E.g: 1 d, 20 h, 30 m, 40 s.
+# %ban_time_digital% - Ban time in digital format E.g: 1:20:30:40.
+# %ban_time_left_long% - Ban time left in long format E.g: 1 day, 20 hours, 30 minutes, 40 seconds.
+# %ban_time_left_short% - Ban time left in short format E.g: 1d, 20h, 30m, 40s.
+# %ban_time_left_digital% - Ban time left in digital format E.g: 1:20:30:40.
+# %ban_start_date_long% - Start date of ban of servers timezone in long format E.g: Saturday Jun 15, 2015 at 9:03:01 CEST.
+# %ban_start_date_medium% - Start date of ban of servers timezone in medium format E.g: Jun 15, 2015, 9:03 CEST.
+# %ban_start_date_short% - Start date of ban of servers timezone in short format E.g: 6/15/15, 9:03 CEST.
+# %ban_expiration_date_long% - Expiration date of ban of servers timezone in long format E.g: Saturday Jun 15, 2015 at 9:03:01 CEST.
+# %ban_expiration_date_medium% - Expiration date of ban of servers timezone in medium format E.g: Jun 15, 2015, 9:03 CEST.
+# %ban_expiration_date_short% - Expiration date of ban of servers timezone in short format E.g: 6/15/15, 9:03 CEST.
 
 #Ban message when banned due to a death containing no killer and not in combat with something.
-EnvironmentBanMessage: "&c&lYou've Died\n\n&rYou %damage_cause_message_random% causing you to be banned.\nYou will be unbanned in &e%long_ban_time_left%&r."
+EnvironmentBanMessage: "&c&lYou've Died\n\n&rYou %ban_damage_cause_random_message% causing you to be banned.\nYou will be unbanned in &e%ban_time_left_long%&r."
 
 #Ban message when banned due to a death containing no killer but in combat with a player/monster.
-#Placeholders: %in_combat_with%
-EnvironmentWhileInCombatBanMessage: "&c&lYou've Died\n\n&rYou %damage_cause_message_random% whilst trying to escape &b%in_combat_with%&r causing you to be banned.\nYou will be unbanned in &e%long_ban_time_left%&r."
+#Placeholders: %ban_in_combat_with%
+EnvironmentWhileInCombatBanMessage: "&c&lYou've Died\n\n&rYou %ban_damage_cause_random_message% whilst trying to escape &b%ban_in_combat_with%&r causing you to be banned.\nYou will be unbanned in &e%ban_time_left_long%&r."
 
 #Ban message when banned due to a death containing a killer and not in combat with something.
-#Placeholders: %killer%
-EntityBanMessage: "&c&lYou've Died\n\n&rYou %damage_cause_message_random% by &b%killer%&r causing you to be banned.\nYou will be unbanned in &e%long_ban_time_left%&r."
+#Placeholders: %ban_killer%
+EntityBanMessage: "&c&lYou've Died\n\n&rYou %ban_damage_cause_random_message% by &b%ban_killer%&r causing you to be banned.\nYou will be unbanned in &e%ban_time_left_long%&r."
 
 #Ban message when banned due to a death containing a killer and in combat with another player/monster.
-#Placeholders: %killer% - %in_combat_with%
-EntityWhileInCombatBanMessage: "&c&lYou've Died\n\n&rYou %damage_cause_message_random% by &b%killer%&r whilst trying to escape &b%in_combat_with%&r causing you to be banned.\nYou will be unbanned in &e%long_ban_time_left%&r."
+#Placeholders: %ban_killer% - %ban_in_combat_with%
+EntityWhileInCombatBanMessage: "&c&lYou've Died\n\n&rYou %ban_damage_cause_random_message% by &b%ban_killer%&r whilst trying to escape &b%ban_in_combat_with%&r causing you to be banned.\nYou will be unbanned in &e%ban_time_left_long%&r."
 
 #Ban message when banned due to reviving someone.
-#Placeholders: %killer%
-ReviveBanMessage: "&c&lYou've Died\n\n&rYou have successfully revived &b%killer%&r, but at what cost?\nYou will be unbanned in &e%long_ban_time_left%&r."
+#Placeholders: %ban_killer%
+ReviveBanMessage: "&c&lYou've Died\n\n&rYou have successfully revived &b%ban_killer%&r, but at what cost?\nYou will be unbanned in &e%ban_time_left_long%&r."
 
 #Ban message when banned due to reviving someone while in combat with a player/monster.
-#Placeholders: %killer% - %in_combat_with%
-ReviveWhileInCombatBanMessage: "&c&lYou've Died\n\n&rYou have successfully revived &b%killer%&r whilst trying to escape &b%in_combat_with%&r, but at what cost?\nYou will be unbanned in &e%long_ban_time_left%&r."
+#Placeholders: %ban_killer% - %ban_in_combat_with%
+ReviveWhileInCombatBanMessage: "&c&lYou've Died\n\n&rYou have successfully revived &b%ban_killer%&r whilst trying to escape &b%ban_in_combat_with%&r, but at what cost?\nYou will be unbanned in &e%ban_time_left_long%&r."
 
 #Ban message when banned due to combat logging.
-#Placeholders: %combat_tagger%
-CombatLogBanMessage: "&c&lYou've Died\n\n&rYou have logged out while in combat with &b%combat_tagger%&r causing you to die and be banned.\nYou will be unbanned in &e%long_ban_time_left%&r."
+#Placeholders: %ban_combat_tagger%
+CombatLogBanMessage: "&c&lYou've Died\n\n&rYou have logged out while in combat with &b%ban_combat_tagger%&r causing you to die and be banned.\nYou will be unbanned in &e%ban_time_left_long%&r."
 
 
 ############################################################
