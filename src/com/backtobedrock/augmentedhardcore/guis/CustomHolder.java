@@ -18,8 +18,8 @@ public class CustomHolder implements InventoryHolder {
     private final String title;
     private final int size;
     private final int rowAmount;
-    private int currentRow = 1;
     private final Map<Integer, Icon> icons = new HashMap<>();
+    private int currentRow = 1;
     private Inventory inventory = null;
 
     public CustomHolder(int size, String title) {

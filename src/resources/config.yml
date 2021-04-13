@@ -555,7 +555,7 @@ FillerDisplay:
 AccentDisplay:
   Material: "light_blue_stained_glass_pane"
   Name: " "
-  Lore: []
+  Lore: [ ]
   Amount: 1
 
 #What should the loading item for GUI's look like?
@@ -570,7 +570,7 @@ LoadingDisplay:
 NotAvailableDisplay:
   Material: "red_stained_glass_pane"
   Name: "&cThis item is currently not available."
-  Lore: []
+  Lore: [ ]
   Amount: 1
 
 #What should the next button for paged GUI's look like?
@@ -578,7 +578,7 @@ NextPageDisplay:
   Material: "arrow"
   #Placeholders: %current_page% - %total_pages% - %next_page%
   Name: "&eNext Page &6&l>>"
-  Lore: []
+  Lore: [ ]
   Amount: 1
 
 #What should the next button for paged GUI's look like?
@@ -586,7 +586,7 @@ PreviousPageDisplay:
   Material: "arrow"
   #Placeholders: %current_page% - %total_pages% - %previous_page%
   Name: "&6&l<< &ePrevious Page"
-  Lore: []
+  Lore: [ ]
   Amount: 1
 
 #What should the page information item for paged GUI's look like?
@@ -594,20 +594,20 @@ PageInformationDisplay:
   Material: "paper"
   #Placeholders: %current_page% - %total_pages%
   Name: "&ePage &6%current_page% &eof &6%total_pages%"
-  Lore: []
+  Lore: [ ]
   Amount: 1
 
 #What should the go back to previous GUI button look like?
 PreviousGuiDisplay:
   Material: "barrier"
   Name: "&eGo back to the previous GUI"
-  Lore: []
+  Lore: [ ]
   Amount: 1
 
 
 #=======================--- INFO ---========================
 
-#What should the lives and life parts button look like?
+#What should the lives and life parts item look like?
 #Placeholders: %lives_number% - %lives% - %life_parts_number% - %life_parts%
 LivesAndLifePartsDisplay:
   Material: "turtle_egg"
@@ -617,7 +617,7 @@ LivesAndLifePartsDisplay:
     - "  &6♦ &aCurrent life parts: &b%life_parts_number%"
   Amount: 1
 
-#What should the max health button look like?
+#What should the max health item look like?
 #Placeholders: %max_health% - %min_health% - %current_max_health% - %time_till_next_max_health_long% - %time_till_next_max_health_short% - %time_till_next_max_health_digital%
 MaxHealthDisplay:
   Material: "gold_nugget"
@@ -637,7 +637,7 @@ ReviveDisplay:
     - "&bClick to revive someone"
   Amount: 1
 
-#What should the life part button look like?
+#What should the life part item look like?
 #Placeholders: %max_life_parts% - %life_parts_number% - %life_parts% - %time_till_next_life_part_long% - %time_till_next_life_part_short% - %time_till_next_life_part_digital%
 LifePartDisplay:
   Material: "iron_nugget"
@@ -649,10 +649,10 @@ LifePartDisplay:
   Amount: 1
 
 #What should the previous bans button look like?
-#Placeholders: %total_bans%
+#Placeholders: %total_death_bans%
 PreviousBansDisplay:
   Material: "skeleton_skull"
-  Name: "&6&lPrevious bans &e(&b%total_bans%&e)"
+  Name: "&6&lPrevious bans &e(&b%total_death_bans%&e)"
   Lore:
     - "&bBrowse your previous bans"
   Amount: 1
@@ -660,7 +660,22 @@ PreviousBansDisplay:
 
 #=======================--- BANS ---========================
 
-#What should the ban buttons look like?
+#What should the player skull item look like?
+#Placeholders:
+# %player_name% - %total_deaths% - %total_death_bans% - %last_ban_time_long% - %last_ban_time_short% - %last_ban_time_digital% -
+# %last_death_time_long% - %last_death_time_short% - %last_death_time_digital%
+PlayerDisplay:
+  #Will be overridden
+  Material: "player_head"
+  Name: "&6&l%player_name%"
+  Lore:
+    - "  &6♦ &aYou've died &b%total_deaths% &atimes on this server"
+    - "  &6♦ &aYour last death was &b%last_death_time_long% &aago"
+    - "  &6♦ &aYour last death ban was &b%last_ban_time_long% &aago"
+  #Will be overridden
+  Amount: 1
+
+#What should the ban items look like?
 #Placeholders:
 # %ban_number% - Number of the ban.
 # %ban_killer% - Killer that caused the ban.
@@ -685,7 +700,7 @@ PreviousBansDisplay:
 # %ban_expiration_date_short% - Expiration date of ban of servers timezone in short format E.g: 6/15/15, 9:03 CEST.
 BanDisplay:
   Material: "conduit"
-  Name: '&eBan &6&l#%ban_number% &e(&6%ban_start_date_short%&e)'
+  Name: "&eBan &6#&l%ban_number% &e(&6%ban_start_date_short%&e)"
   Lore:
     - "  &6♦ &aBan Time: &b%ban_time_short%"
     - "  &6♦ &aExpiration Date: &b%ban_expiration_date_short%"

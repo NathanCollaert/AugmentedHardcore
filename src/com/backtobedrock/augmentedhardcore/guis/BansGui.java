@@ -2,12 +2,16 @@ package com.backtobedrock.augmentedhardcore.guis;
 
 import com.backtobedrock.augmentedhardcore.domain.Ban;
 import com.backtobedrock.augmentedhardcore.domain.data.PlayerData;
-import com.backtobedrock.augmentedhardcore.domain.enums.GuiSortType;
 import com.backtobedrock.augmentedhardcore.utils.InventoryUtils;
 import com.backtobedrock.augmentedhardcore.utils.MessageUtils;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Statistic;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 public class BansGui extends AbstractPaginatedGui {
     private final PlayerData playerData;
@@ -68,6 +72,22 @@ public class BansGui extends AbstractPaginatedGui {
     }
 
     private void setPlayerHead(boolean update) {
-        this.setIcon(4, new Icon(InventoryUtils.createPlayerSkull(this.playerData.getPlayer().getName(), Collections.emptyList(), this.playerData.getPlayer()), Collections.emptyList()), update);
+        this.setIcon(4, new Icon(MessageUtils.replaceItemNameAndLorePlaceholders(InventoryUtils.createPlayerSkull(this.plugin.getConfigurations().getGuisConfiguration().getPlayerDisplay().getName(), this.plugin.getConfigurations().getGuisConfiguration().getPlayerDisplay().getLore(), this.playerData.getPlayer()), this.getPlayerPlaceholders()), Collections.emptyList()), update);
+    }
+
+    private Map<String, String> getPlayerPlaceholders() {
+        Map<String, String> placeholders = new HashMap<>();
+        OfflinePlayer player = this.playerData.getPlayer();
+        placeholders.put("player_name", player.getName());
+        placeholders.put("total_deaths", player.getPlayer() == null ? "-" : Integer.toString(player.getPlayer().getStatistic(Statistic.DEATHS)));
+        placeholders.put("total_death_bans", Integer.toString(this.playerData.getBanCount()));
+        Ban lastBan = this.playerData.getLastDeathBan();
+        placeholders.put("last_ban_time_long", lastBan == null ? "-" : MessageUtils.getTimeFromTicks(MessageUtils.timeUnitToTicks(ChronoUnit.SECONDS.between(this.playerData.getLastDeathBan().getStartDate(), LocalDateTime.now()), TimeUnit.SECONDS), false, true));
+        placeholders.put("last_ban_time_short", lastBan == null ? "-" : MessageUtils.getTimeFromTicks(MessageUtils.timeUnitToTicks(ChronoUnit.SECONDS.between(this.playerData.getLastDeathBan().getStartDate(), LocalDateTime.now()), TimeUnit.SECONDS), false, false));
+        placeholders.put("last_ban_time_digital", lastBan == null ? "-" : MessageUtils.getTimeFromTicks(MessageUtils.timeUnitToTicks(ChronoUnit.SECONDS.between(this.playerData.getLastDeathBan().getStartDate(), LocalDateTime.now()), TimeUnit.SECONDS), true, false));
+        placeholders.put("last_death_time_long", player.getPlayer() == null ? "-" : MessageUtils.getTimeFromTicks(player.getPlayer().getStatistic(Statistic.TIME_SINCE_DEATH), false, true));
+        placeholders.put("last_death_time_short", player.getPlayer() == null ? "-" : MessageUtils.getTimeFromTicks(player.getPlayer().getStatistic(Statistic.TIME_SINCE_DEATH), false, false));
+        placeholders.put("last_death_time_digital", player.getPlayer() == null ? "-" : MessageUtils.getTimeFromTicks(player.getPlayer().getStatistic(Statistic.TIME_SINCE_DEATH), true, false));
+        return placeholders;
     }
 }

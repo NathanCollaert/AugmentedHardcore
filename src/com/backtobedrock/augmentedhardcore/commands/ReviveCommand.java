@@ -27,25 +27,17 @@ public class ReviveCommand extends AbstractCommand {
         }
 
         this.hasPlayedBefore(this.args[0]).thenAcceptAsync(bool -> {
-            //check if reviving is enabled
-            if (!this.plugin.getConfigurations().getReviveConfiguration().isUseRevive()) {
-                this.sender.sendMessage("§cReviving is not enabled on the server.");
+            if (!bool) {
                 return;
             }
 
-            //check if not same player
-            if (this.sender.getUniqueId().equals(this.target.getUniqueId())) {
-                this.sender.sendMessage("§cYou cannot revive yourself, that would break the space-time continuum!");
-                return;
-            }
+            this.plugin.getPlayerRepository().getByPlayer(this.sender).thenAcceptAsync(playerData -> {
+                if (!playerData.checkRevivePermissionsReviver(this.sender)) {
+                    return;
+                }
 
-            //check if in disabled world
-            if (this.plugin.getConfigurations().getReviveConfiguration().getDisableReviveInWorlds().contains(this.sender.getWorld().getName().toLowerCase())) {
-                this.sender.sendMessage(String.format("§cYou cannot revive while in this world (%s).", this.sender.getWorld().getName()));
-                return;
-            }
-
-            PlayerUtils.openInventory(this.sender, new ReviveGui(this.sender, this.target).getInventory());
+                PlayerUtils.openInventory(this.sender, new ReviveGui(playerData, this.target).getInventory());
+            });
         });
     }
 }

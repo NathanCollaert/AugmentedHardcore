@@ -132,6 +132,10 @@ public class Ban {
         return map;
     }
 
+    public LocalDateTime getStartDate() {
+        return startDate;
+    }
+
     public Killer getKiller() {
         return killer;
     }

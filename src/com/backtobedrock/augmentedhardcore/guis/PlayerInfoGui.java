@@ -85,7 +85,7 @@ public class PlayerInfoGui extends AbstractGui {
         if (!this.plugin.getConfigurations().getReviveConfiguration().isUseRevive() || this.isOther) {
             icon = new Icon(this.plugin.getConfigurations().getGuisConfiguration().getNotAvailableDisplay().getItem(), Collections.emptyList());
         } else {
-            icon = new Icon(MessageUtils.replaceItemNameAndLorePlaceholders(this.plugin.getConfigurations().getGuisConfiguration().getReviveDisplay().getItem(), new HashMap<>()), Collections.singletonList(new OpenPlayerSelectionAnvilGuiClickAction()));
+            icon = new Icon(this.plugin.getConfigurations().getGuisConfiguration().getReviveDisplay().getItem(), Collections.singletonList(new OpenPlayerSelectionAnvilGuiClickAction()));
         }
 
         this.setIcon(22, icon, update);
@@ -118,7 +118,7 @@ public class PlayerInfoGui extends AbstractGui {
             icon = new Icon(this.plugin.getConfigurations().getGuisConfiguration().getNotAvailableDisplay().getItem(), Collections.emptyList());
         } else {
             Map<String, String> placeholders = new HashMap<String, String>() {{
-                put("total_bans", Integer.toString(playerData.getBanCount()));
+                put("total_death_bans", Integer.toString(playerData.getBanCount()));
             }};
             icon = new Icon(MessageUtils.replaceItemNameAndLorePlaceholders(this.plugin.getConfigurations().getGuisConfiguration().getPreviousBansDisplay().getItem(), placeholders), Collections.singletonList(new OpenBansGuiClickAction(this.playerData)));
         }

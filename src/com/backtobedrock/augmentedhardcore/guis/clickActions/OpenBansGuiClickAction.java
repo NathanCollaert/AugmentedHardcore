@@ -15,10 +15,10 @@ public class OpenBansGuiClickAction extends AbstractClickAction {
 
     @Override
     public void execute(Player player) {
-        if (playerData.getBanCount() > 0) {
-            PlayerUtils.openInventory(player, new BansGui(playerData).getInventory());
+        if (this.playerData.getBanCount() > 0) {
+            PlayerUtils.openInventory(player, new BansGui(this.playerData).getInventory());
         } else {
-            player.sendMessage("§cYou luckily have no death bans yet!");
+            player.sendMessage("§cThere are currently no death bans recorded yet.");
         }
     }
 }

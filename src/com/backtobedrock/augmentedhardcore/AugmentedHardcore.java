@@ -89,18 +89,16 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
         }
 
         //initialize configurations
-        if (this.configurations == null) {
-            try {
-                File copy = new File(this.getDataFolder(), "config.old.yml");
-                if (copy.exists()) {
-                    copy.delete();
-                }
-                Files.copy(configFile.toPath(), copy.toPath());
-                UpdateUtils.update(this, "config.yml", configFile, Arrays.asList("LifePartsPerKill", "MaxHealthIncreasePerKill"));
-                configFile = new File(this.getDataFolder(), "config.yml");
-            } catch (IOException e) {
-                e.printStackTrace();
+        try {
+            File copy = new File(this.getDataFolder(), "config.old.yml");
+            if (copy.exists()) {
+                copy.delete();
             }
+            Files.copy(configFile.toPath(), copy.toPath());
+            UpdateUtils.update(this, "config.yml", configFile, Arrays.asList("LifePartsPerKill", "MaxHealthIncreasePerKill"));
+            configFile = new File(this.getDataFolder(), "config.yml");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         this.configurations = new Configurations(configFile);
         this.messages = new Messages(messagesFile);

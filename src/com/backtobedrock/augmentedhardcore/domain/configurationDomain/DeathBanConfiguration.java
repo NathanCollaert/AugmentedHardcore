@@ -10,7 +10,10 @@ import org.bukkit.BanList;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.List;
 import java.util.logging.Level;
 
 public class DeathBanConfiguration {

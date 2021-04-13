@@ -24,11 +24,12 @@ public class GuisConfiguration {
     private final Display reviveDisplay;
     private final Display lifePartDisplay;
     private final Display previousBansDisplay;
+    private final Display PlayerDisplay;
     private final Display banDisplay;
     private final Display confirmationDisplay;
     private final Display cancellationDisplay;
 
-    public GuisConfiguration(Display fillerDisplay, Display accentDisplay, Display loadingDisplay, Display notAvailableDisplay, Display nextPageDisplay, Display previousPageDisplay, Display pageInformationDisplay, Display previousGuiDisplay, Display livesAndLifePartsDisplay, Display maxHealthDisplay, Display reviveDisplay, Display lifePartDisplay, Display previousBansDisplay, Display banDisplay, Display confirmationDisplay, Display cancellationDisplay) {
+    public GuisConfiguration(Display fillerDisplay, Display accentDisplay, Display loadingDisplay, Display notAvailableDisplay, Display nextPageDisplay, Display previousPageDisplay, Display pageInformationDisplay, Display previousGuiDisplay, Display livesAndLifePartsDisplay, Display maxHealthDisplay, Display reviveDisplay, Display lifePartDisplay, Display previousBansDisplay, Display playerDisplay, Display banDisplay, Display confirmationDisplay, Display cancellationDisplay) {
         this.fillerDisplay = fillerDisplay;
         this.accentDisplay = accentDisplay;
         this.loadingDisplay = loadingDisplay;
@@ -42,6 +43,7 @@ public class GuisConfiguration {
         this.reviveDisplay = reviveDisplay;
         this.lifePartDisplay = lifePartDisplay;
         this.previousBansDisplay = previousBansDisplay;
+        this.PlayerDisplay = playerDisplay;
         this.banDisplay = banDisplay;
         this.confirmationDisplay = confirmationDisplay;
         this.cancellationDisplay = cancellationDisplay;
@@ -66,6 +68,7 @@ public class GuisConfiguration {
                 "ReviveDisplay",
                 "LifePartDisplay",
                 "PreviousBansDisplay",
+                "PlayerDisplay",
                 "BanDisplay",
                 "ConfirmationDisplay",
                 "CancellationDisplay"
@@ -97,6 +100,7 @@ public class GuisConfiguration {
                 cDisplays.get("ReviveDisplay"),
                 cDisplays.get("LifePartDisplay"),
                 cDisplays.get("PreviousBansDisplay"),
+                cDisplays.get("PlayerDisplay"),
                 cDisplays.get("BanDisplay"),
                 cDisplays.get("ConfirmationDisplay"),
                 cDisplays.get("CancellationDisplay")
@@ -165,5 +169,9 @@ public class GuisConfiguration {
 
     public Display getPreviousGuiDisplay() {
         return previousGuiDisplay;
+    }
+
+    public Display getPlayerDisplay() {
+        return PlayerDisplay;
     }
 }

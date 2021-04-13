@@ -30,22 +30,22 @@ import java.util.concurrent.TimeUnit;
 public class PlayerData {
     //misc
     private final AugmentedHardcore plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
-    //serializable
-    private final Map<Integer, Ban> bans;
-    private String lastKnownName;
+    private final OfflinePlayer player;
+    //helpers
     private final List<AbstractPlaytime> playtime = new ArrayList<>();
+    private List<AbstractCombatTag> combatTag = new ArrayList<>();
+    private boolean kicked = false;
+    private boolean combatLogged = false;
+    private Killer reviving = null;
+    //serializable
+    private String lastKnownName;
     private int timeTillNextLifePart;
     private int timeTillNextMaxHealth;
     private long reviveCooldown;
     private int lifeParts;
     private int lives;
     private String ip;
-    //helpers
-    private final OfflinePlayer player;
-    private List<AbstractCombatTag> combatTag = new ArrayList<>();
-    private boolean kicked = false;
-    private boolean combatLogged = false;
-    private Killer reviving = null;
+    private final Map<Integer, Ban> bans;
 
     public PlayerData(OfflinePlayer player) {
         this(player, new LinkedHashMap<>(), JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getLivesAtStart(), JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getLifePartsAtStart(), JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getPlaytimePerLifePart(), JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getMaxHealthConfiguration().getPlaytimePerHalfHeart(), -1L);
@@ -65,13 +65,7 @@ public class PlayerData {
                 InetSocketAddress address = player.getPlayer().getAddress();
                 this.ip = address.getHostName() == null ? address.getHostString() : address.getHostName();
             }
-            if (this.plugin.getConfigurations().getReviveConfiguration().isUseRevive() && reviveCooldown == -1L) {
-                GregorianCalendar cal = new GregorianCalendar();
-                if (!this.plugin.getConfigurations().getReviveConfiguration().isReviveOnFirstJoin()) {
-                    cal.add(Calendar.MINUTE, this.plugin.getConfigurations().getReviveConfiguration().getTimeBetweenRevives());
-                }
-                reviveCooldown = cal.getTime().getTime();
-            }
+            this.checkReviveCooldown(this.checkReviveCooldown(reviveCooldown));
         }
         this.setReviveCooldown(reviveCooldown);
     }
@@ -102,6 +96,17 @@ public class PlayerData {
         return new PlayerData(player, cBans, cLives, cLifeParts, cTimeTillNextLifePart, cTimeTillNextMaxHealth, cReviveCooldown);
     }
 
+    public long checkReviveCooldown(long reviveCooldown) {
+        if (this.plugin.getConfigurations().getReviveConfiguration().isUseRevive() && reviveCooldown == -1L) {
+            GregorianCalendar cal = new GregorianCalendar();
+            if (!this.plugin.getConfigurations().getReviveConfiguration().isReviveOnFirstJoin()) {
+                cal.add(Calendar.MINUTE, this.plugin.getConfigurations().getReviveConfiguration().getTimeBetweenRevives());
+            }
+            return cal.getTime().getTime();
+        }
+        return reviveCooldown;
+    }
+
     private void setReviveCooldown(long reviveCooldown) {
         GregorianCalendar cal = new GregorianCalendar();
         cal.add(Calendar.MINUTE, this.plugin.getConfigurations().getReviveConfiguration().getTimeBetweenRevives());
@@ -116,12 +121,12 @@ public class PlayerData {
         return lives;
     }
 
-    public OfflinePlayer getPlayer() {
-        return player;
-    }
-
     public void setLives(int lives) {
         this.lives = Math.max(Math.min(lives, this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getMaxLives()), 0);
+    }
+
+    public OfflinePlayer getPlayer() {
+        return player;
     }
 
     public int getLifeParts() {
@@ -558,6 +563,10 @@ public class PlayerData {
         return this.timeTillNextMaxHealth;
     }
 
+    private void setTimeTillNextMaxHealth(int timeTillNextMaxHealth) {
+        this.timeTillNextMaxHealth = Math.min(timeTillNextMaxHealth, this.plugin.getConfigurations().getMaxHealthConfiguration().getPlaytimePerHalfHeart());
+    }
+
     public void onLeave() {
         if (this.player.getPlayer() == null) {
             return;
@@ -587,7 +596,11 @@ public class PlayerData {
             return;
         }
 
-        if (!this.checkRevivePermissions(revivingData)) {
+        if (!this.checkRevivePermissionsReviver(revivingData.getPlayer())) {
+            return;
+        }
+
+        if (!this.checkRevivePermissionsReviving(revivingData)) {
             return;
         }
 
@@ -623,7 +636,18 @@ public class PlayerData {
         this.plugin.getPlayerRepository().updatePlayerData(this);
     }
 
-    public boolean checkRevivePermissions(PlayerData revivingData) {
+    public boolean checkRevivePermissionsReviving(PlayerData revivingData) {
+        //check if player already on max lives
+        if (revivingData.getLives() == this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getMaxLives()) {
+            if (this.player.getPlayer() != null) {
+                this.player.getPlayer().sendMessage(String.format("§c%s already has the maximum amount of lives.", revivingData.getPlayer().getName()));
+            }
+            return false;
+        }
+        return true;
+    }
+
+    public boolean checkRevivePermissionsReviver(OfflinePlayer reviving) {
         if (this.player.getPlayer() == null) {
             return false;
         }
@@ -635,37 +659,32 @@ public class PlayerData {
         }
 
         //check if permission
-        if (!this.player.getPlayer().hasPermission(Permission.REVIVE.getPermissionString()))
+        if (!this.player.getPlayer().hasPermission(Permission.REVIVE.getPermissionString())) {
             return false;
+        }
 
         //check if not same player
-        if (this.player.getPlayer().getUniqueId().equals(revivingData.getPlayer().getUniqueId())) {
+        if (this.player.getPlayer().getUniqueId().equals(reviving.getUniqueId())) {
             this.player.getPlayer().sendMessage("§cYou cannot revive yourself, that would break the space-time continuum!");
             return false;
         }
 
         //check if in disabled world
         if (this.plugin.getConfigurations().getReviveConfiguration().getDisableReviveInWorlds().contains(this.player.getPlayer().getWorld().getName().toLowerCase())) {
-            this.player.getPlayer().sendMessage(String.format("§cYou cannot revive %s while in this world (%s).", revivingData.getPlayer().getName(), this.player.getPlayer().getWorld().getName()));
+            this.player.getPlayer().sendMessage(String.format("§cYou cannot revive %s while in this world (%s).", reviving.getName(), this.player.getPlayer().getWorld().getName()));
             return false;
         }
 
         //check if enough lives left to revive
         int amount = this.plugin.getConfigurations().getReviveConfiguration().getLivesLostOnReviving();
         if (this.getLives() < amount) {
-            this.player.getPlayer().sendMessage(String.format("§cYou'll need %s in order to revive %s, you currently have %s.", amount + (amount > 1 ? " lives" : " life"), revivingData.getPlayer().getName(), this.getLives() + (this.getLives() > 1 ? " lives" : " life")));
+            this.player.getPlayer().sendMessage(String.format("§cYou'll need %s in order to revive %s, you currently have %s.", amount + (amount > 1 ? " lives" : " life"), reviving.getName(), this.getLives() + (this.getLives() > 1 ? " lives" : " life")));
             return false;
         }
 
         //check if revive on cooldown
         if (this.isReviveOnCooldown()) {
-            this.player.getPlayer().sendMessage(String.format("§cYou cannot revive %s for another %s.", revivingData.getPlayer().getName(), MessageUtils.getTimeFromTicks(this.getReviveCooldownLeftInTicks(), false, true)));
-            return false;
-        }
-
-        //check if player already on max lives
-        if (revivingData.getLives() == this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getMaxLives()) {
-            this.player.getPlayer().sendMessage(String.format("§c%s already has the maximum amount of lives.", revivingData.getPlayer().getName()));
+            this.player.getPlayer().sendMessage(String.format("§cYou cannot revive %s for another %s.", reviving.getName(), MessageUtils.getTimeFromTicks(this.getReviveCooldownLeftInTicks(), false, true)));
             return false;
         }
 
@@ -702,12 +721,9 @@ public class PlayerData {
         this.timeTillNextLifePart = Math.min(timeTillNextLifePart, this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getPlaytimePerLifePart());
     }
 
-    private void setTimeTillNextMaxHealth(int timeTillNextMaxHealth) {
-        this.timeTillNextMaxHealth = Math.min(timeTillNextMaxHealth, this.plugin.getConfigurations().getMaxHealthConfiguration().getPlaytimePerHalfHeart());
-    }
-
     public void onReload() {
         this.onJoin();
+        this.checkReviveCooldown(this.checkReviveCooldown(this.reviveCooldown));
     }
 
     public Map<String, Object> serialize() {
@@ -746,5 +762,9 @@ public class PlayerData {
 
     public Killer getReviving() {
         return reviving;
+    }
+
+    public Ban getLastDeathBan() {
+        return this.bans.get(this.bans.size());
     }
 }

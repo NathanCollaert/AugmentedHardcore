@@ -3,11 +3,13 @@ package com.backtobedrock.augmentedhardcore.domain.configurationDomain.configura
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.utils.ConfigUtils;
 import com.backtobedrock.augmentedhardcore.utils.InventoryUtils;
+import com.backtobedrock.augmentedhardcore.utils.MessageUtils;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -43,6 +45,14 @@ public class Display {
     }
 
     public ItemStack getItem() {
-        return InventoryUtils.createItem(this.material, this.name, this.lore, this.amount, false);
+        return MessageUtils.replaceItemNameAndLorePlaceholders(InventoryUtils.createItem(this.material, this.getName(), this.getLore(), this.amount, false), new HashMap<>());
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public List<String> getLore() {
+        return this.lore;
     }
 }
