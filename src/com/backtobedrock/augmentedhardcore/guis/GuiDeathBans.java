@@ -13,10 +13,10 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-public class BansGui extends AbstractPaginatedGui {
+public class GuiDeathBans extends AbstractPaginatedGui {
     private final PlayerData playerData;
 
-    public BansGui(PlayerData playerData) {
+    public GuiDeathBans(PlayerData playerData) {
         super(new CustomHolder(playerData.getBanCount(), String.format("%s Death Bans", playerData.getPlayer().getName())), playerData.getBanCount());
         this.playerData = playerData;
         this.initialize();

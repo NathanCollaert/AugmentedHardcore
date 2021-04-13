@@ -17,6 +17,26 @@ commands:
   revive:
     aliases:
       - rev
+  mystats:
+    aliases:
+      - ms
+  nextlifepart:
+    aliases:
+      - nlp
+  nextmaxhealth:
+    aliases:
+      - nmh
+  nextrevive:
+    aliases:
+      - nr
+  lifeparts:
+    aliases:
+      - lp
+  deathbans:
+    aliases:
+      - db
+  lives:
+    usage: /<command>
 permissions:
   #BYPASSES
   augmentedhardcore.bypass.ban:
@@ -45,21 +65,45 @@ permissions:
   #COMMANDS
   augmentedhardcore.help:
     default: op
-  augmentedhardcore.reload:
-    default: op
   augmentedhardcore.revive:
     default: op
+  augmentedhardcore.undeathban:
+    default: op
   augmentedhardcore.mystats:
+    default: op
+  augmentedhardcore.mystats.other:
+    default: op
+  augmentedhardcore.nextlifepart:
+    default: op
+  augmentedhardcore.nextlifepart.other:
+    default: op
+  augmentedhardcore.nextmaxhealth:
+    default: op
+  augmentedhardcore.nextmaxhealth.other:
+    default: op
+  augmentedhardcore.nextrevive:
+    default: op
+  augmentedhardcore.nextrevive.other:
+    default: op
+  augmentedhardcore.lifeparts:
+    default: op
+  augmentedhardcore.lifeparts.other:
+    default: op
+  augmentedhardcore.lives:
+    default: op
+  augmentedhardcore.lives.other:
+    default: op
+  augmentedhardcore.deathbans:
+    default: op
+  augmentedhardcore.deathbans.other:
+    default: op
+  augmentedhardcore.reload:
     default: op
   augmentedhardcore.setlives:
     default: op
   augmentedhardcore.addlives:
     default: op
-  augmentedhardcore.undeathban:
-    default: op
   augmentedhardcore.addlifeparts:
     default: op
   augmentedhardcore.setlifeparts:
-    default: op
-  augmentedhardcore.mystats.other:
     default: op

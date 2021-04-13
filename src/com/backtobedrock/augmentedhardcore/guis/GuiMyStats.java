@@ -12,11 +12,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PlayerInfoGui extends AbstractGui {
+public class GuiMyStats extends AbstractGui {
     private final PlayerData playerData;
     private final boolean isOther;
 
-    public PlayerInfoGui(Player sender, PlayerData playerData) {
+    public GuiMyStats(Player sender, PlayerData playerData) {
         super(new CustomHolder(54, String.format("%s Information", playerData.getPlayer().getName())));
         this.playerData = playerData;
         this.isOther = sender.getUniqueId() != this.playerData.getPlayer().getUniqueId();

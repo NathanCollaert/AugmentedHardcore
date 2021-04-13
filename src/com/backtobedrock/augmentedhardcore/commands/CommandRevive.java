@@ -1,12 +1,12 @@
 package com.backtobedrock.augmentedhardcore.commands;
 
 import com.backtobedrock.augmentedhardcore.domain.enums.Command;
-import com.backtobedrock.augmentedhardcore.guis.ReviveGui;
+import com.backtobedrock.augmentedhardcore.guis.GuiRevive;
 import com.backtobedrock.augmentedhardcore.utils.PlayerUtils;
 import org.bukkit.command.CommandSender;
 
-public class ReviveCommand extends AbstractCommand {
-    public ReviveCommand(CommandSender cs, String[] args) {
+public class CommandRevive extends AbstractCommand {
+    public CommandRevive(CommandSender cs, String[] args) {
         super(cs, args);
     }
 
@@ -32,11 +32,11 @@ public class ReviveCommand extends AbstractCommand {
             }
 
             this.plugin.getPlayerRepository().getByPlayer(this.sender).thenAcceptAsync(playerData -> {
-                if (!playerData.checkRevivePermissionsReviver(this.sender)) {
+                if (!playerData.checkRevivePermissionsReviver(this.target)) {
                     return;
                 }
 
-                PlayerUtils.openInventory(this.sender, new ReviveGui(playerData, this.target).getInventory());
+                PlayerUtils.openInventory(this.sender, new GuiRevive(playerData, this.target).getInventory());
             });
         });
     }

@@ -35,13 +35,34 @@ public class Commands implements TabCompleter {
     public boolean onCommand(CommandSender cs, Command cmnd, String alias, String[] args) {
         switch (cmnd.getName().toLowerCase()) {
             case "augmentedhardcore":
-                new AugmentedHardcoreCommand(cs, args).run();
+                new CommandAugmentedHardcore(cs, args).run();
                 break;
             case "undeathban":
-                new UnDeathBanCommand(cs, args).run();
+                new CommandUnDeathBan(cs, args).run();
                 break;
             case "revive":
-                new ReviveCommand(cs, args).run();
+                new CommandRevive(cs, args).run();
+                break;
+            case "mystats":
+                new CommandMyStats(cs, args).run();
+                break;
+            case "nextlifepart":
+                new CommandNextLifePart(cs, args).run();
+                break;
+            case "nextmaxhealth":
+                new CommandNextMaxHealth(cs, args).run();
+                break;
+            case "nextrevive":
+                new CommandNextRevive(cs, args).run();
+                break;
+            case "lifeparts":
+                new CommandLifeParts(cs, args).run();
+                break;
+            case "lives":
+                new CommandLives(cs, args).run();
+                break;
+            case "deathbans":
+                new CommandDeathBans(cs, args).run();
                 break;
         }
         return true;
@@ -59,17 +80,11 @@ public class Commands implements TabCompleter {
                         Collections.sort(completions);
                         break;
                     case 2:
-                        if (Arrays.asList("addlives", "addlifeparts", "setlives", "setlifeparts", "mystats").contains(args[0])) {
+                        if (Arrays.asList("addlives", "addlifeparts", "setlives", "setlifeparts").contains(args[0])) {
                             StringUtil.copyPartialMatches(args[1].toLowerCase(), Bukkit.getServer().getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()), completions);
                             Collections.sort(completions);
                         }
                         break;
-                }
-                break;
-            case "revive":
-                if (args.length == 1) {
-                    StringUtil.copyPartialMatches(args[0].toLowerCase(), Bukkit.getServer().getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()), completions);
-                    Collections.sort(completions);
                 }
                 break;
         }

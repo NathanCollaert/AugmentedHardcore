@@ -1,10 +1,7 @@
 package com.backtobedrock.augmentedhardcore.commands;
 
 import com.backtobedrock.augmentedhardcore.domain.enums.Command;
-import com.backtobedrock.augmentedhardcore.domain.enums.Permission;
-import com.backtobedrock.augmentedhardcore.guis.PlayerInfoGui;
 import com.backtobedrock.augmentedhardcore.utils.CommandUtils;
-import com.backtobedrock.augmentedhardcore.utils.PlayerUtils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -13,8 +10,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class AugmentedHardcoreCommand extends AbstractCommand {
-    public AugmentedHardcoreCommand(CommandSender cs, String[] args) {
+public class CommandAugmentedHardcore extends AbstractCommand {
+    public CommandAugmentedHardcore(CommandSender cs, String[] args) {
         super(cs, args);
     }
 
@@ -133,31 +130,6 @@ public class AugmentedHardcoreCommand extends AbstractCommand {
             case RELOAD:
                 this.plugin.initialize();
                 this.cs.sendMessage("§aAugmentedHardcore has successfully been reloaded.");
-                break;
-            case MYSTATS:
-                if (this.args.length > 1) {
-                    if (!this.isPlayer()) {
-                        return;
-                    }
-
-                    if (!this.hasPermission(Permission.MYSTATS_OTHER)) {
-                        return;
-                    }
-
-                    this.hasPlayedBefore(this.args[1]).thenAcceptAsync(bool -> {
-                        if (!bool) {
-                            return;
-                        }
-
-                        this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(playerData -> PlayerUtils.openInventory(this.sender, new PlayerInfoGui(this.sender, playerData).getInventory()));
-                    });
-                } else {
-                    if (!this.isPlayer()) {
-                        return;
-                    }
-
-                    this.plugin.getPlayerRepository().getByPlayer(this.sender).thenAcceptAsync(playerData -> PlayerUtils.openInventory(this.sender, new PlayerInfoGui(this.sender, playerData).getInventory()));
-                }
                 break;
             default:
                 this.sendHelpMessage();

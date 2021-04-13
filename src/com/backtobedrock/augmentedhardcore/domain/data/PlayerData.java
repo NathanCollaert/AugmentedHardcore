@@ -65,7 +65,7 @@ public class PlayerData {
                 InetSocketAddress address = player.getPlayer().getAddress();
                 this.ip = address.getHostName() == null ? address.getHostString() : address.getHostName();
             }
-            this.checkReviveCooldown(this.checkReviveCooldown(reviveCooldown));
+            reviveCooldown = this.checkReviveCooldown(reviveCooldown);
         }
         this.setReviveCooldown(reviveCooldown);
     }
@@ -723,7 +723,7 @@ public class PlayerData {
 
     public void onReload() {
         this.onJoin();
-        this.checkReviveCooldown(this.checkReviveCooldown(this.reviveCooldown));
+        this.setReviveCooldown(this.checkReviveCooldown(this.reviveCooldown));
     }
 
     public Map<String, Object> serialize() {

@@ -12,12 +12,12 @@ import org.bukkit.OfflinePlayer;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-public class ReviveGui extends AbstractGui {
+public class GuiRevive extends AbstractGui {
     private final PlayerData reviverData;
     private final OfflinePlayer reviving;
     private final Map<String, String> placeholders;
 
-    public ReviveGui(PlayerData reviverData, OfflinePlayer reviving) {
+    public GuiRevive(PlayerData reviverData, OfflinePlayer reviving) {
         super(new CustomHolder(54, String.format("Reviving %s", reviving.getName())));
         this.reviverData = reviverData;
         this.reviving = reviving;

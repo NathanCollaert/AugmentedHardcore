@@ -4,8 +4,8 @@ import com.backtobedrock.augmentedhardcore.domain.enums.Command;
 import com.backtobedrock.augmentedhardcore.utils.BanUtils;
 import org.bukkit.command.CommandSender;
 
-public class UnDeathBanCommand extends AbstractCommand {
-    public UnDeathBanCommand(CommandSender cs, String[] args) {
+public class CommandUnDeathBan extends AbstractCommand {
+    public CommandUnDeathBan(CommandSender cs, String[] args) {
         super(cs, args);
     }
 
