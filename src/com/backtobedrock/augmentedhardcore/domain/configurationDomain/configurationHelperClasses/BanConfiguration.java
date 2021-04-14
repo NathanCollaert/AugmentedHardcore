@@ -21,8 +21,12 @@ public class BanConfiguration {
     public static BanConfiguration deserialize(DamageCause cause, ConfigurationSection section) {
         AugmentedHardcore plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
 
-        int cBanTime = ConfigUtils.checkMinBanTime(section.getInt("BanTime", cause.getDefaultBantime()), 0);
+        int cBanTime = ConfigUtils.checkMinMaxNoNotification(section.getInt("BanTime", cause.getDefaultBantime()), -1, Integer.MAX_VALUE);
         List<String> cDisplayMessages = section.contains("DisplayMessages") ? section.getStringList("DisplayMessages") : null;
+
+        if (cBanTime == -1) {
+            cBanTime = Integer.MAX_VALUE;
+        }
 
         if (cDisplayMessages == null) {
             cDisplayMessages = cause.getDefaultDisplayMessages();

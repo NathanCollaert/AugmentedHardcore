@@ -5,7 +5,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
-public class PlayerRegainHealthListener extends AbstractEventListener {
+public class ListenerPlayerRegainHealth extends AbstractEventListener {
 
     @EventHandler
     public void onEntityRegainHealth(EntityRegainHealthEvent event) {
@@ -18,7 +18,7 @@ public class PlayerRegainHealthListener extends AbstractEventListener {
         }
 
         EntityRegainHealthEvent.RegainReason reason = event.getRegainReason();
-        if (this.plugin.getConfigurations().getMaxHealthConfiguration().isDisableArtificialRegeneration() && (reason == EntityRegainHealthEvent.RegainReason.EATING || reason == EntityRegainHealthEvent.RegainReason.MAGIC || reason == EntityRegainHealthEvent.RegainReason.MAGIC_REGEN)) {
+        if (this.plugin.getConfigurations().getMiscellaneousConfiguration().isDisableArtificialRegeneration() && (reason == EntityRegainHealthEvent.RegainReason.EATING || reason == EntityRegainHealthEvent.RegainReason.MAGIC || reason == EntityRegainHealthEvent.RegainReason.MAGIC_REGEN)) {
             if (event.getEntity().hasPermission(Permission.BYPASS_ARTIFICIALREGENERATION.getPermissionString())) {
                 return;
             }
@@ -28,6 +28,6 @@ public class PlayerRegainHealthListener extends AbstractEventListener {
 
     @Override
     public boolean isEnabled() {
-        return (this.plugin.getConfigurations().getMaxHealthConfiguration().isDisableArtificialRegeneration());
+        return (this.plugin.getConfigurations().getMiscellaneousConfiguration().isDisableArtificialRegeneration());
     }
 }

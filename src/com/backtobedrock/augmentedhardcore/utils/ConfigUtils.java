@@ -24,8 +24,8 @@ public class ConfigUtils {
         }
     }
 
-    public static int checkMinBanTime(int value, int min) {
-        if (value >= min) {
+    public static int checkMinMaxNoNotification(int value, int min, int max) {
+        if (value >= min && value <= max) {
             return value;
         } else {
             return -10;
@@ -46,6 +46,15 @@ public class ConfigUtils {
             return value;
         } else {
             sendErrorMessage(String.format("%s: value cannot be lower than %f and higher than %f, your value is: %f", id, min, max, value));
+            return -10;
+        }
+    }
+
+    public static int checkMinMax(String id, int value, int min, int max) {
+        if (value >= min && value <= max) {
+            return value;
+        } else {
+            sendErrorMessage(String.format("%s: value cannot be lower than %d and higher than %d, your value is: %d", id, min, max, value));
             return -10;
         }
     }

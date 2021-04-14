@@ -5,7 +5,7 @@ import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.List;
 
-public class CombatTagConfiguration {
+public class ConfigurationCombatTag {
     private final boolean playerCombatTag;
     private final boolean monsterCombatTag;
     private final boolean combatTagSelf;
@@ -13,7 +13,7 @@ public class CombatTagConfiguration {
     private final boolean combatTagPlayerKickDeath;
     private final List<String> disableCombatTagInWorlds;
 
-    public CombatTagConfiguration(
+    public ConfigurationCombatTag(
             boolean playerCombatTag,
             boolean monsterCombatTag,
             boolean combatTagSelf,
@@ -29,11 +29,11 @@ public class CombatTagConfiguration {
         this.disableCombatTagInWorlds = disableCombatTagInWorlds;
     }
 
-    public static CombatTagConfiguration deserialize(ConfigurationSection section) {
+    public static ConfigurationCombatTag deserialize(ConfigurationSection section) {
         boolean cPlayerCombatTag = section.getBoolean("PlayerCombatTag", true);
         boolean cMonsterCombatTag = section.getBoolean("MonsterCombatTag", true);
         boolean cCombatTagSelf = section.getBoolean("CombatTagSelf", true);
-        int cCombatTagTime = ConfigUtils.checkMin("CombatTagTime", section.getInt("CombatTagTime", 15), 1);
+        int cCombatTagTime = ConfigUtils.checkMinMax("CombatTagTime", section.getInt("CombatTagTime", 15), 1, Integer.MAX_VALUE);
         boolean cCombatTagPlayerKickDeath = section.getBoolean("CombatTagPlayerKickDeath", true);
         List<String> cDisableCombatTagInWorlds = section.getStringList("DisableCombatTagInWorlds");
 
@@ -41,7 +41,7 @@ public class CombatTagConfiguration {
             return null;
         }
 
-        return new CombatTagConfiguration(
+        return new ConfigurationCombatTag(
                 cPlayerCombatTag,
                 cMonsterCombatTag,
                 cCombatTagSelf,

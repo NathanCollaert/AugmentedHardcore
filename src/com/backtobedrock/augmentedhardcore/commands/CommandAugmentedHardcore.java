@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class CommandAugmentedHardcore extends AbstractCommand {
     public CommandAugmentedHardcore(CommandSender cs, String[] args) {
@@ -16,7 +17,7 @@ public class CommandAugmentedHardcore extends AbstractCommand {
     }
 
     @Override
-    public void run() {
+    public void run() throws ExecutionException, InterruptedException {
         if (this.args.length < 1) {
             this.sendHelpMessage();
             return;
@@ -46,17 +47,21 @@ public class CommandAugmentedHardcore extends AbstractCommand {
                         return;
                     }
 
-                    this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(playerData -> {
-                        playerData.increaseLives(amount);
+                    try {
+                        this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(playerData -> {
+                            playerData.increaseLives(amount);
 
-                        this.sendSuccessMessages(target,
-                                String.format("§aYou've been given §6%s§a, you now have §6%s§a.", amount + (amount == 1 ? " life" : " lives"), playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives")),
-                                String.format("§aYou successfully gave §6%s§a, §6%s§a now has §6%s§a.", amount + (amount == 1 ? " life" : " lives"), this.args[1], playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives"))
-                        );
+                            this.sendSuccessMessages(target,
+                                    String.format("§aYou've been given §6%s§a, you now have §6%s§a.", amount + (amount == 1 ? " life" : " lives"), playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives")),
+                                    String.format("§aYou successfully gave §6%s§a, §6%s§a now has §6%s§a.", amount + (amount == 1 ? " life" : " lives"), this.args[1], playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives"))
+                            );
 
-                        this.plugin.getPlayerRepository().updatePlayerData(playerData);
-                    });
-                });
+                            this.plugin.getPlayerRepository().updatePlayerData(playerData);
+                        }).get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                }).get();
                 break;
             case ADDLIFEPARTS:
                 amount = CommandUtils.getPositiveNumberFromString(this.cs, this.args[2]);
@@ -69,17 +74,21 @@ public class CommandAugmentedHardcore extends AbstractCommand {
                         return;
                     }
 
-                    this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(playerData -> {
-                        playerData.increaseLifeParts(amount);
+                    try {
+                        this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(playerData -> {
+                            playerData.increaseLifeParts(amount);
 
-                        this.sendSuccessMessages(target,
-                                String.format("§aYou've been given §6%s§a, you now have §6%s§a and §6%s§a.", amount + (amount == 1 ? " life part" : " life parts"), playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives"), playerData.getLifeParts() + (playerData.getLifeParts() == 1 ? " life part" : " life parts")),
-                                String.format("§aYou successfully gave §6%s§a, §6%s§a now has §6%s§a and §6%s§a.", amount + (amount == 1 ? " life part" : " life parts"), this.args[1], playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives"), playerData.getLifeParts() + (playerData.getLifeParts() == 1 ? " life part" : " life parts"))
-                        );
+                            this.sendSuccessMessages(target,
+                                    String.format("§aYou've been given §6%s§a, you now have §6%s§a and §6%s§a.", amount + (amount == 1 ? " life part" : " life parts"), playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives"), playerData.getLifeParts() + (playerData.getLifeParts() == 1 ? " life part" : " life parts")),
+                                    String.format("§aYou successfully gave §6%s§a, §6%s§a now has §6%s§a and §6%s§a.", amount + (amount == 1 ? " life part" : " life parts"), this.args[1], playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives"), playerData.getLifeParts() + (playerData.getLifeParts() == 1 ? " life part" : " life parts"))
+                            );
 
-                        this.plugin.getPlayerRepository().updatePlayerData(playerData);
-                    });
-                });
+                            this.plugin.getPlayerRepository().updatePlayerData(playerData);
+                        }).get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                }).get();
                 break;
             case SETLIVES:
                 amount = CommandUtils.getPositiveNumberFromString(this.cs, this.args[2]);
@@ -92,17 +101,21 @@ public class CommandAugmentedHardcore extends AbstractCommand {
                         return;
                     }
 
-                    this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(playerData -> {
-                        playerData.setLives(amount);
+                    try {
+                        this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(playerData -> {
+                            playerData.setLives(amount);
 
-                        this.sendSuccessMessages(target,
-                                String.format("§aYour §6lives§a have been set to §6%d§a.", playerData.getLives()),
-                                String.format("§aYou successfully set the §6lives§a of §6%s§a to §6%d§a.", this.args[1], playerData.getLives())
-                        );
+                            this.sendSuccessMessages(target,
+                                    String.format("§aYour §6lives§a have been set to §6%d§a.", playerData.getLives()),
+                                    String.format("§aYou successfully set the §6lives§a of §6%s§a to §6%d§a.", this.args[1], playerData.getLives())
+                            );
 
-                        this.plugin.getPlayerRepository().updatePlayerData(playerData);
-                    });
-                });
+                            this.plugin.getPlayerRepository().updatePlayerData(playerData);
+                        }).get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                }).get();
                 break;
             case SETLIFEPARTS:
                 amount = CommandUtils.getPositiveNumberFromString(this.cs, this.args[2]);
@@ -115,17 +128,21 @@ public class CommandAugmentedHardcore extends AbstractCommand {
                         return;
                     }
 
-                    this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(playerData -> {
-                        playerData.setLifeParts(amount);
+                    try {
+                        this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(playerData -> {
+                            playerData.setLifeParts(amount);
 
-                        this.sendSuccessMessages(target,
-                                String.format("§aYour §6life parts§a have been set to §6%d§a, giving you §6%s§a and §6%s§a.", amount, playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives"), playerData.getLifeParts() + (playerData.getLifeParts() == 1 ? " life part" : " life parts")),
-                                String.format("§aYou successfully set the §6life parts§a of §6%s§a to §6%d§a, §6%s§a now has §6%s§a and §6%s§a.", this.args[1], amount, this.args[1], playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives"), playerData.getLifeParts() + (playerData.getLifeParts() == 1 ? " life part" : " life parts"))
-                        );
+                            this.sendSuccessMessages(target,
+                                    String.format("§aYour §6life parts§a have been set to §6%d§a, giving you §6%s§a and §6%s§a.", amount, playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives"), playerData.getLifeParts() + (playerData.getLifeParts() == 1 ? " life part" : " life parts")),
+                                    String.format("§aYou successfully set the §6life parts§a of §6%s§a to §6%d§a, §6%s§a now has §6%s§a and §6%s§a.", this.args[1], amount, this.args[1], playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives"), playerData.getLifeParts() + (playerData.getLifeParts() == 1 ? " life part" : " life parts"))
+                            );
 
-                        this.plugin.getPlayerRepository().updatePlayerData(playerData);
-                    });
-                });
+                            this.plugin.getPlayerRepository().updatePlayerData(playerData);
+                        }).get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                }).get();
                 break;
             case RELOAD:
                 this.plugin.initialize();

@@ -16,26 +16,30 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.logging.Level;
 
-public class DeathBanConfiguration {
+public class ConfigurationDeathBan {
     private final boolean useDeathBan;
     private final EnumMap<DamageCause, BanConfiguration> banTimes;
     private final BanList.Type banType;
     private final BanTimeType banTimeType;
     private final GrowthType banTimeByPlaytimeGrowthType;
     private final boolean selfHarmBan;
+    private final boolean lightningOnDeathBan;
+    private final List<String> commandsOnDeathBan;
     private final List<String> disableBanInWorlds;
 
-    public DeathBanConfiguration(boolean useDeathBan, EnumMap<DamageCause, BanConfiguration> banTimes, BanList.Type banType, BanTimeType banTimeType, GrowthType banTimeByPlaytimeGrowthType, boolean selfHarmBan, List<String> disableBanInWorlds) {
+    public ConfigurationDeathBan(boolean useDeathBan, EnumMap<DamageCause, BanConfiguration> banTimes, BanList.Type banType, BanTimeType banTimeType, GrowthType banTimeByPlaytimeGrowthType, boolean selfHarmBan, boolean lightningOnDeathBan, List<String> commandsOnDeathBan, List<String> disableBanInWorlds) {
         this.useDeathBan = useDeathBan;
         this.banTimes = banTimes;
         this.banType = banType;
         this.banTimeType = banTimeType;
         this.banTimeByPlaytimeGrowthType = banTimeByPlaytimeGrowthType;
         this.selfHarmBan = selfHarmBan;
+        this.lightningOnDeathBan = lightningOnDeathBan;
+        this.commandsOnDeathBan = commandsOnDeathBan;
         this.disableBanInWorlds = disableBanInWorlds;
     }
 
-    public static DeathBanConfiguration deserialize(ConfigurationSection section) {
+    public static ConfigurationDeathBan deserialize(ConfigurationSection section) {
         AugmentedHardcore plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
 
         //configurations
@@ -45,6 +49,8 @@ public class DeathBanConfiguration {
         BanTimeType cBanTimeType = ConfigUtils.getBanTimeType("BanTimeType", section.getString("BanTimeType", BanTimeType.STATIC.name()), BanTimeType.STATIC);
         GrowthType cBanTimeByPlaytimeGrowthType = ConfigUtils.getGrowthType("BanTimeByPlaytimeGrowthType", section.getString("BanTimeByPlaytimeGrowthType", GrowthType.EXPONENTIAL.name()), GrowthType.EXPONENTIAL);
         boolean cSelfHarmBan = section.getBoolean("SelfHarmBan", false);
+        boolean cLightningOnDeathBan = section.getBoolean("LightningOnDeathBan", false);
+        List<String> cCommandsOnDeathBan = section.getStringList("CommandsOnDeathBan");
         List<String> cDisableBanInWorlds = ConfigUtils.getWorlds("DisableBanInWorlds", section.getStringList("DisableBanInWorlds"));
 
         //loop over all damage causes
@@ -62,13 +68,15 @@ public class DeathBanConfiguration {
             });
         }
 
-        return new DeathBanConfiguration(
+        return new ConfigurationDeathBan(
                 cUseDeathBan,
                 cBanTimes,
                 cBanType,
                 cBanTimeType,
                 cBanTimeByPlaytimeGrowthType,
                 cSelfHarmBan,
+                cLightningOnDeathBan,
+                cCommandsOnDeathBan,
                 cDisableBanInWorlds
         );
     }
@@ -99,5 +107,13 @@ public class DeathBanConfiguration {
 
     public boolean isUseDeathBan() {
         return useDeathBan;
+    }
+
+    public boolean isLightningOnDeathBan() {
+        return lightningOnDeathBan;
+    }
+
+    public List<String> getCommandsOnDeathBan() {
+        return commandsOnDeathBan;
     }
 }

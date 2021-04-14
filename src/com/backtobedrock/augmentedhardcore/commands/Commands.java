@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class Commands implements TabCompleter {
@@ -32,7 +33,7 @@ public class Commands implements TabCompleter {
         }
     }
 
-    public boolean onCommand(CommandSender cs, Command cmnd, String alias, String[] args) {
+    public boolean onCommand(CommandSender cs, Command cmnd, String alias, String[] args) throws ExecutionException, InterruptedException {
         switch (cmnd.getName().toLowerCase()) {
             case "augmentedhardcore":
                 new CommandAugmentedHardcore(cs, args).run();

@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public abstract class AbstractCommand {
 
@@ -25,7 +26,7 @@ public abstract class AbstractCommand {
         this.args = args;
     }
 
-    public abstract void run();
+    public abstract void run() throws ExecutionException, InterruptedException;
 
     protected boolean hasPermission(Command command) {
         return this.hasPermission(command.getPermission());

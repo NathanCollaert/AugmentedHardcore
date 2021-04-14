@@ -21,7 +21,6 @@ public class Ban {
 
     //serializable
     private final LocalDateTime startDate;
-    private final int banTime;
     private final LocalDateTime expirationDate;
     private final DamageCause damageCause;
     private final DamageCauseType damageCauseType;
@@ -29,8 +28,11 @@ public class Ban {
     private final Killer inCombatWith;
     private final Location location;
     private final String deathMessage;
+    private final int banTime;
+    private final long timeSincePreviousDeathBan;
+    private final long timeSincePreviousDeath;
 
-    public Ban(LocalDateTime startDate, LocalDateTime expirationDate, DamageCause damageCause, Killer killer, Killer inCombatWith, Location location, String deathMessage, int banTime, DamageCauseType damageCauseType) {
+    public Ban(LocalDateTime startDate, LocalDateTime expirationDate, DamageCause damageCause, Killer killer, Killer inCombatWith, Location location, String deathMessage, int banTime, DamageCauseType damageCauseType, long timeSincePreviousDeathBan, long timeSincePreviousDeath) {
         this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
         this.startDate = startDate;
         this.expirationDate = expirationDate;
@@ -41,6 +43,8 @@ public class Ban {
         this.deathMessage = deathMessage;
         this.banTime = banTime;
         this.damageCauseType = damageCauseType;
+        this.timeSincePreviousDeathBan = timeSincePreviousDeathBan;
+        this.timeSincePreviousDeath = timeSincePreviousDeath;
     }
 
     public static Ban Deserialize(ConfigurationSection section) {
@@ -51,8 +55,10 @@ public class Ban {
         Killer cInCombatWith = null;
         Location cLocation = new Location("world", 0, 0, 0);
         String cDeathMessage = section.getString("DeathMessage");
-        int cBanTime = section.getInt("BanTime", 0);
         DamageCauseType cDamageCauseType = ConfigUtils.getDamageCauseType(section.getString("DamageCauseType", DamageCauseType.ENVIRONMENT.name()), DamageCauseType.ENVIRONMENT);
+        int cBanTime = section.getInt("BanTime", 0);
+        long cTimeSincePreviousDeathBan = section.getLong("TimeSincePreviousDeathBan", 0);
+        long cTimeSincePreviousDeath = section.getLong("TimeSincePreviousDeath", 0);
 
         ConfigurationSection locationSection = section.getConfigurationSection("Location");
         if (locationSection != null) {
@@ -70,7 +76,7 @@ public class Ban {
             cInCombatWith = Killer.Deserialize(killerSection);
         }
 
-        return new Ban(cStartDate, cExpirationDate, cDamageCause, cKiller, cInCombatWith, cLocation, cDeathMessage, cBanTime, cDamageCauseType);
+        return new Ban(cStartDate, cExpirationDate, cDamageCause, cKiller, cInCombatWith, cLocation, cDeathMessage, cBanTime, cDamageCauseType, cTimeSincePreviousDeathBan, cTimeSincePreviousDeath);
     }
 
     public String getBanMessage() {
@@ -126,8 +132,10 @@ public class Ban {
         map.put("InCombatWith", this.inCombatWith == null ? null : this.inCombatWith.serialize());
         map.put("Location", locationMap);
         map.put("DeathMessage", this.deathMessage);
-        map.put("BanTime", this.banTime);
         map.put("DamageCauseType", this.damageCauseType.name());
+        map.put("BanTime", this.banTime);
+        map.put("TimeSincePreviousDeathBan", this.timeSincePreviousDeathBan);
+        map.put("TimeSincePreviousDeath", this.timeSincePreviousDeath);
 
         return map;
     }
@@ -183,6 +191,14 @@ public class Ban {
         placeholders.put("ban_time_long", MessageUtils.getTimeFromTicks(ticksTillExpiration, false, true));
         placeholders.put("ban_time_short", MessageUtils.getTimeFromTicks(ticksTillExpiration, false, false));
         placeholders.put("ban_time_digital", MessageUtils.getTimeFromTicks(ticksTillExpiration, true, false));
+
+        placeholders.put("ban_time_since_previous_death_ban_long", MessageUtils.getTimeFromTicks(this.timeSincePreviousDeathBan, false, true));
+        placeholders.put("ban_time_since_previous_death_ban_short", MessageUtils.getTimeFromTicks(this.timeSincePreviousDeathBan, false, false));
+        placeholders.put("ban_time_since_previous_death_ban_digital", MessageUtils.getTimeFromTicks(this.timeSincePreviousDeathBan, true, false));
+
+        placeholders.put("ban_time_since_previous_death_long", MessageUtils.getTimeFromTicks(this.timeSincePreviousDeath, false, true));
+        placeholders.put("ban_time_since_previous_death_short", MessageUtils.getTimeFromTicks(this.timeSincePreviousDeath, false, false));
+        placeholders.put("ban_time_since_previous_death_digital", MessageUtils.getTimeFromTicks(this.timeSincePreviousDeath, true, false));
 
         return placeholders;
     }

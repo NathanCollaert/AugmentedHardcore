@@ -6,13 +6,15 @@ import com.backtobedrock.augmentedhardcore.guis.GuiMyStats;
 import com.backtobedrock.augmentedhardcore.utils.PlayerUtils;
 import org.bukkit.command.CommandSender;
 
+import java.util.concurrent.ExecutionException;
+
 public class CommandMyStats extends AbstractCommand {
     public CommandMyStats(CommandSender cs, String[] args) {
         super(cs, args);
     }
 
     @Override
-    public void run() {
+    public void run() throws ExecutionException, InterruptedException {
         Command command = Command.MYSTATS;
 
         if (this.args.length == 0 && !this.hasPermission(command)) {
@@ -30,15 +32,19 @@ public class CommandMyStats extends AbstractCommand {
         }
 
         if (this.args.length == 0) {
-            this.plugin.getPlayerRepository().getByPlayer(this.sender).thenAcceptAsync(playerData -> PlayerUtils.openInventory(this.sender, new GuiMyStats(this.sender, playerData).getInventory()));
+            this.plugin.getPlayerRepository().getByPlayer(this.sender).thenAcceptAsync(playerData -> PlayerUtils.openInventory(this.sender, new GuiMyStats(this.sender, playerData).getInventory())).get();
         } else {
             this.hasPlayedBefore(this.args[0]).thenAcceptAsync(bool -> {
                 if (!bool) {
                     return;
                 }
 
-                this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(playerData -> PlayerUtils.openInventory(this.sender, new GuiMyStats(this.sender, playerData).getInventory()));
-            });
+                try {
+                    this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(playerData -> PlayerUtils.openInventory(this.sender, new GuiMyStats(this.sender, playerData).getInventory())).get();
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+            }).get();
         }
     }
 }

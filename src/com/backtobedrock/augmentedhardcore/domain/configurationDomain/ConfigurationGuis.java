@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
-public class GuisConfiguration {
+public class ConfigurationGuis {
     private final Display fillerDisplay;
     private final Display accentDisplay;
     private final Display loadingDisplay;
@@ -29,7 +29,7 @@ public class GuisConfiguration {
     private final Display confirmationDisplay;
     private final Display cancellationDisplay;
 
-    public GuisConfiguration(Display fillerDisplay, Display accentDisplay, Display loadingDisplay, Display notAvailableDisplay, Display nextPageDisplay, Display previousPageDisplay, Display pageInformationDisplay, Display previousGuiDisplay, Display livesAndLifePartsDisplay, Display maxHealthDisplay, Display reviveDisplay, Display lifePartDisplay, Display previousBansDisplay, Display playerDisplay, Display banDisplay, Display confirmationDisplay, Display cancellationDisplay) {
+    public ConfigurationGuis(Display fillerDisplay, Display accentDisplay, Display loadingDisplay, Display notAvailableDisplay, Display nextPageDisplay, Display previousPageDisplay, Display pageInformationDisplay, Display previousGuiDisplay, Display livesAndLifePartsDisplay, Display maxHealthDisplay, Display reviveDisplay, Display lifePartDisplay, Display previousBansDisplay, Display playerDisplay, Display banDisplay, Display confirmationDisplay, Display cancellationDisplay) {
         this.fillerDisplay = fillerDisplay;
         this.accentDisplay = accentDisplay;
         this.loadingDisplay = loadingDisplay;
@@ -49,7 +49,7 @@ public class GuisConfiguration {
         this.cancellationDisplay = cancellationDisplay;
     }
 
-    public static GuisConfiguration deserialize(ConfigurationSection section) {
+    public static ConfigurationGuis deserialize(ConfigurationSection section) {
         AugmentedHardcore plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
 
         Map<String, Display> cDisplays = new HashMap<>();
@@ -86,7 +86,7 @@ public class GuisConfiguration {
             }
         }
 
-        return new GuisConfiguration(
+        return new ConfigurationGuis(
                 cDisplays.get("FillerDisplay"),
                 cDisplays.get("AccentDisplay"),
                 cDisplays.get("LoadingDisplay"),

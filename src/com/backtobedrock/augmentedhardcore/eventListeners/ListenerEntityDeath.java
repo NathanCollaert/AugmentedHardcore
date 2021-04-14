@@ -5,10 +5,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 
-public class EntityDeathListener extends AbstractEventListener {
+import java.util.concurrent.ExecutionException;
+
+public class ListenerEntityDeath extends AbstractEventListener {
 
     @EventHandler
-    public void onEntityKill(EntityDeathEvent event) {
+    public void onEntityKill(EntityDeathEvent event) throws ExecutionException, InterruptedException {
         if (!(event.getEntity().getLastDamageCause() instanceof EntityDamageByEntityEvent)) {
             return;
         }
@@ -18,7 +20,7 @@ public class EntityDeathListener extends AbstractEventListener {
             return;
         }
 
-        this.plugin.getPlayerRepository().getByPlayer((Player) entityDamageByEntityEvent.getDamager()).thenAcceptAsync(playerData -> playerData.onEntityKill(event.getEntity().getType()));
+        this.plugin.getPlayerRepository().getByPlayer((Player) entityDamageByEntityEvent.getDamager()).thenAcceptAsync(playerData -> playerData.onEntityKill(event.getEntity().getType())).get();
     }
 
     @Override

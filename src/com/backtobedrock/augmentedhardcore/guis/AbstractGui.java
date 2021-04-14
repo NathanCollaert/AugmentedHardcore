@@ -6,6 +6,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public abstract class AbstractGui {
     protected final AugmentedHardcore plugin;
@@ -16,7 +17,7 @@ public abstract class AbstractGui {
         this.customHolder = customHolder;
     }
 
-    protected void initialize() {
+    protected void initialize() throws ExecutionException, InterruptedException {
         for (int i = 0; i < this.customHolder.getSize(); i++) {
             int calc = i % 9;
             if (i < 9 || i >= (this.customHolder.getRowAmount() - 1) * 9 || calc == 0 || calc == 8) {

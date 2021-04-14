@@ -32,14 +32,16 @@ public class Display {
         Material cMaterial = ConfigUtils.getMaterial(id + ".Material", section.getString("Material"));
         String cName = section.getString("Name");
         List<String> cLore = section.getStringList("Lore");
-        int cAmount = ConfigUtils.checkMin(id + ".Amount", section.getInt("Amount", 1), 1);
+        int cAmount = ConfigUtils.checkMinMax(id + ".Amount", section.getInt("Amount", 1), 1, Integer.MAX_VALUE);
 
         if (cName == null) {
             plugin.getLogger().log(Level.SEVERE, id + ".Name: %s is not a valid name.");
             return null;
         }
-        if (cAmount == -10 || cMaterial == null)
+
+        if (cAmount == -10 || cMaterial == null) {
             return null;
+        }
 
         return new Display(cMaterial, cName, cLore, cAmount);
     }

@@ -13,22 +13,23 @@ public class Configurations {
     private final FileConfiguration config;
 
     //configurations
-    private DataConfiguration dataConfiguration = null;
-    private LivesAndLifePartsConfiguration livesAndLifePartsConfiguration = null;
-    private DeathBanConfiguration deathBanConfiguration = null;
-    private MaxHealthConfiguration maxHealthConfiguration = null;
-    private CombatTagConfiguration combatTagConfiguration = null;
-    private ReviveConfiguration reviveConfiguration = null;
-    private GuisConfiguration guisConfiguration = null;
+    private ConfigurationData dataConfiguration = null;
+    private ConfigurationLivesAndLifeParts livesAndLifePartsConfiguration = null;
+    private ConfigurationDeathBan deathBanConfiguration = null;
+    private ConfigurationMaxHealth maxHealthConfiguration = null;
+    private ConfigurationCombatTag combatTagConfiguration = null;
+    private ConfigurationRevive reviveConfiguration = null;
+    private ConfigurationMiscellaneous miscellaneousConfiguration = null;
+    private ConfigurationGuis guisConfiguration = null;
 
     public Configurations(File configFile) {
         this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
         this.config = YamlConfiguration.loadConfiguration(configFile);
     }
 
-    public DataConfiguration getDataConfiguration() {
+    public ConfigurationData getDataConfiguration() {
         if (this.dataConfiguration == null) {
-            this.dataConfiguration = DataConfiguration.deserialize(this.config);
+            this.dataConfiguration = ConfigurationData.deserialize(this.config);
             if (this.dataConfiguration == null) {
                 this.plugin.getServer().getPluginManager().disablePlugin(this.plugin);
             }
@@ -36,9 +37,9 @@ public class Configurations {
         return this.dataConfiguration;
     }
 
-    public LivesAndLifePartsConfiguration getLivesAndLifePartsConfiguration() {
+    public ConfigurationLivesAndLifeParts getLivesAndLifePartsConfiguration() {
         if (this.livesAndLifePartsConfiguration == null) {
-            this.livesAndLifePartsConfiguration = LivesAndLifePartsConfiguration.deserialize(this.config);
+            this.livesAndLifePartsConfiguration = ConfigurationLivesAndLifeParts.deserialize(this.config);
             if (this.livesAndLifePartsConfiguration == null) {
                 this.plugin.getServer().getPluginManager().disablePlugin(this.plugin);
             }
@@ -46,16 +47,16 @@ public class Configurations {
         return this.livesAndLifePartsConfiguration;
     }
 
-    public DeathBanConfiguration getDeathBanConfiguration() {
+    public ConfigurationDeathBan getDeathBanConfiguration() {
         if (this.deathBanConfiguration == null) {
-            this.deathBanConfiguration = DeathBanConfiguration.deserialize(this.config);
+            this.deathBanConfiguration = ConfigurationDeathBan.deserialize(this.config);
         }
         return this.deathBanConfiguration;
     }
 
-    public MaxHealthConfiguration getMaxHealthConfiguration() {
+    public ConfigurationMaxHealth getMaxHealthConfiguration() {
         if (this.maxHealthConfiguration == null) {
-            this.maxHealthConfiguration = MaxHealthConfiguration.deserialize(this.config);
+            this.maxHealthConfiguration = ConfigurationMaxHealth.deserialize(this.config);
             if (this.maxHealthConfiguration == null) {
                 this.plugin.getServer().getPluginManager().disablePlugin(this.plugin);
             }
@@ -63,9 +64,9 @@ public class Configurations {
         return this.maxHealthConfiguration;
     }
 
-    public CombatTagConfiguration getCombatTagConfiguration() {
+    public ConfigurationCombatTag getCombatTagConfiguration() {
         if (this.combatTagConfiguration == null) {
-            this.combatTagConfiguration = CombatTagConfiguration.deserialize(this.config);
+            this.combatTagConfiguration = ConfigurationCombatTag.deserialize(this.config);
             if (this.combatTagConfiguration == null) {
                 this.plugin.getServer().getPluginManager().disablePlugin(this.plugin);
             }
@@ -73,9 +74,9 @@ public class Configurations {
         return this.combatTagConfiguration;
     }
 
-    public ReviveConfiguration getReviveConfiguration() {
+    public ConfigurationRevive getReviveConfiguration() {
         if (this.reviveConfiguration == null) {
-            this.reviveConfiguration = ReviveConfiguration.deserialize(this.config);
+            this.reviveConfiguration = ConfigurationRevive.deserialize(this.config);
             if (this.reviveConfiguration == null) {
                 this.plugin.getServer().getPluginManager().disablePlugin(this.plugin);
             }
@@ -83,9 +84,16 @@ public class Configurations {
         return this.reviveConfiguration;
     }
 
-    public GuisConfiguration getGuisConfiguration() {
+    public ConfigurationMiscellaneous getMiscellaneousConfiguration() {
+        if (this.miscellaneousConfiguration == null) {
+            this.miscellaneousConfiguration = ConfigurationMiscellaneous.deserialize(this.config);
+        }
+        return this.miscellaneousConfiguration;
+    }
+
+    public ConfigurationGuis getGuisConfiguration() {
         if (this.guisConfiguration == null) {
-            this.guisConfiguration = GuisConfiguration.deserialize(this.config);
+            this.guisConfiguration = ConfigurationGuis.deserialize(this.config);
             if (this.guisConfiguration == null) {
                 this.plugin.getServer().getPluginManager().disablePlugin(this.plugin);
             }

@@ -25,6 +25,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.net.InetSocketAddress;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public class PlayerData {
@@ -166,7 +167,7 @@ public class PlayerData {
         this.setLifeParts(this.getLifeParts() + amount);
     }
 
-    public void onDeath(PlayerDeathEvent event) {
+    public void onDeath(PlayerDeathEvent event) throws ExecutionException, InterruptedException {
         this.unCombatTag();
 
         this.loseLives(this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getLivesLostPerDeath());
@@ -183,6 +184,14 @@ public class PlayerData {
         } else {
             this.loseLifeParts(this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getLifePartsLostPerDeath());
             this.ban(event);
+        }
+
+        if (this.player.getPlayer() != null && this.plugin.getConfigurations().getMiscellaneousConfiguration().isLightningOnDeath()) {
+            Bukkit.getScheduler().runTask(this.plugin, () -> this.player.getPlayer().getWorld().strikeLightningEffect(this.player.getPlayer().getLocation()));
+        }
+
+        if (!this.plugin.getConfigurations().getMiscellaneousConfiguration().getCommandsOnDeath().isEmpty() && this.player.getName() != null) {
+            this.plugin.getConfigurations().getMiscellaneousConfiguration().getCommandsOnDeath().forEach(e -> Bukkit.getScheduler().runTask(this.plugin, () -> Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), e.replaceAll("%player%", this.player.getName()))));
         }
 
         this.plugin.getPlayerRepository().updatePlayerData(this);
@@ -277,7 +286,7 @@ public class PlayerData {
         this.decreaseLifeParts(amount);
     }
 
-    private void ban(PlayerDeathEvent event) {
+    private void ban(PlayerDeathEvent event) throws ExecutionException, InterruptedException {
         if (this.player.getPlayer() == null) {
             return;
         }
@@ -322,12 +331,20 @@ public class PlayerData {
                 //add ban to player and server data
                 this.addBan(ban);
                 serverData.addBan(this.player.getPlayer(), ban);
-            });
+            }).get();
+        }
+
+        if (this.plugin.getConfigurations().getDeathBanConfiguration().isLightningOnDeathBan() && !this.plugin.getConfigurations().getMiscellaneousConfiguration().isLightningOnDeath()) {
+            Bukkit.getScheduler().runTask(this.plugin, () -> this.player.getPlayer().getWorld().strikeLightningEffect(this.player.getPlayer().getLocation()));
+        }
+
+        if (!this.plugin.getConfigurations().getDeathBanConfiguration().getCommandsOnDeathBan().isEmpty() && this.player.getName() != null) {
+            this.plugin.getConfigurations().getDeathBanConfiguration().getCommandsOnDeathBan().forEach(e -> Bukkit.getScheduler().runTask(this.plugin, () -> Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), e.replaceAll("%player%", this.player.getName()))));
         }
     }
 
     private void addBan(Ban ban) {
-        this.bans.put(this.bans.size(), ban);
+        this.bans.put(this.bans.size() + 1, ban);
     }
 
     public void onRespawn() {

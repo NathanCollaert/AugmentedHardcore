@@ -8,7 +8,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class InventoryClickListener extends AbstractEventListener {
+import java.util.concurrent.ExecutionException;
+
+public class ListenerInventoryClick extends AbstractEventListener {
     @EventHandler
     public void onCustomInventoryClick(InventoryClickEvent event) {
         if (!(event.getView().getTopInventory().getHolder() instanceof CustomHolder)) {
@@ -35,7 +37,13 @@ public class InventoryClickListener extends AbstractEventListener {
             return;
         }
 
-        icon.getClickActions().forEach(clickAction -> clickAction.execute(player));
+        icon.getClickActions().forEach(clickAction -> {
+            try {
+                clickAction.execute(player);
+            } catch (ExecutionException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @Override

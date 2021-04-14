@@ -5,16 +5,16 @@ import com.backtobedrock.augmentedhardcore.domain.enums.StorageType;
 import com.backtobedrock.augmentedhardcore.utils.ConfigUtils;
 import org.bukkit.configuration.ConfigurationSection;
 
-public class DataConfiguration {
+public class ConfigurationData {
     private final StorageType storageType;
     private final Connection connection;
 
-    public DataConfiguration(StorageType storageType, Connection connection) {
+    public ConfigurationData(StorageType storageType, Connection connection) {
         this.storageType = storageType;
         this.connection = connection;
     }
 
-    public static DataConfiguration deserialize(ConfigurationSection section) {
+    public static ConfigurationData deserialize(ConfigurationSection section) {
         //configurations
         StorageType cStorageType = ConfigUtils.getStorageType("StorageType", section.getString("StorageType", "YAML"));
         ConfigurationSection connectionSection = section.getConfigurationSection("Connection");
@@ -24,7 +24,7 @@ public class DataConfiguration {
             return null;
         }
 
-        return new DataConfiguration(cStorageType, cConnection);
+        return new ConfigurationData(cStorageType, cConnection);
     }
 
     public StorageType getStorageType() {

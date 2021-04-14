@@ -1,13 +1,14 @@
 package com.backtobedrock.augmentedhardcore.guis;
 
-import com.backtobedrock.augmentedhardcore.guis.clickActions.NextPageClickAction;
-import com.backtobedrock.augmentedhardcore.guis.clickActions.PreviousPageClickAction;
+import com.backtobedrock.augmentedhardcore.guis.clickActions.ClickActionNextPage;
+import com.backtobedrock.augmentedhardcore.guis.clickActions.ClickActionPreviousPage;
 import com.backtobedrock.augmentedhardcore.utils.MessageUtils;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 public abstract class AbstractPaginatedGui extends AbstractGui {
     protected int currentPage = 1;
@@ -19,7 +20,7 @@ public abstract class AbstractPaginatedGui extends AbstractGui {
     }
 
     @Override
-    public void initialize() {
+    public void initialize() throws ExecutionException, InterruptedException {
         //clear content for new page
         this.customHolder.reset();
         super.initialize();
@@ -29,7 +30,7 @@ public abstract class AbstractPaginatedGui extends AbstractGui {
     protected void setData() {
         //Previous page button
         if (this.totalPages > 1 && this.currentPage > 1) {
-            this.customHolder.setIcon((this.customHolder.getRowAmount() - 1) * 9 + 3, new Icon(this.previousPageDisplayItem(), Collections.singletonList(new PreviousPageClickAction(this))));
+            this.customHolder.setIcon((this.customHolder.getRowAmount() - 1) * 9 + 3, new Icon(this.previousPageDisplayItem(), Collections.singletonList(new ClickActionPreviousPage(this))));
         }
 
         //Current page
@@ -37,11 +38,11 @@ public abstract class AbstractPaginatedGui extends AbstractGui {
 
         //Next page button
         if (this.totalPages > 1 && this.currentPage < this.totalPages) {
-            this.customHolder.setIcon((this.customHolder.getRowAmount() - 1) * 9 + 5, new Icon(this.nextPageDisplayItem(), Collections.singletonList(new NextPageClickAction(this))));
+            this.customHolder.setIcon((this.customHolder.getRowAmount() - 1) * 9 + 5, new Icon(this.nextPageDisplayItem(), Collections.singletonList(new ClickActionNextPage(this))));
         }
     }
 
-    public void nextPage() {
+    public void nextPage() throws ExecutionException, InterruptedException {
         if (this.currentPage < this.totalPages) {
             this.currentPage++;
             this.initialize();
@@ -49,7 +50,7 @@ public abstract class AbstractPaginatedGui extends AbstractGui {
         }
     }
 
-    public void previousPage() {
+    public void previousPage() throws ExecutionException, InterruptedException {
         if (this.currentPage > 1) {
             this.currentPage--;
             this.initialize();

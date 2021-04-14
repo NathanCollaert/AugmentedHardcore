@@ -4,15 +4,17 @@ import com.backtobedrock.augmentedhardcore.domain.data.PlayerData;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerKickEvent;
 
-public class PlayerKickListener extends AbstractEventListener {
+import java.util.concurrent.ExecutionException;
+
+public class ListenerPlayerKick extends AbstractEventListener {
 
     @EventHandler
-    public void onPlayerKick(PlayerKickEvent event) {
+    public void onPlayerKick(PlayerKickEvent event) throws ExecutionException, InterruptedException {
         if (event.isCancelled()) {
             return;
         }
 
-        this.plugin.getPlayerRepository().getByPlayer(event.getPlayer()).thenAcceptAsync(PlayerData::onKick);
+        this.plugin.getPlayerRepository().getByPlayer(event.getPlayer()).thenAcceptAsync(PlayerData::onKick).get();
     }
 
     @Override

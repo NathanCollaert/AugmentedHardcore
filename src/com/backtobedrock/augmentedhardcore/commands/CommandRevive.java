@@ -5,13 +5,15 @@ import com.backtobedrock.augmentedhardcore.guis.GuiRevive;
 import com.backtobedrock.augmentedhardcore.utils.PlayerUtils;
 import org.bukkit.command.CommandSender;
 
+import java.util.concurrent.ExecutionException;
+
 public class CommandRevive extends AbstractCommand {
     public CommandRevive(CommandSender cs, String[] args) {
         super(cs, args);
     }
 
     @Override
-    public void run() {
+    public void run() throws ExecutionException, InterruptedException {
         Command command = Command.REVIVE;
 
         if (!this.hasPermission(command)) {
@@ -31,13 +33,21 @@ public class CommandRevive extends AbstractCommand {
                 return;
             }
 
-            this.plugin.getPlayerRepository().getByPlayer(this.sender).thenAcceptAsync(playerData -> {
-                if (!playerData.checkRevivePermissionsReviver(this.target)) {
-                    return;
-                }
+            try {
+                this.plugin.getPlayerRepository().getByPlayer(this.sender).thenAcceptAsync(playerData -> {
+                    if (!playerData.checkRevivePermissionsReviver(this.target)) {
+                        return;
+                    }
 
-                PlayerUtils.openInventory(this.sender, new GuiRevive(playerData, this.target).getInventory());
-            });
-        });
+                    try {
+                        PlayerUtils.openInventory(this.sender, new GuiRevive(playerData, this.target).getInventory());
+                    } catch (ExecutionException | InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }).get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }).get();
     }
 }

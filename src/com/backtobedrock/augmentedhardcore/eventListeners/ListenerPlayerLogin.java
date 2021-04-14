@@ -5,7 +5,7 @@ import com.backtobedrock.augmentedhardcore.domain.data.ServerData;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerLoginEvent;
 
-public class PlayerLoginListener extends AbstractEventListener {
+public class ListenerPlayerLogin extends AbstractEventListener {
 
     @EventHandler
     public void OnPlayerLogin(PlayerLoginEvent e) {

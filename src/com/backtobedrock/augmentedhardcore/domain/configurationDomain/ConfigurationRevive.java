@@ -8,7 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.List;
 import java.util.logging.Level;
 
-public class ReviveConfiguration {
+public class ConfigurationRevive {
     private final boolean useRevive;
     private final int livesLostOnReviving;
     private final int livesGainedOnRevive;
@@ -16,7 +16,7 @@ public class ReviveConfiguration {
     private final boolean reviveOnFirstJoin;
     private final List<String> disableReviveInWorlds;
 
-    public ReviveConfiguration(boolean useRevive, int livesLostOnReviving, int livesGainedOnRevive, int timeBetweenRevives, boolean reviveOnFirstJoin, List<String> disableReviveInWorlds) {
+    public ConfigurationRevive(boolean useRevive, int livesLostOnReviving, int livesGainedOnRevive, int timeBetweenRevives, boolean reviveOnFirstJoin, List<String> disableReviveInWorlds) {
         this.useRevive = useRevive;
         this.livesLostOnReviving = livesLostOnReviving;
         this.livesGainedOnRevive = livesGainedOnRevive;
@@ -25,11 +25,11 @@ public class ReviveConfiguration {
         this.disableReviveInWorlds = disableReviveInWorlds;
     }
 
-    public static ReviveConfiguration deserialize(ConfigurationSection section) {
+    public static ConfigurationRevive deserialize(ConfigurationSection section) {
         boolean cUseRevive = section.getBoolean("UseRevive", true);
-        int cLivesLostOnReviving = ConfigUtils.checkMin("LivesLostOnReviving", section.getInt("LivesLostOnReviving", 1), 1);
-        int cLivesGainedOnRevive = ConfigUtils.checkMin("LivesGainedOnRevive", section.getInt("LivesGainedOnRevive", 1), 1);
-        int cTimeBetweenRevives = ConfigUtils.checkMin("TimeBetweenRevives", section.getInt("TimeBetweenRevives", 1440), 0);
+        int cLivesLostOnReviving = ConfigUtils.checkMinMax("LivesLostOnReviving", section.getInt("LivesLostOnReviving", 1), 1, Integer.MAX_VALUE);
+        int cLivesGainedOnRevive = ConfigUtils.checkMinMax("LivesGainedOnRevive", section.getInt("LivesGainedOnRevive", 1), 1, Integer.MAX_VALUE);
+        int cTimeBetweenRevives = ConfigUtils.checkMinMax("TimeBetweenRevives", section.getInt("TimeBetweenRevives", 1440), 0, Integer.MAX_VALUE);
         boolean cReviveOnFirstJoin = section.getBoolean("ReviveOnFirstJoin", false);
         List<String> cDisableReviveInWorlds = ConfigUtils.getWorlds("DisableReviveInWorlds", section.getStringList("DisableReviveInWorlds"));
 
@@ -42,7 +42,7 @@ public class ReviveConfiguration {
             return null;
         }
 
-        return new ReviveConfiguration(cUseRevive, cLivesLostOnReviving, cLivesGainedOnRevive, cTimeBetweenRevives, cReviveOnFirstJoin, cDisableReviveInWorlds);
+        return new ConfigurationRevive(cUseRevive, cLivesLostOnReviving, cLivesGainedOnRevive, cTimeBetweenRevives, cReviveOnFirstJoin, cDisableReviveInWorlds);
     }
 
     public boolean isUseRevive() {

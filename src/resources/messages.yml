@@ -32,6 +32,12 @@
 # %ban_expiration_date_long% - Expiration date of ban of servers timezone in long format E.g: Saturday Jun 15, 2015 at 9:03:01 CEST.
 # %ban_expiration_date_medium% - Expiration date of ban of servers timezone in medium format E.g: Jun 15, 2015, 9:03 CEST.
 # %ban_expiration_date_short% - Expiration date of ban of servers timezone in short format E.g: 6/15/15, 9:03 CEST.
+# %ban_time_since_previous_death_ban_long% - Time since previous ban in long format E.g: 1 day, 20 hours, 30 minutes, 40 seconds.
+# %ban_time_since_previous_death_ban_short% - Time since previous ban in short format E.g: 1 d, 20 h, 30 m, 40 s.
+# %ban_time_since_previous_death_ban_digital% - Time since previous ban in digital format E.g: 1:20:30:40.
+# %ban_time_since_previous_death_long% - Time since previous death in long format E.g: 1 day, 20 hours, 30 minutes, 40 seconds.
+# %ban_time_since_previous_death_short% - Time since previous death in short format E.g: 1 d, 20 h, 30 m, 40 s.
+# %ban_time_since_previous_death_digital% - Time since previous death in digital format E.g: 1:20:30:40.
 
 #Ban message when banned due to a death containing no killer and not in combat with something.
 EnvironmentBanMessage: "&c&lYou've Died\n\n&rYou %ban_damage_cause_random_message% causing you to be banned.\nYou will be unbanned in &e%ban_time_left_long%&r."

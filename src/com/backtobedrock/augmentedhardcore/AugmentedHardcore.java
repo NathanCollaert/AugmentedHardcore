@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 
 public class AugmentedHardcore extends JavaPlugin implements Listener {
@@ -41,7 +42,11 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        this.initialize();
+        try {
+            this.initialize();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
 
         //bstats metrics
         Metrics metrics = new Metrics(this, 10843);
@@ -70,10 +75,15 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
 
     @Override
     public boolean onCommand(@NotNull CommandSender cs, @NotNull Command cmnd, @NotNull String alias, String[] args) {
-        return this.commands.onCommand(cs, cmnd, alias, args);
+        try {
+            return this.commands.onCommand(cs, cmnd, alias, args);
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
-    public void initialize() {
+    public void initialize() throws ExecutionException, InterruptedException {
         //get config.yml and make if none existent
         File configFile = new File(this.getDataFolder(), "config.yml");
         if (!configFile.exists()) {
@@ -119,16 +129,16 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
 
     private void registerListeners() {
         Arrays.asList(
-                new InventoryClickListener(),
-                new EntityDeathListener(),
-                new PlayerDamageByEntityListener(),
-                new PlayerDeathListener(),
-                new PlayerJoinListener(),
-                new PlayerKickListener(),
-                new PlayerLoginListener(),
-                new PlayerQuitListener(),
-                new PlayerRegainHealthListener(),
-                new PlayerRespawnListener()
+                new ListenerInventoryClick(),
+                new ListenerEntityDeath(),
+                new ListenerPlayerDamageByEntity(),
+                new ListenerPlayerDeath(),
+                new ListenerPlayerJoin(),
+                new ListenerPlayerKick(),
+                new ListenerPlayerLogin(),
+                new ListenerPlayerQuit(),
+                new ListenerPlayerRegainHealth(),
+                new ListenerPlayerRespawn()
         ).forEach(e ->
                 {
                     if (this.activeEventListeners.containsKey(e.getClass())) {

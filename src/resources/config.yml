@@ -396,6 +396,14 @@ BanTimeByPlaytimeGrowthType: exponential
 #Should players be banned if killed by themselves (excluding /kill)?
 SelfHarmBan: false
 
+#Should a lightning strike at the players position on death ban?
+LightningOnDeathBan: false
+
+#Should any commands be executed on death ban?
+#Placeholders: %player%
+CommandsOnDeathBan: [ ]
+#- "minecraft:advancement revoke %player% everything"
+
 #Should banning players be disabled in any worlds?
 DisableBanInWorlds: [ ]
 #- world
@@ -413,15 +421,15 @@ DisableBanInWorlds: [ ]
 UseMaxHealth: false
 
 #What should the highest amount of half hearts be that a player is able to get?
-#In half hearts, minimum is 1, maximum is 2048 (Minecraft will not display health over 1024 but it's still there)
+#In half hearts, minimum is 1 (Minecraft will not display health over 1024 but it's still there)
 MaxHealth: 20
 
 #What should the lowest amount of half hearts be that a player is able to get?
-#In half hearts, minimum is 1, maximum is 2048 (Minecraft will not display health over 1024 but it's still there)
+#In half hearts, minimum is 1 (Minecraft will not display health over 1024 but it's still there)
 MinHealth: 6
 
 #How many half hearts should a player respawn with after a death ban?
-#In half hearts, minimum is 1, maximum is 2048, -1 to keep the current amount (Minecraft will not display health over 1024 but it's still there)
+#In half hearts, minimum is 1, -1 to keep the current amount (Minecraft will not display health over 1024 but it's still there)
 MaxHealthAfterBan: 20
 
 #With how many half hearts should the max health drop per death?
@@ -434,7 +442,7 @@ MaxHealthIncreaseOnKill: true
 #How many max health should a player receive when killing another entity?
 #Any living entity type can be added to the list followed by the amount of max health it would give. (https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/entity/EntityType.html)
 #Any living entity type not listed will give 0 max health.
-#In half hearts, minimum is 0, maximum is 2048
+#In half hearts, minimum is 0
 MaxHealthIncreasePerKill:
   PLAYER: 2
   ENDER_DRAGON: 2
@@ -459,19 +467,6 @@ DisableGainingMaxHealthInWorlds: [ ]
 #- world
 #- world_nether
 #- world_the_end
-
-
-############################################################
-# +------------------------------------------------------+ #
-# |                  Health Regeneration                 | #
-# +------------------------------------------------------+ #
-############################################################
-
-#Setting this configuration to true will disable the following health regeneration:
-#- When a player regains health from eating consumables
-#- When a player is healed by a potion or spell
-#- When a player is healed over time by a potion or spell
-DisableArtificialRegeneration: false
 
 
 ############################################################
@@ -534,6 +529,27 @@ DisableReviveInWorlds: [ ]
 #- world
 #- world_nether
 #- world_the_end
+
+
+############################################################
+# +------------------------------------------------------+ #
+# |                    Miscellaneous                     | #
+# +------------------------------------------------------+ #
+############################################################
+
+#Setting this configuration to true will disable the following health regeneration:
+#- When a player regains health from eating consumables
+#- When a player is healed by a potion or spell
+#- When a player is healed over time by a potion or spell
+DisableArtificialRegeneration: false
+
+#Should a lightning strike at the players position on death?
+LightningOnDeath: false
+
+#Should any commands be executed on death?
+#Placeholders: %player%
+CommandsOnDeath: [ ]
+#- "minecraft:advancement revoke %player% everything"
 
 
 ############################################################
@@ -662,12 +678,12 @@ PreviousBansDisplay:
 
 #What should the player skull item look like?
 #Placeholders:
-# %player_name% - %total_deaths% - %total_death_bans% - %last_ban_time_long% - %last_ban_time_short% - %last_ban_time_digital% -
+# %player% - %total_deaths% - %total_death_bans% - %last_ban_time_long% - %last_ban_time_short% - %last_ban_time_digital% -
 # %last_death_time_long% - %last_death_time_short% - %last_death_time_digital%
 PlayerDisplay:
   #Will be overridden
   Material: "player_head"
-  Name: "&6&l%player_name%"
+  Name: "&6&l%player%"
   Lore:
     - "  &6♦ &aYou've died &b%total_deaths% &atimes on this server"
     - "  &6♦ &aYour last death was &b%last_death_time_long% &aago"
@@ -698,6 +714,12 @@ PlayerDisplay:
 # %ban_expiration_date_long% - Expiration date of ban of servers timezone in long format E.g: Saturday Jun 15, 2015 at 9:03:01 CEST.
 # %ban_expiration_date_medium% - Expiration date of ban of servers timezone in medium format E.g: Jun 15, 2015, 9:03 CEST.
 # %ban_expiration_date_short% - Expiration date of ban of servers timezone in short format E.g: 6/15/15, 9:03 CEST.
+# %ban_time_since_previous_death_ban_long% - Time since previous ban in long format E.g: 1 day, 20 hours, 30 minutes, 40 seconds.
+# %ban_time_since_previous_death_ban_short% - Time since previous ban in short format E.g: 1 d, 20 h, 30 m, 40 s.
+# %ban_time_since_previous_death_ban_digital% - Time since previous ban in digital format E.g: 1:20:30:40.
+# %ban_time_since_previous_death_long% - Time since previous death in long format E.g: 1 day, 20 hours, 30 minutes, 40 seconds.
+# %ban_time_since_previous_death_short% - Time since previous death in short format E.g: 1 d, 20 h, 30 m, 40 s.
+# %ban_time_since_previous_death_digital% - Time since previous death in digital format E.g: 1:20:30:40.
 BanDisplay:
   Material: "conduit"
   Name: "&eBan &6#&l%ban_number% &e(&6%ban_start_date_short%&e)"
@@ -710,6 +732,8 @@ BanDisplay:
     - "  &6♦ &aIn Combat With: &b%ban_in_combat_with%"
     - "  &6♦ &aLocation: &b%ban_location%"
     - "  &6♦ &aDeath Message: &b%ban_death_message%"
+    - "  &6♦ &aPrevious death ban: &b%ban_time_since_previous_death_ban_short%"
+    - "  &6♦ &aPrevious death: &b%ban_time_since_previous_death_short%"
   Amount: 1
 
 

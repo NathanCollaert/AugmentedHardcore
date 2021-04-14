@@ -4,7 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-public class PlayerQuitListener extends AbstractEventListener {
+public class ListenerPlayerQuit extends AbstractEventListener {
 
     @EventHandler
     public void OnPlayerQuit(PlayerQuitEvent e) {

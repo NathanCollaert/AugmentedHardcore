@@ -7,6 +7,7 @@ import com.backtobedrock.augmentedhardcore.mappers.server.YAMLServerMapper;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 
 public class ServerRepository {
@@ -17,12 +18,12 @@ public class ServerRepository {
     //server cache
     private ServerData serverData = null;
 
-    public ServerRepository() {
+    public ServerRepository() throws ExecutionException, InterruptedException {
         this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
         this.initializeMapper();
         this.getServerData().thenAccept(serverData -> {
             this.plugin.getLogger().log(Level.INFO, String.format("Loaded %d ongoing death %s.", serverData.getTotalOngoingBans(), serverData.getTotalOngoingBans() != 1 ? "bans" : "ban"));
-        });
+        }).get();
     }
 
     private void initializeMapper() {

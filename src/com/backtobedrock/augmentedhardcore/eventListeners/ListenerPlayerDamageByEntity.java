@@ -7,9 +7,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-public class PlayerDamageByEntityListener extends AbstractEventListener {
+import java.util.concurrent.ExecutionException;
+
+public class ListenerPlayerDamageByEntity extends AbstractEventListener {
     @EventHandler
-    public void onPlayerDamage(EntityDamageByEntityEvent event) {
+    public void onPlayerDamage(EntityDamageByEntityEvent event) throws ExecutionException, InterruptedException {
         if (event.isCancelled()) {
             return;
         }
@@ -32,7 +34,7 @@ public class PlayerDamageByEntityListener extends AbstractEventListener {
 
         Killer tagger = EventUtils.getDamageEventKiller(event);
 
-        this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(playerData -> playerData.onCombatTag(tagger));
+        this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(playerData -> playerData.onCombatTag(tagger)).get();
     }
 
     @Override

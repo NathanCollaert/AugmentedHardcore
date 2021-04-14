@@ -6,13 +6,15 @@ import com.backtobedrock.augmentedhardcore.guis.GuiDeathBans;
 import com.backtobedrock.augmentedhardcore.utils.PlayerUtils;
 import org.bukkit.command.CommandSender;
 
+import java.util.concurrent.ExecutionException;
+
 public class CommandDeathBans extends AbstractCommand {
     public CommandDeathBans(CommandSender cs, String[] args) {
         super(cs, args);
     }
 
     @Override
-    public void run() {
+    public void run() throws ExecutionException, InterruptedException {
         Command command = Command.DEATHBANS;
 
         if (this.args.length == 0 && !this.hasPermission(command)) {
@@ -30,15 +32,31 @@ public class CommandDeathBans extends AbstractCommand {
         }
 
         if (this.args.length == 0) {
-            this.plugin.getPlayerRepository().getByPlayer(this.sender).thenAcceptAsync(playerData -> PlayerUtils.openInventory(this.sender, new GuiDeathBans(playerData).getInventory()));
+            this.plugin.getPlayerRepository().getByPlayer(this.sender).thenAcceptAsync(playerData -> {
+                try {
+                    PlayerUtils.openInventory(this.sender, new GuiDeathBans(playerData).getInventory());
+                } catch (ExecutionException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }).get();
         } else {
             this.hasPlayedBefore(this.args[0]).thenAcceptAsync(bool -> {
                 if (!bool) {
                     return;
                 }
 
-                this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(playerData -> PlayerUtils.openInventory(this.sender, new GuiDeathBans(playerData).getInventory()));
-            });
+                try {
+                    this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(playerData -> {
+                        try {
+                            PlayerUtils.openInventory(this.sender, new GuiDeathBans(playerData).getInventory());
+                        } catch (ExecutionException | InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }).get();
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+            }).get();
         }
     }
 }
