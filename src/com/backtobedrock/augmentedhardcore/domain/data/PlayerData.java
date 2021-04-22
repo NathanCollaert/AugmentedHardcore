@@ -5,33 +5,38 @@ import com.backtobedrock.augmentedhardcore.domain.Ban;
 import com.backtobedrock.augmentedhardcore.domain.Killer;
 import com.backtobedrock.augmentedhardcore.domain.enums.DamageCause;
 import com.backtobedrock.augmentedhardcore.domain.enums.Permission;
+import com.backtobedrock.augmentedhardcore.domain.observer.*;
+import com.backtobedrock.augmentedhardcore.guis.AbstractGui;
+import com.backtobedrock.augmentedhardcore.guis.GuiMyStats;
 import com.backtobedrock.augmentedhardcore.runnables.CombatTag.AbstractCombatTag;
 import com.backtobedrock.augmentedhardcore.runnables.Playtime.AbstractPlaytime;
-import com.backtobedrock.augmentedhardcore.runnables.Playtime.LifePartPlaytime;
-import com.backtobedrock.augmentedhardcore.runnables.Playtime.MaxHealthPlaytime;
+import com.backtobedrock.augmentedhardcore.runnables.Playtime.PlaytimeLifePart;
+import com.backtobedrock.augmentedhardcore.runnables.Playtime.PlaytimeMaxHealth;
 import com.backtobedrock.augmentedhardcore.utils.BanUtils;
 import com.backtobedrock.augmentedhardcore.utils.EventUtils;
 import com.backtobedrock.augmentedhardcore.utils.MessageUtils;
 import com.backtobedrock.augmentedhardcore.utils.PlayerUtils;
+import javafx.util.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.net.InetSocketAddress;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public class PlayerData {
     //misc
     private final AugmentedHardcore plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
     private final OfflinePlayer player;
+    private final Map<UUID, Map<Class<?>, IObserver>> observers;
     //helpers
     private final List<AbstractPlaytime> playtime = new ArrayList<>();
     private List<AbstractCombatTag> combatTag = new ArrayList<>();
@@ -39,42 +44,52 @@ public class PlayerData {
     private boolean combatLogged = false;
     private Killer reviving = null;
     //serializable
-    private String lastKnownName;
-    private int timeTillNextLifePart;
-    private int timeTillNextMaxHealth;
-    private long reviveCooldown;
-    private int lifeParts;
+    private final String lastKnownIp;
     private int lives;
-    private String ip;
-    private final Map<Integer, Ban> bans;
+    private int lifeParts;
+    private long reviveCooldown;
+    private long timeTillNextLifePart;
+    private long timeTillNextMaxHealth;
+    private final NavigableMap<Integer, Ban> bans;
 
     public PlayerData(OfflinePlayer player) {
-        this(player, new LinkedHashMap<>(), JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getLivesAtStart(), JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getLifePartsAtStart(), JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getPlaytimePerLifePart(), JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getMaxHealthConfiguration().getPlaytimePerHalfHeart(), -1L);
+        this(
+                player,
+                null,
+                JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getLivesAtStart(),
+                JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getLifePartsAtStart(),
+                -1L,
+                JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getPlaytimePerLifePart(),
+                JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getMaxHealthConfiguration().getPlaytimePerHalfHeart(),
+                new TreeMap<>()
+        );
     }
 
-    public PlayerData(OfflinePlayer player, Map<Integer, Ban> bans, int lives, int lifeParts, int timeTillNextLifePart, int timeTillNextMaxHealth, long reviveCooldown) {
+    public PlayerData(OfflinePlayer player, String lastKnownIp, int lives, int lifeParts, long reviveCooldown, long timeTillNextLifePart, long timeTillNextMaxHealth, NavigableMap<Integer, Ban> bans) {
         //serializable
         this.player = player;
         this.bans = bans;
+        this.observers = new HashMap<>();
         this.setTimeTillNextLifePart(timeTillNextLifePart);
         this.setTimeTillNextMaxHealth(timeTillNextMaxHealth);
         this.setLives(lives);
         this.setLifeParts(lifeParts);
         if (player.getPlayer() != null) {
-            this.lastKnownName = player.getName();
             if (player.getPlayer().getAddress() != null) {
                 InetSocketAddress address = player.getPlayer().getAddress();
-                this.ip = address.getHostName() == null ? address.getHostString() : address.getHostName();
+                lastKnownIp = address.getHostName() == null ? address.getHostString() : address.getHostName();
             }
             reviveCooldown = this.checkReviveCooldown(reviveCooldown);
         }
+        this.lastKnownIp = lastKnownIp;
         this.setReviveCooldown(reviveCooldown);
     }
 
     public static PlayerData deserialize(ConfigurationSection section, OfflinePlayer player) {
         AugmentedHardcore plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
 
-        Map<Integer, Ban> cBans = new LinkedHashMap<>();
+        NavigableMap<Integer, Ban> cBans = new TreeMap<>();
+        String cLastKnownIp = section.getString("LastKnownIp", null);
         int cLives = section.getInt("Lives", plugin.getConfigurations().getLivesAndLifePartsConfiguration().getLivesAtStart());
         int cLifeParts = section.getInt("LifeParts", plugin.getConfigurations().getLivesAndLifePartsConfiguration().getLifePartsAtStart());
         int cTimeTillNextLifePart = section.getInt("TimeTillNextLifePart", plugin.getConfigurations().getLivesAndLifePartsConfiguration().getPlaytimePerLifePart());
@@ -84,17 +99,15 @@ public class PlayerData {
         //get all bans
         ConfigurationSection bansSection = section.getConfigurationSection("Bans");
         if (bansSection != null) {
-            int i = 1;
             for (String e : bansSection.getKeys(false)) {
                 ConfigurationSection banSection = bansSection.getConfigurationSection(e);
                 if (banSection != null) {
-                    cBans.put(i, Ban.Deserialize(banSection));
-                    i++;
+                    cBans.put(Integer.parseInt(e), Ban.Deserialize(banSection));
                 }
             }
         }
 
-        return new PlayerData(player, cBans, cLives, cLifeParts, cTimeTillNextLifePart, cTimeTillNextMaxHealth, cReviveCooldown);
+        return new PlayerData(player, cLastKnownIp, cLives, cLifeParts, cReviveCooldown, cTimeTillNextLifePart, cTimeTillNextMaxHealth, cBans);
     }
 
     public long checkReviveCooldown(long reviveCooldown) {
@@ -108,14 +121,18 @@ public class PlayerData {
         return reviveCooldown;
     }
 
+    public long getReviveCooldown() {
+        return reviveCooldown;
+    }
+
     private void setReviveCooldown(long reviveCooldown) {
         GregorianCalendar cal = new GregorianCalendar();
         cal.add(Calendar.MINUTE, this.plugin.getConfigurations().getReviveConfiguration().getTimeBetweenRevives());
         this.reviveCooldown = Math.min(reviveCooldown, cal.getTime().getTime());
     }
 
-    public String getIp() {
-        return ip;
+    public String getLastKnownIp() {
+        return this.lastKnownIp;
     }
 
     public int getLives() {
@@ -124,6 +141,7 @@ public class PlayerData {
 
     public void setLives(int lives) {
         this.lives = Math.max(Math.min(lives, this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getMaxLives()), 0);
+        this.observers.forEach((key, value) -> value.get(MyStatsLivesObserver.class).update());
     }
 
     public OfflinePlayer getPlayer() {
@@ -141,9 +159,10 @@ public class PlayerData {
             this.increaseLives(lives);
         }
         this.lifeParts = Math.min(this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getMaxLifeParts(), Math.max(0, lifeParts - (lives * lifePartsPerLife)));
+        this.observers.forEach((key, value) -> value.get(MyStatsLifePartsObserver.class).update());
     }
 
-    public Map<Integer, Ban> getBans() {
+    public NavigableMap<Integer, Ban> getBans() {
         return bans;
     }
 
@@ -167,8 +186,14 @@ public class PlayerData {
         this.setLifeParts(this.getLifeParts() + amount);
     }
 
-    public void onDeath(PlayerDeathEvent event) throws ExecutionException, InterruptedException {
-        this.unCombatTag();
+    public void onDeath(PlayerDeathEvent event) {
+        if (this.player.getPlayer() != null && this.plugin.getConfigurations().getMiscellaneousConfiguration().isLightningOnDeath()) {
+            Bukkit.getScheduler().runTask(this.plugin, () -> this.player.getPlayer().getWorld().strikeLightningEffect(this.player.getPlayer().getLocation()));
+        }
+
+        if (!this.plugin.getConfigurations().getMiscellaneousConfiguration().getCommandsOnDeath().isEmpty() && this.player.getName() != null) {
+            this.plugin.getConfigurations().getMiscellaneousConfiguration().getCommandsOnDeath().forEach(e -> Bukkit.getScheduler().runTask(this.plugin, () -> Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), e.replaceAll("%player%", this.player.getName()))));
+        }
 
         this.loseLives(this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getLivesLostPerDeath());
 
@@ -186,13 +211,7 @@ public class PlayerData {
             this.ban(event);
         }
 
-        if (this.player.getPlayer() != null && this.plugin.getConfigurations().getMiscellaneousConfiguration().isLightningOnDeath()) {
-            Bukkit.getScheduler().runTask(this.plugin, () -> this.player.getPlayer().getWorld().strikeLightningEffect(this.player.getPlayer().getLocation()));
-        }
-
-        if (!this.plugin.getConfigurations().getMiscellaneousConfiguration().getCommandsOnDeath().isEmpty() && this.player.getName() != null) {
-            this.plugin.getConfigurations().getMiscellaneousConfiguration().getCommandsOnDeath().forEach(e -> Bukkit.getScheduler().runTask(this.plugin, () -> Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), e.replaceAll("%player%", this.player.getName()))));
-        }
+        this.unCombatTag();
 
         this.plugin.getPlayerRepository().updatePlayerData(this);
     }
@@ -213,11 +232,13 @@ public class PlayerData {
             return;
         }
 
-        if (this.player.getPlayer().hasPermission(Permission.BYPASS_LOSEMAXHEALTH.getPermissionString()))
+        if (this.player.getPlayer().hasPermission(Permission.BYPASS_LOSEMAXHEALTH.getPermissionString())) {
             return;
+        }
 
-        if (this.plugin.getConfigurations().getMaxHealthConfiguration().getDisableLosingMaxHealthInWorlds().contains(this.player.getPlayer().getWorld().getName().toLowerCase()))
+        if (this.plugin.getConfigurations().getMaxHealthConfiguration().getDisableLosingMaxHealthInWorlds().contains(this.player.getPlayer().getWorld().getName().toLowerCase())) {
             return;
+        }
 
         this.decreaseMaxHealth(amount);
     }
@@ -230,6 +251,7 @@ public class PlayerData {
         AttributeInstance attribute = this.player.getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH);
         if (attribute != null) {
             PlayerUtils.setMaxHealth(this.player.getPlayer(), attribute.getBaseValue() - amount);
+            this.observers.forEach((key, value) -> value.get(MyStatsMaxHealthObserver.class).update());
         }
     }
 
@@ -241,6 +263,7 @@ public class PlayerData {
         AttributeInstance attribute = this.player.getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH);
         if (attribute != null) {
             this.player.getPlayer().setHealth(this.player.getPlayer().getHealth() + PlayerUtils.setMaxHealth(this.player.getPlayer(), attribute.getBaseValue() + amount));
+            this.observers.forEach((key, value) -> value.get(MyStatsMaxHealthObserver.class).update());
         }
     }
 
@@ -254,12 +277,14 @@ public class PlayerData {
         }
 
         //check if permission to bypass
-        if (this.player.getPlayer().hasPermission(Permission.BYPASS_LOSELIVES.getPermissionString()))
+        if (this.player.getPlayer().hasPermission(Permission.BYPASS_LOSELIVES.getPermissionString())) {
             return;
+        }
 
         //check if in disabled world
-        if (this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getDisableLosingLivesInWorlds().contains(this.player.getPlayer().getWorld().getName().toLowerCase()))
+        if (this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getDisableLosingLivesInWorlds().contains(this.player.getPlayer().getWorld().getName().toLowerCase())) {
             return;
+        }
 
         //lose lives
         this.decreaseLives(amount);
@@ -275,18 +300,20 @@ public class PlayerData {
         }
 
         //check if permission to bypass
-        if (this.player.getPlayer().hasPermission(Permission.BYPASS_LOSELIFEPARTS.getPermissionString()))
+        if (this.player.getPlayer().hasPermission(Permission.BYPASS_LOSELIFEPARTS.getPermissionString())) {
             return;
+        }
 
         //check if in disabled world
-        if (this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getDisableLosingLifePartsInWorlds().contains(this.player.getPlayer().getWorld().getName().toLowerCase()))
+        if (this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getDisableLosingLifePartsInWorlds().contains(this.player.getPlayer().getWorld().getName().toLowerCase())) {
             return;
+        }
 
         //lose life parts
         this.decreaseLifeParts(amount);
     }
 
-    private void ban(PlayerDeathEvent event) throws ExecutionException, InterruptedException {
+    private void ban(PlayerDeathEvent event) {
         if (this.player.getPlayer() == null) {
             return;
         }
@@ -327,24 +354,26 @@ public class PlayerData {
         //ban player
         if (ban.getBanTime() > 0) {
             BanUtils.deathBan(this, ban);
-            this.plugin.getServerRepository().getServerData().thenAcceptAsync(serverData -> {
+            this.plugin.getServerRepository().getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> {
                 //add ban to player and server data
-                this.addBan(ban);
-                serverData.addBan(this.player.getPlayer(), ban);
-            }).get();
-        }
+                serverData.addBan(this.player.getPlayer(), this.addBan(ban));
+            });
 
-        if (this.plugin.getConfigurations().getDeathBanConfiguration().isLightningOnDeathBan() && !this.plugin.getConfigurations().getMiscellaneousConfiguration().isLightningOnDeath()) {
-            Bukkit.getScheduler().runTask(this.plugin, () -> this.player.getPlayer().getWorld().strikeLightningEffect(this.player.getPlayer().getLocation()));
-        }
+            if (this.plugin.getConfigurations().getDeathBanConfiguration().isLightningOnDeathBan() && !this.plugin.getConfigurations().getMiscellaneousConfiguration().isLightningOnDeath()) {
+                Bukkit.getScheduler().runTask(this.plugin, () -> this.player.getPlayer().getWorld().strikeLightningEffect(this.player.getPlayer().getLocation()));
+            }
 
-        if (!this.plugin.getConfigurations().getDeathBanConfiguration().getCommandsOnDeathBan().isEmpty() && this.player.getName() != null) {
-            this.plugin.getConfigurations().getDeathBanConfiguration().getCommandsOnDeathBan().forEach(e -> Bukkit.getScheduler().runTask(this.plugin, () -> Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), e.replaceAll("%player%", this.player.getName()))));
+            if (!this.plugin.getConfigurations().getDeathBanConfiguration().getCommandsOnDeathBan().isEmpty() && this.player.getName() != null) {
+                this.plugin.getConfigurations().getDeathBanConfiguration().getCommandsOnDeathBan().forEach(e -> Bukkit.getScheduler().runTask(this.plugin, () -> Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), e.replaceAll("%player%", this.player.getName()))));
+            }
         }
     }
 
-    private void addBan(Ban ban) {
-        this.bans.put(this.bans.size() + 1, ban);
+    private Pair<Integer, Ban> addBan(Ban ban) {
+        int key = (this.bans.isEmpty() ? 0 : this.bans.lastKey()) + 1;
+        this.bans.put(key, ban);
+        this.observers.forEach((k, value) -> value.get(MyStatsDeathBansObserver.class).update());
+        return new Pair<>(key, ban);
     }
 
     public void onRespawn() {
@@ -435,8 +464,9 @@ public class PlayerData {
         }
 
         //check if in disabled world
-        if (this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getDisableGainingLifePartsInWorlds().contains(this.player.getPlayer().getWorld().getName().toLowerCase()))
+        if (this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getDisableGainingLifePartsInWorlds().contains(this.player.getPlayer().getWorld().getName().toLowerCase())) {
             return;
+        }
 
         this.increaseLifeParts(amount);
     }
@@ -447,8 +477,9 @@ public class PlayerData {
         }
 
         //check if in disabled world
-        if (this.plugin.getConfigurations().getMaxHealthConfiguration().getDisableGainingMaxHealthInWorlds().contains(this.player.getPlayer().getWorld().getName().toLowerCase()))
+        if (this.plugin.getConfigurations().getMaxHealthConfiguration().getDisableGainingMaxHealthInWorlds().contains(this.player.getPlayer().getWorld().getName().toLowerCase())) {
             return;
+        }
 
         this.increaseMaxHealth(amount);
     }
@@ -463,12 +494,14 @@ public class PlayerData {
         }
 
         //check if combat tag self enabled and if self harming
-        if (!this.plugin.getConfigurations().getCombatTagConfiguration().isCombatTagSelf() && tagger.getName().equals(player.getName()))
+        if (!this.plugin.getConfigurations().getCombatTagConfiguration().isCombatTagSelf() && tagger.getName().equals(player.getName())) {
             return;
+        }
 
         //check if in disabled worlds
-        if (this.plugin.getConfigurations().getCombatTagConfiguration().getDisableCombatTagInWorlds().contains(this.player.getPlayer().getWorld().getName().toLowerCase()))
+        if (this.plugin.getConfigurations().getCombatTagConfiguration().getDisableCombatTagInWorlds().contains(this.player.getPlayer().getWorld().getName().toLowerCase())) {
             return;
+        }
 
         if (!this.combatTag.isEmpty()) {
             new ArrayList<>(this.combatTag).forEach(e -> e.restart(tagger));
@@ -498,7 +531,7 @@ public class PlayerData {
             if (attribute != null && attribute.getBaseValue() != 20D) {
                 this.player.getPlayer().setHealth(this.player.getPlayer().getHealth() + PlayerUtils.setMaxHealth(this.player.getPlayer(), 20D));
             }
-        } else {
+        } else if (this.player.getPlayer().getHealth() != 0D) {
             //fix visual bug from Minecraft when max health is higher than 20
             this.player.getPlayer().setHealth(this.player.getPlayer().getHealth());
         }
@@ -509,10 +542,11 @@ public class PlayerData {
         }
 
         if (this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().isUseLifeParts() && this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().isGetLifePartsByPlaytime()) {
-            this.playtime.add(new LifePartPlaytime(this));
+            this.playtime.add(new PlaytimeLifePart(this));
         }
+
         if (this.plugin.getConfigurations().getMaxHealthConfiguration().isUseMaxHealth() && this.plugin.getConfigurations().getMaxHealthConfiguration().isGetMaxHealthByPlaytime()) {
-            this.playtime.add(new MaxHealthPlaytime(this));
+            this.playtime.add(new PlaytimeMaxHealth(this));
         }
 
         this.playtime.forEach(AbstractPlaytime::start);
@@ -539,7 +573,11 @@ public class PlayerData {
             return;
         }
 
-        int decreased = this.getTimeTillNextLifePart() - amount;
+        if (this.lifeParts >= this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getMaxLifeParts()) {
+            return;
+        }
+
+        long decreased = this.getTimeTillNextLifePart() - amount;
         if (decreased <= 0) {
             this.gainLifeParts(1);
             this.setTimeTillNextLifePart(this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getPlaytimePerLifePart() - Math.abs(decreased));
@@ -561,13 +599,21 @@ public class PlayerData {
             return;
         }
 
-        if (this.player.getPlayer().hasPermission(Permission.BYPASS_GAINMAXHEALTH_PLAYTIME.getPermissionString()))
+        if (this.player.getPlayer().hasPermission(Permission.BYPASS_GAINMAXHEALTH_PLAYTIME.getPermissionString())) {
             return;
+        }
 
-        if (this.plugin.getConfigurations().getMaxHealthConfiguration().getDisableGainingMaxHealthInWorlds().contains(this.player.getPlayer().getWorld().getName().toLowerCase()))
+        if (this.plugin.getConfigurations().getMaxHealthConfiguration().getDisableGainingMaxHealthInWorlds().contains(this.player.getPlayer().getWorld().getName().toLowerCase())) {
             return;
+        }
 
-        int decreased = this.getTimeTillNextMaxHealth() - amount;
+        AttributeInstance attributeInstance = this.player.getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH);
+
+        if (attributeInstance != null && attributeInstance.getBaseValue() >= this.plugin.getConfigurations().getMaxHealthConfiguration().getMaxHealth()) {
+            return;
+        }
+
+        long decreased = this.getTimeTillNextMaxHealth() - amount;
         if (decreased <= 0) {
             this.gainMaxHealth(1D);
             this.setTimeTillNextMaxHealth(this.plugin.getConfigurations().getMaxHealthConfiguration().getPlaytimePerHalfHeart() - Math.abs(decreased));
@@ -576,12 +622,13 @@ public class PlayerData {
         }
     }
 
-    public int getTimeTillNextMaxHealth() {
+    public long getTimeTillNextMaxHealth() {
         return this.timeTillNextMaxHealth;
     }
 
-    private void setTimeTillNextMaxHealth(int timeTillNextMaxHealth) {
+    private void setTimeTillNextMaxHealth(long timeTillNextMaxHealth) {
         this.timeTillNextMaxHealth = Math.min(timeTillNextMaxHealth, this.plugin.getConfigurations().getMaxHealthConfiguration().getPlaytimePerHalfHeart());
+        this.observers.forEach((key, value) -> value.get(MyStatsTimeTillNextMaxHealthObserver.class).update());
     }
 
     public void onLeave() {
@@ -730,12 +777,13 @@ public class PlayerData {
         this.plugin.getPlayerRepository().updatePlayerData(this);
     }
 
-    public int getTimeTillNextLifePart() {
+    public long getTimeTillNextLifePart() {
         return timeTillNextLifePart;
     }
 
-    private void setTimeTillNextLifePart(int timeTillNextLifePart) {
+    private void setTimeTillNextLifePart(long timeTillNextLifePart) {
         this.timeTillNextLifePart = Math.min(timeTillNextLifePart, this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getPlaytimePerLifePart());
+        this.observers.forEach((key, value) -> value.get(MyStatsTimeTillNextLifePartObserver.class).update());
     }
 
     public void onReload() {
@@ -750,13 +798,13 @@ public class PlayerData {
         this.bans.forEach((key, value) -> cBans.put(key, value.serialize()));
 
         map.put("Bans", cBans);
-        map.put("TimeTillNextLifePart", this.timeTillNextLifePart);
         map.put("TimeTillNextMaxHealth", this.timeTillNextMaxHealth);
+        map.put("TimeTillNextLifePart", this.timeTillNextLifePart);
+        map.put("ReviveCooldown", this.reviveCooldown);
         map.put("LifeParts", this.lifeParts);
         map.put("Lives", this.lives);
-        map.put("LastKnownPlayername", this.lastKnownName);
-        map.put("ReviveCooldown", this.reviveCooldown);
-        map.put("LastKnownIP", this.ip);
+        map.put("LastKnownIp", this.lastKnownIp);
+        map.put("LastKnownName", this.player.getName());
 
         return map;
     }
@@ -782,6 +830,32 @@ public class PlayerData {
     }
 
     public Ban getLastDeathBan() {
-        return this.bans.get(this.bans.size());
+        Map.Entry<Integer, Ban> entry = this.bans.lastEntry();
+        if (entry != null) {
+            return entry.getValue();
+        }
+        return null;
+    }
+
+    public void registerObserver(Player player, AbstractGui gui) {
+        Map<Class<?>, IObserver> observers = new HashMap<>();
+        if (gui instanceof GuiMyStats) {
+            GuiMyStats guiMyStats = (GuiMyStats) gui;
+            Arrays.asList(
+                    new MyStatsDeathBansObserver(guiMyStats),
+                    new MyStatsLifePartsObserver(guiMyStats),
+                    new MyStatsLivesObserver(guiMyStats),
+                    new MyStatsMaxHealthObserver(guiMyStats),
+                    new MyStatsTimeTillNextLifePartObserver(guiMyStats),
+                    new MyStatsTimeTillNextMaxHealthObserver(guiMyStats)
+            ).forEach(e -> observers.put(e.getClass(), e));
+        }
+        if (!observers.isEmpty()) {
+            this.observers.put(player.getUniqueId(), observers);
+        }
+    }
+
+    public void unregisterObserver(Player player) {
+        this.observers.remove(player.getUniqueId());
     }
 }

@@ -11,20 +11,19 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public class GuiDeathBans extends AbstractPaginatedGui {
     private final PlayerData playerData;
 
-    public GuiDeathBans(PlayerData playerData) throws ExecutionException, InterruptedException {
+    public GuiDeathBans(PlayerData playerData) {
         super(new CustomHolder(playerData.getBanCount(), String.format("%s Death Bans", playerData.getPlayer().getName())), playerData.getBanCount());
         this.playerData = playerData;
         this.initialize();
     }
 
     @Override
-    public void initialize() throws ExecutionException, InterruptedException {
+    public void initialize() {
         super.initialize();
         this.setPlayerHead(false);
         this.setData();
@@ -69,6 +68,9 @@ public class GuiDeathBans extends AbstractPaginatedGui {
             }
 
             this.customHolder.updateInvent();
+        }).exceptionally(ex -> {
+            ex.printStackTrace();
+            return null;
         });
     }
 
@@ -79,7 +81,7 @@ public class GuiDeathBans extends AbstractPaginatedGui {
     private Map<String, String> getPlayerPlaceholders() {
         Map<String, String> placeholders = new HashMap<>();
         OfflinePlayer player = this.playerData.getPlayer();
-        placeholders.put("player", player.getName());
+        placeholders.put("player_name", player.getName());
         placeholders.put("total_deaths", player.getPlayer() == null ? "-" : Integer.toString(player.getPlayer().getStatistic(Statistic.DEATHS)));
         placeholders.put("total_death_bans", Integer.toString(this.playerData.getBanCount()));
         Ban lastBan = this.playerData.getLastDeathBan();

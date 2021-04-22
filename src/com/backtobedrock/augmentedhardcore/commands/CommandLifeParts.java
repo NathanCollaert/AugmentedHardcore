@@ -6,15 +6,13 @@ import com.backtobedrock.augmentedhardcore.domain.enums.Permission;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.concurrent.ExecutionException;
-
 public class CommandLifeParts extends AbstractCommand {
     public CommandLifeParts(CommandSender cs, String[] args) {
         super(cs, args);
     }
 
     @Override
-    public void run() throws ExecutionException, InterruptedException {
+    public void run() {
         Command command = Command.LIFEPARTS;
 
         if (this.args.length == 0 && !this.hasPermission(command)) {
@@ -32,19 +30,15 @@ public class CommandLifeParts extends AbstractCommand {
                 return;
             }
 
-            this.plugin.getPlayerRepository().getByPlayer(this.sender).thenAcceptAsync(this::sendSuccessMessage).get();
+            this.plugin.getPlayerRepository().getByPlayer(this.sender).thenAcceptAsync(this::sendSuccessMessage);
         } else {
             this.hasPlayedBefore(this.args[0]).thenAcceptAsync(bool -> {
                 if (!bool) {
                     return;
                 }
 
-                try {
-                    this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(this::sendSuccessMessage).get();
-                } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
-                }
-            }).get();
+                this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(this::sendSuccessMessage);
+            });
         }
     }
 

@@ -8,7 +8,6 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 public abstract class AbstractPaginatedGui extends AbstractGui {
     protected int currentPage = 1;
@@ -20,7 +19,7 @@ public abstract class AbstractPaginatedGui extends AbstractGui {
     }
 
     @Override
-    public void initialize() throws ExecutionException, InterruptedException {
+    public void initialize() {
         //clear content for new page
         this.customHolder.reset();
         super.initialize();
@@ -42,7 +41,7 @@ public abstract class AbstractPaginatedGui extends AbstractGui {
         }
     }
 
-    public void nextPage() throws ExecutionException, InterruptedException {
+    public void nextPage() {
         if (this.currentPage < this.totalPages) {
             this.currentPage++;
             this.initialize();
@@ -50,7 +49,7 @@ public abstract class AbstractPaginatedGui extends AbstractGui {
         }
     }
 
-    public void previousPage() throws ExecutionException, InterruptedException {
+    public void previousPage() {
         if (this.currentPage > 1) {
             this.currentPage--;
             this.initialize();

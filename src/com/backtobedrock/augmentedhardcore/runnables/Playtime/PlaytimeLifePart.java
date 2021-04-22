@@ -2,8 +2,8 @@ package com.backtobedrock.augmentedhardcore.runnables.Playtime;
 
 import com.backtobedrock.augmentedhardcore.domain.data.PlayerData;
 
-public class LifePartPlaytime extends AbstractPlaytime {
-    public LifePartPlaytime(PlayerData playerData) {
+public class PlaytimeLifePart extends AbstractPlaytime {
+    public PlaytimeLifePart(PlayerData playerData) {
         super(playerData);
     }
 

@@ -25,7 +25,7 @@ public class ConfigurationRevive {
         this.disableReviveInWorlds = disableReviveInWorlds;
     }
 
-    public static ConfigurationRevive deserialize(ConfigurationSection section) {
+    public static ConfigurationRevive deserialize(ConfigurationSection section, ConfigurationLivesAndLifeParts configuration) {
         boolean cUseRevive = section.getBoolean("UseRevive", true);
         int cLivesLostOnReviving = ConfigUtils.checkMinMax("LivesLostOnReviving", section.getInt("LivesLostOnReviving", 1), 1, Integer.MAX_VALUE);
         int cLivesGainedOnRevive = ConfigUtils.checkMinMax("LivesGainedOnRevive", section.getInt("LivesGainedOnRevive", 1), 1, Integer.MAX_VALUE);
@@ -33,7 +33,7 @@ public class ConfigurationRevive {
         boolean cReviveOnFirstJoin = section.getBoolean("ReviveOnFirstJoin", false);
         List<String> cDisableReviveInWorlds = ConfigUtils.getWorlds("DisableReviveInWorlds", section.getStringList("DisableReviveInWorlds"));
 
-        if (cUseRevive && !JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().isUseLives()) {
+        if (cUseRevive && !configuration.isUseLives()) {
             JavaPlugin.getPlugin(AugmentedHardcore.class).getLogger().log(Level.SEVERE, "Reviving cannot be enabled without enabling lives.");
             cUseRevive = false;
         }

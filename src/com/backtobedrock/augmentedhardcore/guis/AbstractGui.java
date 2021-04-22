@@ -17,7 +17,7 @@ public abstract class AbstractGui {
         this.customHolder = customHolder;
     }
 
-    protected void initialize() throws ExecutionException, InterruptedException {
+    protected void initialize() {
         for (int i = 0; i < this.customHolder.getSize(); i++) {
             int calc = i % 9;
             if (i < 9 || i >= (this.customHolder.getRowAmount() - 1) * 9 || calc == 0 || calc == 8) {

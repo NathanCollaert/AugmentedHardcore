@@ -2,7 +2,9 @@ package com.backtobedrock.augmentedhardcore.repositories;
 
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.data.PlayerData;
+import com.backtobedrock.augmentedhardcore.domain.enums.StorageType;
 import com.backtobedrock.augmentedhardcore.mappers.player.IPlayerMapper;
+import com.backtobedrock.augmentedhardcore.mappers.player.MySQLPlayerMapper;
 import com.backtobedrock.augmentedhardcore.mappers.player.YAMLPlayerMapper;
 import com.backtobedrock.augmentedhardcore.runnables.ClearCache;
 import org.bukkit.OfflinePlayer;
@@ -32,24 +34,21 @@ public class PlayerRepository {
     }
 
     private void initializeMapper() {
-        this.mapper = new YAMLPlayerMapper();
-        //TODO: uncomment
-//        if (this.plugin.getConfigurations().getDataConfiguration().getStorageType() == StorageType.MYSQL) {
-//            this.mapper = new MySQLPlayerMapper();
-//        } else {
-//            this.mapper = new YAMLPlayerMapper();
-//        }
-    }
-
-    public void insertPlayerDataAsync(PlayerData data) {
-        this.mapper.insertPlayerDataAsync(data);
+        if (this.plugin.getConfigurations().getDataConfiguration().getStorageType() == StorageType.MYSQL) {
+            this.mapper = MySQLPlayerMapper.getInstance();
+        } else {
+            this.mapper = new YAMLPlayerMapper();
+        }
     }
 
     public CompletableFuture<PlayerData> getByPlayer(OfflinePlayer player) {
         if (!this.playerCache.containsKey(player.getUniqueId())) {
             return this.mapper.getByPlayer(player).thenApplyAsync(playerData -> this.getFromDataAndCache(player, playerData));
         } else {
-            return CompletableFuture.supplyAsync(() -> player).thenApplyAsync(this::getFromCache);
+            return CompletableFuture.supplyAsync(() -> player).thenApplyAsync(this::getFromCache).exceptionally(ex -> {
+                ex.printStackTrace();
+                return null;
+            });
         }
     }
 
@@ -65,7 +64,7 @@ public class PlayerRepository {
         if (playerData == null) {
             playerData = new PlayerData(player);
             if (player.hasPlayedBefore())
-                this.insertPlayerDataAsync(playerData);
+                this.mapper.insertPlayerDataAsync(playerData);
         }
         this.playerCache.put(player.getUniqueId(), playerData);
 

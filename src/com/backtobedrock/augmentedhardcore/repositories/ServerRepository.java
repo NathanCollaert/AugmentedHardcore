@@ -1,13 +1,18 @@
 package com.backtobedrock.augmentedhardcore.repositories;
 
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
+import com.backtobedrock.augmentedhardcore.domain.Ban;
 import com.backtobedrock.augmentedhardcore.domain.data.ServerData;
+import com.backtobedrock.augmentedhardcore.domain.enums.StorageType;
 import com.backtobedrock.augmentedhardcore.mappers.server.IServerMapper;
+import com.backtobedrock.augmentedhardcore.mappers.server.MySQLServerMapper;
 import com.backtobedrock.augmentedhardcore.mappers.server.YAMLServerMapper;
+import javafx.util.Pair;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 
 public class ServerRepository {
@@ -18,29 +23,29 @@ public class ServerRepository {
     //server cache
     private ServerData serverData = null;
 
-    public ServerRepository() throws ExecutionException, InterruptedException {
+    public ServerRepository() {
         this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
         this.initializeMapper();
-        this.getServerData().thenAccept(serverData -> {
-            this.plugin.getLogger().log(Level.INFO, String.format("Loaded %d ongoing death %s.", serverData.getTotalOngoingBans(), serverData.getTotalOngoingBans() != 1 ? "bans" : "ban"));
-        }).get();
+        this.getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> this.plugin.getLogger().log(Level.INFO, String.format("Loaded %d ongoing death %s.", serverData.getTotalOngoingBans(), serverData.getTotalOngoingBans() != 1 ? "bans" : "ban")));
     }
 
     private void initializeMapper() {
         this.mapper = new YAMLServerMapper();
-        //TODO: uncomment
-//        if (this.plugin.getConfigurations().getDataConfiguration().getStorageType() == StorageType.MYSQL) {
-//            this.mapper = new MySQLServerMapper();
-//        } else {
-//            this.mapper = new YAMLServerMapper();
-//        }
+        if (this.plugin.getConfigurations().getDataConfiguration().getStorageType() == StorageType.MYSQL) {
+            this.mapper = MySQLServerMapper.getInstance();
+        } else {
+            this.mapper = new YAMLServerMapper();
+        }
     }
 
-    public CompletableFuture<ServerData> getServerData() {
+    public CompletableFuture<ServerData> getServerData(Server server) {
         if (this.serverData == null) {
-            return this.mapper.getServerData().thenApply(this::getFromDataAndCache);
+            return this.mapper.getServerData(server).thenApplyAsync(this::getFromDataAndCache);
         } else {
-            return CompletableFuture.supplyAsync(this::getFromCache);
+            return CompletableFuture.supplyAsync(this::getFromCache).exceptionally(ex -> {
+                ex.printStackTrace();
+                return null;
+            });
         }
     }
 
@@ -63,5 +68,9 @@ public class ServerRepository {
 
     public void updateServerData(ServerData data) {
         this.mapper.updateServerData(data);
+    }
+
+    public void removeBanFromServerData(OfflinePlayer player, Pair<Integer, Ban> banPair) {
+        this.mapper.deleteBanFromServerData(player, banPair);
     }
 }

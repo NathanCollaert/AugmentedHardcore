@@ -6,6 +6,7 @@ import com.backtobedrock.augmentedhardcore.guis.clickActions.ClickActionOpenPlay
 import com.backtobedrock.augmentedhardcore.utils.MessageUtils;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,12 +15,14 @@ import java.util.Map;
 
 public class GuiMyStats extends AbstractGui {
     private final PlayerData playerData;
+    private final Player sender;
     private final boolean isOther;
 
     public GuiMyStats(Player sender, PlayerData playerData) {
         super(new CustomHolder(54, String.format("%s Information", playerData.getPlayer().getName())));
         this.playerData = playerData;
-        this.isOther = sender.getUniqueId() != this.playerData.getPlayer().getUniqueId();
+        this.sender = sender;
+        this.isOther = !sender.getUniqueId().toString().equals(this.playerData.getPlayer().getUniqueId().toString());
         this.initialize();
     }
 
@@ -39,7 +42,7 @@ public class GuiMyStats extends AbstractGui {
         this.fillGui(Arrays.asList(13, 21, 22, 23, 31));
     }
 
-    private void updateLivesAndLifeParts(boolean update) {
+    public void updateLivesAndLifeParts(boolean update) {
         Icon icon;
 
         if (!this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().isUseLives() && !this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().isUseLifeParts()) {
@@ -59,7 +62,7 @@ public class GuiMyStats extends AbstractGui {
         this.setIcon(13, icon, update);
     }
 
-    private void updateTimeTillNextMaxHealth(boolean update) {
+    public void updateTimeTillNextMaxHealth(boolean update) {
         Icon icon;
 
         if (!this.plugin.getConfigurations().getMaxHealthConfiguration().isUseMaxHealth()) {
@@ -80,6 +83,7 @@ public class GuiMyStats extends AbstractGui {
     }
 
     private void updateRevive(boolean update) {
+        //TODO: add checks
         Icon icon;
 
         if (!this.plugin.getConfigurations().getReviveConfiguration().isUseRevive() || this.isOther) {
@@ -91,7 +95,7 @@ public class GuiMyStats extends AbstractGui {
         this.setIcon(22, icon, update);
     }
 
-    private void updateTimeTillNextLifePart(boolean update) {
+    public void updateTimeTillNextLifePart(boolean update) {
         Icon icon;
 
         if (!this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().isUseLifeParts()) {
@@ -111,7 +115,7 @@ public class GuiMyStats extends AbstractGui {
         this.setIcon(23, icon, update);
     }
 
-    private void updateBansInformation(boolean update) {
+    public void updateBansInformation(boolean update) {
         Icon icon;
 
         if (!this.plugin.getConfigurations().getDeathBanConfiguration().isUseDeathBan()) {
@@ -124,5 +128,15 @@ public class GuiMyStats extends AbstractGui {
         }
 
         this.setIcon(31, icon, update);
+    }
+
+    @Override
+    public Inventory getInventory() {
+        this.playerData.registerObserver(this.sender, this);
+        return super.getInventory();
+    }
+
+    public PlayerData getPlayerData() {
+        return this.playerData;
     }
 }

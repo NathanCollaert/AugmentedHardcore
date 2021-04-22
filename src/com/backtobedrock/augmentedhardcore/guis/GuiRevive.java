@@ -10,26 +10,31 @@ import org.bukkit.BanEntry;
 import org.bukkit.OfflinePlayer;
 
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public class GuiRevive extends AbstractGui {
     private final PlayerData reviverData;
     private final OfflinePlayer reviving;
+    private PlayerData revivingData;
     private final Map<String, String> placeholders;
 
-    public GuiRevive(PlayerData reviverData, OfflinePlayer reviving) throws ExecutionException, InterruptedException {
+    public GuiRevive(PlayerData reviverData, OfflinePlayer reviving) {
         super(new CustomHolder(54, String.format("Reviving %s", reviving.getName())));
         this.reviverData = reviverData;
         this.reviving = reviving;
         this.placeholders = new HashMap<String, String>() {{
             put("player", reviving.getName());
         }};
+        this.plugin.getPlayerRepository().getByPlayer(this.reviving).thenAcceptAsync(playerData -> {
+            this.revivingData = playerData;
+            this.updatePlayerHead(true);
+            this.updateConfirmation(true);
+        });
         this.initialize();
     }
 
     @Override
-    protected void initialize() throws ExecutionException, InterruptedException {
+    protected void initialize() {
         this.updateCancellation(false);
         this.updatePlayerHead(true);
         this.updateConfirmation(true);
@@ -46,22 +51,30 @@ public class GuiRevive extends AbstractGui {
         this.setIcon(38, new Icon(MessageUtils.replaceItemNameAndLorePlaceholders(this.plugin.getConfigurations().getGuisConfiguration().getCancellationDisplay().getItem(), this.placeholders), Collections.singletonList(new ClickActionCloseInventory())), update);
     }
 
-    public void updatePlayerHead(boolean update) throws ExecutionException, InterruptedException {
-        this.setIcon(13, new Icon(this.plugin.getConfigurations().getGuisConfiguration().getLoadingDisplay().getItem(), Collections.emptyList()), false);
-        this.plugin.getPlayerRepository().getByPlayer(this.reviving).thenAcceptAsync(playerData -> {
+    public void updatePlayerHead(boolean update) {
+        Icon icon;
+        if (this.revivingData != null) {
             List<String> lore = new ArrayList<>();
             lore.add(String.format("%s current statistics:", this.reviving.getName()));
-            lore.add(String.format("    • Lives left: %d", playerData.getLives()));
-            BanEntry banEntry = BanUtils.isBanned(playerData);
+            lore.add(String.format("    • Lives left: %d", this.revivingData.getLives()));
+            BanEntry banEntry = BanUtils.isBanned(this.revivingData);
             if (banEntry != null) {
                 lore.add(String.format("    • Death banned for another: %s", MessageUtils.getTimeFromTicks(MessageUtils.timeUnitToTicks(banEntry.getExpiration().getTime() - new Date().getTime(), TimeUnit.MILLISECONDS), false, false)));
             }
-            this.setIcon(13, new Icon(InventoryUtils.createPlayerSkull(this.reviving.getName(), lore, this.reviving), Collections.emptyList()), update);
-        }).get();
+            icon = new Icon(InventoryUtils.createPlayerSkull(this.reviving.getName(), lore, this.reviving), Collections.emptyList());
+        } else {
+            icon = new Icon(this.plugin.getConfigurations().getGuisConfiguration().getLoadingDisplay().getItem(), Collections.emptyList());
+        }
+        this.setIcon(13, icon, update);
     }
 
-    public void updateConfirmation(boolean update) throws ExecutionException, InterruptedException {
-        this.setIcon(42, new Icon(this.plugin.getConfigurations().getGuisConfiguration().getLoadingDisplay().getItem(), Collections.emptyList()), false);
-        this.plugin.getPlayerRepository().getByPlayer(this.reviving).thenAcceptAsync(playerData -> this.setIcon(42, new Icon(MessageUtils.replaceItemNameAndLorePlaceholders(this.plugin.getConfigurations().getGuisConfiguration().getConfirmationDisplay().getItem(), this.placeholders), Collections.singletonList(new ClickActionConfirmRevive(this.reviverData, playerData))), update)).get();
+    public void updateConfirmation(boolean update) {
+        Icon icon;
+        if (this.revivingData != null) {
+            icon = new Icon(MessageUtils.replaceItemNameAndLorePlaceholders(this.plugin.getConfigurations().getGuisConfiguration().getConfirmationDisplay().getItem(), this.placeholders), Collections.singletonList(new ClickActionConfirmRevive(this.reviverData, this.revivingData)));
+        } else {
+            icon = new Icon(this.plugin.getConfigurations().getGuisConfiguration().getLoadingDisplay().getItem(), Collections.emptyList());
+        }
+        this.setIcon(42, icon, update);
     }
 }

@@ -78,7 +78,7 @@ public class PlaceholderUtils extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getAuthor() {
-        return "Augmented Hardcore";
+        return this.plugin.getDescription().getName();
     }
 
     @Override

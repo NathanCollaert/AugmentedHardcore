@@ -1,7 +1,6 @@
 package com.backtobedrock.augmentedhardcore.utils;
 
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -11,24 +10,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class UpdateUtils {
-
-    public static void getVersion(int resourceId, final Consumer<String> consumer) {
-        try (InputStream inputStream = new URL("https://api.spigotmc.org/legacy/update.php?resource=" + resourceId).openStream(); Scanner scanner = new Scanner(inputStream)) {
-            if (scanner.hasNext()) {
-                consumer.accept(scanner.next());
-            }
-        } catch (IOException exception) {
-            Bukkit.getLogger().log(Level.INFO, "Cannot look for updates: {0}", exception.getMessage());
-        }
-    }
 
     public static void update(Plugin plugin, String resourceName, File toUpdate, List<String> ignoredSections) {
         FileConfiguration oldConfig = YamlConfiguration.loadConfiguration(toUpdate);
