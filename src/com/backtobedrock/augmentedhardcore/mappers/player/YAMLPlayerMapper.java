@@ -34,8 +34,9 @@ public class YAMLPlayerMapper implements IPlayerMapper {
 
     @Override
     public void insertPlayerDataAsync(PlayerData data) {
-        Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-            this.insertPlayerData(data);
+        CompletableFuture.runAsync(() -> this.insertPlayerData(data)).exceptionally(ex -> {
+            ex.printStackTrace();
+            return null;
         });
     }
 
@@ -46,7 +47,10 @@ public class YAMLPlayerMapper implements IPlayerMapper {
 
     @Override
     public CompletableFuture<PlayerData> getByPlayer(OfflinePlayer player) {
-        return CompletableFuture.supplyAsync(() -> PlayerData.deserialize(this.getConfig(player), player));
+        return CompletableFuture.supplyAsync(() -> PlayerData.deserialize(this.getConfig(player), player)).exceptionally(ex -> {
+            ex.printStackTrace();
+            return null;
+        });
     }
 
     @Override
@@ -65,13 +69,16 @@ public class YAMLPlayerMapper implements IPlayerMapper {
 
     @Override
     public void deletePlayerData(OfflinePlayer player) {
-        Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+        CompletableFuture.runAsync(() -> {
             File file = this.getFile(player);
             if (file.exists()) {
                 if (file.delete()) {
                     this.plugin.getLogger().log(Level.INFO, "File for player {0} has been deleted at {1}.", new Object[]{player.getName(), file.getPath()});
                 }
             }
+        }).exceptionally(ex -> {
+            ex.printStackTrace();
+            return null;
         });
     }
 

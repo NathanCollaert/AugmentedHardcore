@@ -14,7 +14,6 @@ Connection:
   Database: "minecraft"
   Username: "root"
   Password: "root"
-  Prefix: "ah_"
 
 
 ############################################################
@@ -131,6 +130,7 @@ UseDeathBan: true
 
 #What ban times should these death causes have when a player reaches 0 lives?
 #Bantime:         The ban time in minutes this damage cause will give the player.
+#                 Minimum is 0, -1 will ban permanently
 #DisplayMessages: A list of possible ban messages that can be used in the ban reason of a player.
 #                 These ban messages can use ALL placeholders available (if present in the ban cause) in the Ban section of the messages.yml config.
 BanTimes:

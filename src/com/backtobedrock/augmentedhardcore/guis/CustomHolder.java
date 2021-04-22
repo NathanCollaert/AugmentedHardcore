@@ -67,7 +67,7 @@ public class CustomHolder implements InventoryHolder {
                 }
                 break;
             case 5:
-                int[] slots5 = {1, 2, 3, 5, 7};
+                int[] slots5 = {1, 2, 4, 6, 7};
                 for (int i = 0; i < icons.size(); i++) {
                     this.icons.put((this.currentRow * 9) + slots5[i], icons.get(i));
                 }

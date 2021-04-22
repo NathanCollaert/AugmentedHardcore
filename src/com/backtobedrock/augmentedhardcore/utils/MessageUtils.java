@@ -38,28 +38,28 @@ public class MessageUtils {
             sb.append(days > 9 ? days : "0" + days).append(":").append(hours > 9 ? hours : "0" + hours).append(":").append(minutes > 9 ? minutes : "0" + minutes).append(":").append(seconds > 9 ? seconds : "0" + seconds);
         } else {
             if (days > 0) {
-                sb.append(days).append(longVersion ? days > 1 ? " days" : " day" : "d");
+                sb.append(days).append(longVersion ? days == 1 ? " day" : " days" : "d");
             }
             if (hours > 0) {
                 if (!sb.toString().isEmpty()) {
                     sb.append(", ");
                 }
-                sb.append(hours).append(longVersion ? hours > 1 ? " hours" : " hour" : "h");
+                sb.append(hours).append(longVersion ? hours == 1 ? " hour" : " hours" : "h");
             }
             if (minutes > 0) {
                 if (!sb.toString().isEmpty()) {
                     sb.append(", ");
                 }
-                sb.append(minutes).append(longVersion ? minutes > 1 ? " minutes" : " minute" : "m");
+                sb.append(minutes).append(longVersion ? minutes == 1 ? " minute" : " minutes" : "m");
             }
             if (seconds > 0) {
                 if (!sb.toString().isEmpty()) {
                     sb.append(", ");
                 }
-                sb.append(seconds).append(longVersion ? seconds > 1 ? " seconds" : " second" : "s");
+                sb.append(seconds).append(longVersion ? seconds == 1 ? " second" : " seconds" : "s");
             }
             if (sb.toString().isEmpty()) {
-                sb.append(timeInTicks).append(longVersion ? timeInTicks > 1 ? " ticks" : " tick" : "t");
+                sb.append(timeInTicks).append(longVersion ? timeInTicks == 1 ? " tick" : " ticks" : "t");
             }
         }
 

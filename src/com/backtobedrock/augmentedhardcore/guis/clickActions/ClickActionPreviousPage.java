@@ -4,8 +4,6 @@ import com.backtobedrock.augmentedhardcore.guis.AbstractPaginatedGui;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.util.concurrent.ExecutionException;
-
 public class ClickActionPreviousPage extends AbstractClickAction {
     private final AbstractPaginatedGui paginatedGui;
 
@@ -14,7 +12,7 @@ public class ClickActionPreviousPage extends AbstractClickAction {
     }
 
     @Override
-    public void execute(Player player) throws ExecutionException, InterruptedException {
+    public void execute(Player player) {
         this.paginatedGui.previousPage();
         Bukkit.getScheduler().runTask(this.plugin, () -> player.openInventory(this.paginatedGui.getInventory()));
     }

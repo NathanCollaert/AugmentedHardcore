@@ -14,5 +14,5 @@ public abstract class AbstractClickAction {
         this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
     }
 
-    public abstract void execute(Player player) throws ExecutionException, InterruptedException;
+    public abstract void execute(Player player);
 }

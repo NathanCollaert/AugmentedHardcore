@@ -73,110 +73,142 @@ public class ConfigUtils {
 
     public static StorageType getStorageType(String id, String storageType) {
         try {
-            return StorageType.valueOf(storageType.toUpperCase());
+            if (storageType != null) {
+                return StorageType.valueOf(storageType.toUpperCase());
+            }
         } catch (IllegalArgumentException e) {
             sendErrorMessage(String.format("%s: %s is not an existing storage type.", id, storageType));
-            return null;
         }
+        return null;
     }
 
     public static Material getMaterial(String id, String material) {
         try {
-            return Material.valueOf(material.toUpperCase());
+            if (material != null) {
+                return Material.valueOf(material.toUpperCase());
+            }
         } catch (IllegalArgumentException e) {
             sendErrorMessage(String.format("%s: %s is not an existing material.", id, material));
-            return null;
         }
+        return null;
     }
 
     public static GrowthType getGrowthType(String id, String growthType, GrowthType type) {
         try {
-            return GrowthType.valueOf(growthType.toUpperCase());
+            if (growthType != null) {
+                return GrowthType.valueOf(growthType.toUpperCase());
+            }
         } catch (IllegalArgumentException e) {
             sendErrorMessage(String.format("%s: %s is not an existing growth type, default value will be used: %s.", id, growthType, type));
-            return type;
         }
+        return type;
     }
 
     public static BanTimeType getBanTimeType(String id, String banTimeType, BanTimeType type) {
         try {
-            return BanTimeType.valueOf(banTimeType.toUpperCase());
+            if (banTimeType != null) {
+                return BanTimeType.valueOf(banTimeType.toUpperCase());
+            }
         } catch (IllegalArgumentException e) {
             sendErrorMessage(String.format("%s: %s is not an existing ban time type, default value will be used: %s.", id, banTimeType, type));
-            return type;
         }
+        return type;
     }
 
     public static BanList.Type getBanType(String id, String banType, BanList.Type type) {
         try {
-            return BanList.Type.valueOf(banType.toUpperCase());
+            if (banType != null) {
+                return BanList.Type.valueOf(banType.toUpperCase());
+            }
         } catch (IllegalArgumentException e) {
             sendErrorMessage(String.format("%s: %s is not an existing ban type, default value will be used: %s.", id, banType, type));
-            return type;
         }
+        return type;
     }
 
     public static BarStyle getBarStyle(String id, String barStyle, BarStyle type) {
         try {
-            return BarStyle.valueOf(barStyle.toUpperCase());
+            if (barStyle != null) {
+                return BarStyle.valueOf(barStyle.toUpperCase());
+            }
         } catch (IllegalArgumentException e) {
             sendErrorMessage(String.format("%s: %s is not an existing bar type, default value will be used: %s.", id, barStyle, type));
-            return type;
         }
+        return type;
     }
 
     public static BarColor getBarColor(String id, String barColor, BarColor type) {
         try {
-            return BarColor.valueOf(barColor.toUpperCase());
+            if (barColor != null) {
+                return BarColor.valueOf(barColor.toUpperCase());
+            }
         } catch (IllegalArgumentException e) {
             sendErrorMessage(String.format("%s: %s is not an existing bar color, default value will be used: %s.", id, barColor, type));
-            return type;
         }
+        return type;
     }
 
     public static NotificationType getNotifcationType(String id, String notificationType) {
         try {
-            return NotificationType.valueOf(notificationType.toUpperCase());
+            if (notificationType != null) {
+                return NotificationType.valueOf(notificationType.toUpperCase());
+            }
         } catch (IllegalArgumentException e) {
             sendErrorMessage(String.format("%s: %s is not an existing notification type.", id, notificationType));
-            return null;
         }
+        return null;
     }
 
     public static DamageCause getDamageCause(String damageCause, DamageCause defaultValue) {
         try {
-            return DamageCause.valueOf(damageCause.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            return defaultValue;
+            if (damageCause != null) {
+                return DamageCause.valueOf(damageCause.toUpperCase());
+            }
+        } catch (IllegalArgumentException ignored) {
         }
+        return defaultValue;
+    }
+
+    public static DamageCause getDamageCause(String damageCause) {
+        return getDamageCause(damageCause, null);
     }
 
     public static DamageCauseType getDamageCauseType(String damageCauseType, DamageCauseType defaultValue) {
         try {
-            return DamageCauseType.valueOf(damageCauseType.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            return defaultValue;
+            if (damageCauseType != null) {
+                return DamageCauseType.valueOf(damageCauseType.toUpperCase());
+            }
+        } catch (IllegalArgumentException ignored) {
         }
+        return defaultValue;
+    }
+
+    public static DamageCauseType getDamageCauseType(String damageCauseType) {
+        return getDamageCauseType(damageCauseType, null);
     }
 
     public static EntityType getEntityType(String entityType) {
         try {
-            return EntityType.valueOf(entityType.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            return null;
+            if (entityType != null) {
+                return EntityType.valueOf(entityType.toUpperCase());
+            }
+        } catch (IllegalArgumentException ignored) {
         }
+        return null;
     }
 
     public static EntityType getLivingEntityType(String id, String livingEntityType) {
         try {
-            EntityType type = EntityType.valueOf(livingEntityType.toUpperCase());
-            if (type.isAlive())
-                return type;
-            return null;
+            if (livingEntityType != null) {
+                EntityType type = EntityType.valueOf(livingEntityType.toUpperCase());
+                if (type.isAlive()) {
+                    return type;
+                }
+            }
         } catch (IllegalArgumentException e) {
             sendErrorMessage(String.format("%s: %s is not a living entity.", id, livingEntityType));
-            return null;
         }
+        return null;
     }
 
     private static void sendErrorMessage(String message) {

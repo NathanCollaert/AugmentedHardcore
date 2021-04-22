@@ -5,8 +5,6 @@ import com.backtobedrock.augmentedhardcore.guis.GuiDeathBans;
 import com.backtobedrock.augmentedhardcore.utils.PlayerUtils;
 import org.bukkit.entity.Player;
 
-import java.util.concurrent.ExecutionException;
-
 public class ClickActionOpenBansGui extends AbstractClickAction {
 
     private final PlayerData playerData;
@@ -16,9 +14,9 @@ public class ClickActionOpenBansGui extends AbstractClickAction {
     }
 
     @Override
-    public void execute(Player player) throws ExecutionException, InterruptedException {
+    public void execute(Player player) {
         if (this.playerData.getBanCount() > 0) {
-            PlayerUtils.openInventory(player, new GuiDeathBans(this.playerData).getInventory());
+            PlayerUtils.openInventory(player, new GuiDeathBans(this.playerData));
         } else {
             player.sendMessage("§cThere are currently no death bans recorded yet.");
         }

@@ -10,7 +10,7 @@ import java.util.concurrent.ExecutionException;
 public class ListenerEntityDeath extends AbstractEventListener {
 
     @EventHandler
-    public void onEntityKill(EntityDeathEvent event) throws ExecutionException, InterruptedException {
+    public void onEntityKill(EntityDeathEvent event) {
         if (!(event.getEntity().getLastDamageCause() instanceof EntityDamageByEntityEvent)) {
             return;
         }
@@ -20,7 +20,7 @@ public class ListenerEntityDeath extends AbstractEventListener {
             return;
         }
 
-        this.plugin.getPlayerRepository().getByPlayer((Player) entityDamageByEntityEvent.getDamager()).thenAcceptAsync(playerData -> playerData.onEntityKill(event.getEntity().getType())).get();
+        this.plugin.getPlayerRepository().getByPlayer((Player) entityDamageByEntityEvent.getDamager()).thenAcceptAsync(playerData -> playerData.onEntityKill(event.getEntity().getType()));
     }
 
     @Override

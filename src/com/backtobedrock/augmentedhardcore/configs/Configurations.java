@@ -13,18 +13,26 @@ public class Configurations {
     private final FileConfiguration config;
 
     //configurations
-    private ConfigurationData dataConfiguration = null;
-    private ConfigurationLivesAndLifeParts livesAndLifePartsConfiguration = null;
-    private ConfigurationDeathBan deathBanConfiguration = null;
-    private ConfigurationMaxHealth maxHealthConfiguration = null;
-    private ConfigurationCombatTag combatTagConfiguration = null;
-    private ConfigurationRevive reviveConfiguration = null;
-    private ConfigurationMiscellaneous miscellaneousConfiguration = null;
-    private ConfigurationGuis guisConfiguration = null;
+    private ConfigurationData dataConfiguration;
+    private ConfigurationLivesAndLifeParts livesAndLifePartsConfiguration;
+    private ConfigurationDeathBan deathBanConfiguration;
+    private ConfigurationMaxHealth maxHealthConfiguration;
+    private ConfigurationCombatTag combatTagConfiguration;
+    private ConfigurationRevive reviveConfiguration;
+    private ConfigurationMiscellaneous miscellaneousConfiguration;
+    private ConfigurationGuis guisConfiguration;
 
     public Configurations(File configFile) {
         this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
         this.config = YamlConfiguration.loadConfiguration(configFile);
+        this.getDataConfiguration();
+        this.getLivesAndLifePartsConfiguration();
+        this.getDeathBanConfiguration();
+        this.getMaxHealthConfiguration();
+        this.getCombatTagConfiguration();
+        this.getReviveConfiguration();
+        this.getMiscellaneousConfiguration();
+        this.getGuisConfiguration();
     }
 
     public ConfigurationData getDataConfiguration() {
@@ -76,7 +84,7 @@ public class Configurations {
 
     public ConfigurationRevive getReviveConfiguration() {
         if (this.reviveConfiguration == null) {
-            this.reviveConfiguration = ConfigurationRevive.deserialize(this.config);
+            this.reviveConfiguration = ConfigurationRevive.deserialize(this.config, this.getLivesAndLifePartsConfiguration());
             if (this.reviveConfiguration == null) {
                 this.plugin.getServer().getPluginManager().disablePlugin(this.plugin);
             }

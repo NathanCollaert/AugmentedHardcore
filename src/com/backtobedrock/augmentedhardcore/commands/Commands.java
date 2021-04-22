@@ -11,6 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,7 +34,7 @@ public class Commands implements TabCompleter {
         }
     }
 
-    public boolean onCommand(CommandSender cs, Command cmnd, String alias, String[] args) throws ExecutionException, InterruptedException {
+    public boolean onCommand(CommandSender cs, Command cmnd, String alias, String[] args) {
         switch (cmnd.getName().toLowerCase()) {
             case "augmentedhardcore":
                 new CommandAugmentedHardcore(cs, args).run();
@@ -77,7 +78,7 @@ public class Commands implements TabCompleter {
             case "augmentedhardcore":
                 switch (args.length) {
                     case 1:
-                        StringUtil.copyPartialMatches(args[0].toLowerCase(), Arrays.asList("help", "addlives", "addlifeparts", "setlives", "setlifeparts", "reload", "mystats"), completions);
+                        StringUtil.copyPartialMatches(args[0].toLowerCase(), Arrays.asList("help", "addlives", "addlifeparts", "setlives", "setlifeparts", "reload"), completions);
                         Collections.sort(completions);
                         break;
                     case 2:

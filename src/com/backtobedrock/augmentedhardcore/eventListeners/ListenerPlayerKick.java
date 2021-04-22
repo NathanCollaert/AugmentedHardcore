@@ -9,12 +9,12 @@ import java.util.concurrent.ExecutionException;
 public class ListenerPlayerKick extends AbstractEventListener {
 
     @EventHandler
-    public void onPlayerKick(PlayerKickEvent event) throws ExecutionException, InterruptedException {
+    public void onPlayerKick(PlayerKickEvent event) {
         if (event.isCancelled()) {
             return;
         }
 
-        this.plugin.getPlayerRepository().getByPlayer(event.getPlayer()).thenAcceptAsync(PlayerData::onKick).get();
+        this.plugin.getPlayerRepository().getByPlayer(event.getPlayer()).thenAcceptAsync(PlayerData::onKick);
     }
 
     @Override

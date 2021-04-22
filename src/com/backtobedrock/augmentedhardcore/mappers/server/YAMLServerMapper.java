@@ -1,8 +1,12 @@
 package com.backtobedrock.augmentedhardcore.mappers.server;
 
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
+import com.backtobedrock.augmentedhardcore.domain.Ban;
 import com.backtobedrock.augmentedhardcore.domain.data.ServerData;
+import javafx.util.Pair;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -27,8 +31,9 @@ public class YAMLServerMapper implements IServerMapper {
 
     @Override
     public void insertServerDataAsync(ServerData data) {
-        Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-            this.insertServerData(data);
+        CompletableFuture.runAsync(() -> this.insertServerData(data)).exceptionally(ex -> {
+            ex.printStackTrace();
+            return null;
         });
     }
 
@@ -38,8 +43,11 @@ public class YAMLServerMapper implements IServerMapper {
     }
 
     @Override
-    public CompletableFuture<ServerData> getServerData() {
-        return CompletableFuture.supplyAsync(() -> ServerData.deserialize(getConfig()));
+    public CompletableFuture<ServerData> getServerData(Server server) {
+        return CompletableFuture.supplyAsync(() -> ServerData.deserialize(getConfig())).exceptionally(ex -> {
+            ex.printStackTrace();
+            return null;
+        });
     }
 
     @Override
@@ -53,13 +61,28 @@ public class YAMLServerMapper implements IServerMapper {
 
     @Override
     public void deleteServerData() {
-        Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+        CompletableFuture.runAsync(() -> {
             File file = this.getFile();
             if (file.exists()) {
                 if (file.delete()) {
                     this.plugin.getLogger().log(Level.INFO, "File for server data has been deleted at {1}.", new Object[]{file.getPath()});
                 }
             }
+        }).exceptionally(ex -> {
+            ex.printStackTrace();
+            return null;
+        });
+    }
+
+    @Override
+    public void deleteBanFromServerData(OfflinePlayer player, Pair<Integer, Ban> ban) {
+        CompletableFuture.runAsync(() -> {
+            FileConfiguration config = this.getConfig();
+            config.set("OngoingBans." + player.getUniqueId(), null);
+            this.saveConfig(config);
+        }).exceptionally(ex -> {
+            ex.printStackTrace();
+            return null;
         });
     }
 

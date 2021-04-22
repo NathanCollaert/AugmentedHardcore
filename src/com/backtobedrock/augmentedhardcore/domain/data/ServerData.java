@@ -2,7 +2,9 @@ package com.backtobedrock.augmentedhardcore.domain.data;
 
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.Ban;
+import javafx.util.Pair;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -15,21 +17,23 @@ public class ServerData {
     private final AugmentedHardcore plugin;
 
     //serializable
-    private final Map<UUID, Ban> ongoingBans;
+    private final Server server;
+    private final Map<UUID, Pair<Integer, Ban>> ongoingBans;
     private int totalBans;
 
     public ServerData() {
-        this(new HashMap<>(), 0);
+        this(0, new HashMap<>());
     }
 
-    public ServerData(Map<UUID, Ban> ongoingBans, int totalBans) {
+    public ServerData(int totalBans, Map<UUID, Pair<Integer, Ban>> ongoingBans) {
         this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
+        this.server = this.plugin.getServer();
         this.ongoingBans = ongoingBans;
         this.totalBans = totalBans;
     }
 
     public static ServerData deserialize(ConfigurationSection section) {
-        Map<UUID, Ban> cOngoingBans = new HashMap<>();
+        Map<UUID, Pair<Integer, Ban>> cOngoingBans = new HashMap<>();
         int cTotalBans = section.getInt("TotalBans", 0);
 
         //get ongoing bans section
@@ -40,18 +44,23 @@ public class ServerData {
                 UUID uuid = UUID.fromString(e);
                 //get ban
                 ConfigurationSection banSection = ongoingBanSection.getConfigurationSection(e);
-                Ban ban = null;
                 if (banSection != null) {
-                    ban = Ban.Deserialize(banSection);
-                }
-                //if exists, put in map
-                if (ban != null) {
-                    cOngoingBans.put(uuid, ban);
+                    banSection.getKeys(false).forEach(a -> {
+                        int id = Integer.parseInt(a);
+                        ConfigurationSection banConfiguration = banSection.getConfigurationSection(a);
+                        Ban ban = null;
+                        if (banConfiguration != null) {
+                            ban = Ban.Deserialize(banConfiguration);
+                        }
+                        //if exists, put in map
+                        if (ban != null) {
+                            cOngoingBans.put(uuid, new Pair<>(id, ban));
+                        }
+                    });
                 }
             });
         }
-
-        return new ServerData(cOngoingBans, cTotalBans);
+        return new ServerData(cTotalBans, cOngoingBans);
     }
 
     public int getTotalBans() {
@@ -62,22 +71,22 @@ public class ServerData {
         return ongoingBans.size();
     }
 
-    public void addBan(Player player, Ban ban) {
+    public void addBan(Player player, Pair<Integer, Ban> ban) {
         this.ongoingBans.put(player.getUniqueId(), ban);
         this.totalBans++;
         this.plugin.getServerRepository().updateServerData(this);
     }
 
     public void removeBan(OfflinePlayer player) {
-        this.ongoingBans.remove(player.getUniqueId());
-        this.plugin.getServerRepository().updateServerData(this);
+        Pair<Integer, Ban> banPair = this.ongoingBans.remove(player.getUniqueId());
+        this.plugin.getServerRepository().removeBanFromServerData(player, banPair);
     }
 
     public boolean isDeathBanned(OfflinePlayer player) {
         return this.ongoingBans.get(player.getUniqueId()) != null;
     }
 
-    public Ban getBan(OfflinePlayer player) {
+    public Pair<Integer, Ban> getBan(OfflinePlayer player) {
         return this.ongoingBans.get(player.getUniqueId());
     }
 
@@ -85,14 +94,22 @@ public class ServerData {
         Map<String, Object> map = new HashMap<>();
 
         Map<String, Object> cOngoingBans = new HashMap<>();
-        this.ongoingBans.forEach((key, value) -> cOngoingBans.put(key.toString(), value.serialize()));
+        this.ongoingBans.forEach((key, value) -> {
+            Map<Integer, Object> cOngoingBansPlayer = new HashMap<>();
+            cOngoingBansPlayer.put(value.getKey(), value.getValue().serialize());
+            cOngoingBans.put(key.toString(), cOngoingBansPlayer);
+        });
         map.put("OngoingBans", cOngoingBans);
         map.put("TotalBans", this.totalBans);
 
         return map;
     }
 
-    public Map<UUID, Ban> getOngoingBans() {
+    public Map<UUID, Pair<Integer, Ban>> getOngoingBans() {
         return ongoingBans;
+    }
+
+    public Server getServer() {
+        return server;
     }
 }

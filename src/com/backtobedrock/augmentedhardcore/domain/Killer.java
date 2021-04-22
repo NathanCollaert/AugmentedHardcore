@@ -29,8 +29,9 @@ public class Killer {
         EntityType cType = null;
 
         String sType = section.getString("Type");
-        if (sType != null)
+        if (sType != null) {
             cType = ConfigUtils.getEntityType(sType);
+        }
 
         return new Killer(cName, cDisplayName, cType);
     }
@@ -52,7 +53,7 @@ public class Killer {
 
         map.put("Name", this.name);
         map.put("DisplayName", this.displayName);
-        map.put("Type", this.type == null ? null : this.type.name());
+        map.put("Type", this.type.name());
 
         return map;
     }

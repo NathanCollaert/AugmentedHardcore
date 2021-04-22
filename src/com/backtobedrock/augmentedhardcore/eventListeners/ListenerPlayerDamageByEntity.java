@@ -11,7 +11,7 @@ import java.util.concurrent.ExecutionException;
 
 public class ListenerPlayerDamageByEntity extends AbstractEventListener {
     @EventHandler
-    public void onPlayerDamage(EntityDamageByEntityEvent event) throws ExecutionException, InterruptedException {
+    public void onPlayerDamage(EntityDamageByEntityEvent event) {
         if (event.isCancelled()) {
             return;
         }
@@ -34,7 +34,7 @@ public class ListenerPlayerDamageByEntity extends AbstractEventListener {
 
         Killer tagger = EventUtils.getDamageEventKiller(event);
 
-        this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(playerData -> playerData.onCombatTag(tagger)).get();
+        this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(playerData -> playerData.onCombatTag(tagger));
     }
 
     @Override

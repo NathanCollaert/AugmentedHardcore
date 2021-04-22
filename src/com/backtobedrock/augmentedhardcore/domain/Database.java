@@ -1,35 +1,35 @@
 package com.backtobedrock.augmentedhardcore.domain;
 
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
+import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Level;
 
-public class Connection {
+public class Database {
     private final String hostname;
     private final String port;
-    private final String database;
+    private final String databaseName;
     private final String username;
     private final String password;
-    private final String prefix;
 
-    public Connection(String hostname, String port, String database, String username, String password, String prefix) {
+    private HikariDataSource dataSource;
+
+    public Database(String hostname, String port, String databaseName, String username, String password) {
         this.hostname = hostname;
         this.port = port;
-        this.database = database;
+        this.databaseName = databaseName;
         this.username = username;
         this.password = password;
-        this.prefix = prefix;
     }
 
-    public static Connection deserialize(ConfigurationSection section) {
+    public static Database deserialize(ConfigurationSection section) {
         String cHostname = section.getString("Hostname");
         String cPort = section.getString("Port", "3306");
         String cDatabase = section.getString("Database");
         String cUsername = section.getString("Username");
         String cPassword = section.getString("Password");
-        String cPrefix = section.getString("Prefix", "ah_");
 
         if (cHostname == null) {
             JavaPlugin.getPlugin(AugmentedHardcore.class).getLogger().log(Level.SEVERE, "Data Connection: Hostname was empty.");
@@ -51,7 +51,7 @@ public class Connection {
             return null;
         }
 
-        return new Connection(cHostname, cPort, cDatabase, cUsername, cPassword, cPrefix);
+        return new Database(cHostname, cPort, cDatabase, cUsername, cPassword);
     }
 
     public String getHostname() {
@@ -62,8 +62,8 @@ public class Connection {
         return port;
     }
 
-    public String getDatabase() {
-        return database;
+    public String getDatabaseName() {
+        return databaseName;
     }
 
     public String getUsername() {
@@ -74,11 +74,19 @@ public class Connection {
         return password;
     }
 
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public String getConnectionString() {
-        return "jdbc:mysql://" + this.hostname + ":" + this.port + "/" + this.database + "?autoReconnect=true&useSSL=false";
+    public HikariDataSource getDataSource() {
+        if (this.dataSource == null) {
+            this.dataSource = new HikariDataSource();
+            this.dataSource.setJdbcUrl(String.format("jdbc:mysql://%s:%s/%s", this.getHostname(), this.getPort(), this.getDatabaseName()));
+            this.dataSource.setUsername(this.getUsername());
+            this.dataSource.setPassword(this.getPassword());
+//            this.dataSource.addDataSourceProperty("autoReconnect", "true");
+            this.dataSource.addDataSourceProperty("useSSL", "false");
+            this.dataSource.addDataSourceProperty("cachePrepStmts", "true");
+            this.dataSource.addDataSourceProperty("prepStmtCacheSize", "250");
+            this.dataSource.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+            this.dataSource.addDataSourceProperty("useServerPrepStmts", "true");
+        }
+        return this.dataSource;
     }
 }

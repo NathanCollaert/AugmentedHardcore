@@ -34,6 +34,7 @@ public enum Permission {
     BYPASS_LOSELIVES,
     BYPASS_LOSELIFEPARTS,
     BYPASS_BAN,
+    BYPASS_BAN_SPECTATOR,
     BYPASS_GAINLIFEPARTS_KILL,
     BYPASS_GAINLIFEPARTS_PLAYTIME,
     BYPASS_LOSEMAXHEALTH,
@@ -45,6 +46,6 @@ public enum Permission {
     GAIN_REVIVE_ALIVE;
 
     public String getPermissionString() {
-        return JavaPlugin.getPlugin(AugmentedHardcore.class).getDescription().getName() + "." + this.name().replaceAll("_", ".").toLowerCase();
+        return (JavaPlugin.getPlugin(AugmentedHardcore.class).getDescription().getName().toLowerCase() + "." + this.name().replaceAll("_", ".").toLowerCase());
     }
 }

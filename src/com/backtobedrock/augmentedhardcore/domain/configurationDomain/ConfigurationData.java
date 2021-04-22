@@ -1,24 +1,24 @@
 package com.backtobedrock.augmentedhardcore.domain.configurationDomain;
 
-import com.backtobedrock.augmentedhardcore.domain.Connection;
+import com.backtobedrock.augmentedhardcore.domain.Database;
 import com.backtobedrock.augmentedhardcore.domain.enums.StorageType;
 import com.backtobedrock.augmentedhardcore.utils.ConfigUtils;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class ConfigurationData {
     private final StorageType storageType;
-    private final Connection connection;
+    private final Database database;
 
-    public ConfigurationData(StorageType storageType, Connection connection) {
+    public ConfigurationData(StorageType storageType, Database database) {
         this.storageType = storageType;
-        this.connection = connection;
+        this.database = database;
     }
 
     public static ConfigurationData deserialize(ConfigurationSection section) {
         //configurations
         StorageType cStorageType = ConfigUtils.getStorageType("StorageType", section.getString("StorageType", "YAML"));
         ConfigurationSection connectionSection = section.getConfigurationSection("Connection");
-        Connection cConnection = (cStorageType == StorageType.MYSQL && connectionSection != null) ? Connection.deserialize(connectionSection) : null;
+        Database cConnection = (cStorageType == StorageType.MYSQL && connectionSection != null) ? Database.deserialize(connectionSection) : null;
 
         if (cStorageType == StorageType.MYSQL && cConnection == null) {
             return null;
@@ -31,7 +31,7 @@ public class ConfigurationData {
         return storageType;
     }
 
-    public Connection getConnection() {
-        return connection;
+    public Database getDatabase() {
+        return database;
     }
 }

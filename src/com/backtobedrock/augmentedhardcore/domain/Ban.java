@@ -22,29 +22,29 @@ public class Ban {
     //serializable
     private final LocalDateTime startDate;
     private final LocalDateTime expirationDate;
+    private final int banTime;
     private final DamageCause damageCause;
     private final DamageCauseType damageCauseType;
+    private final Location location;
     private final Killer killer;
     private final Killer inCombatWith;
-    private final Location location;
     private final String deathMessage;
-    private final int banTime;
     private final long timeSincePreviousDeathBan;
     private final long timeSincePreviousDeath;
 
-    public Ban(LocalDateTime startDate, LocalDateTime expirationDate, DamageCause damageCause, Killer killer, Killer inCombatWith, Location location, String deathMessage, int banTime, DamageCauseType damageCauseType, long timeSincePreviousDeathBan, long timeSincePreviousDeath) {
-        this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
+    public Ban(LocalDateTime startDate, LocalDateTime expirationDate, int banTime, DamageCause damageCause, DamageCauseType damageCauseType, Location location, Killer killer, Killer inCombatWith, String deathMessage, long timeSincePreviousDeathBan, long timeSincePreviousDeath) {
         this.startDate = startDate;
         this.expirationDate = expirationDate;
+        this.banTime = banTime;
         this.damageCause = damageCause;
+        this.damageCauseType = damageCauseType;
+        this.location = location;
         this.killer = killer;
         this.inCombatWith = inCombatWith;
-        this.location = location;
         this.deathMessage = deathMessage;
-        this.banTime = banTime;
-        this.damageCauseType = damageCauseType;
         this.timeSincePreviousDeathBan = timeSincePreviousDeathBan;
         this.timeSincePreviousDeath = timeSincePreviousDeath;
+        this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
     }
 
     public static Ban Deserialize(ConfigurationSection section) {
@@ -76,7 +76,7 @@ public class Ban {
             cInCombatWith = Killer.Deserialize(killerSection);
         }
 
-        return new Ban(cStartDate, cExpirationDate, cDamageCause, cKiller, cInCombatWith, cLocation, cDeathMessage, cBanTime, cDamageCauseType, cTimeSincePreviousDeathBan, cTimeSincePreviousDeath);
+        return new Ban(cStartDate, cExpirationDate, cBanTime, cDamageCause, cDamageCauseType, cLocation, cKiller, cInCombatWith, cDeathMessage, cTimeSincePreviousDeathBan, cTimeSincePreviousDeath);
     }
 
     public String getBanMessage() {
@@ -201,5 +201,33 @@ public class Ban {
         placeholders.put("ban_time_since_previous_death_digital", MessageUtils.getTimeFromTicks(this.timeSincePreviousDeath, true, false));
 
         return placeholders;
+    }
+
+    public DamageCause getDamageCause() {
+        return damageCause;
+    }
+
+    public DamageCauseType getDamageCauseType() {
+        return damageCauseType;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public Killer getInCombatWith() {
+        return inCombatWith;
+    }
+
+    public String getDeathMessage() {
+        return deathMessage;
+    }
+
+    public long getTimeSincePreviousDeathBan() {
+        return timeSincePreviousDeathBan;
+    }
+
+    public long getTimeSincePreviousDeath() {
+        return timeSincePreviousDeath;
     }
 }

@@ -6,11 +6,10 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.concurrent.ExecutionException;
-
-public class ListenerInventoryClick extends AbstractEventListener {
+public class ListenerCustomInventory extends AbstractEventListener {
     @EventHandler
     public void onCustomInventoryClick(InventoryClickEvent event) {
         if (!(event.getView().getTopInventory().getHolder() instanceof CustomHolder)) {
@@ -38,12 +37,17 @@ public class ListenerInventoryClick extends AbstractEventListener {
         }
 
         icon.getClickActions().forEach(clickAction -> {
-            try {
-                clickAction.execute(player);
-            } catch (ExecutionException | InterruptedException e) {
-                e.printStackTrace();
-            }
+            clickAction.execute(player);
         });
+    }
+
+    @EventHandler
+    public void onCustomInventoryClose(InventoryCloseEvent event) {
+        if (!(event.getView().getTopInventory().getHolder() instanceof CustomHolder)) {
+            return;
+        }
+
+        this.plugin.removeFromGuis((Player) event.getPlayer());
     }
 
     @Override

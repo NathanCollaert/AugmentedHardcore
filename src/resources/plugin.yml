@@ -41,6 +41,8 @@ permissions:
   #BYPASSES
   augmentedhardcore.bypass.ban:
     default: false
+  augmentedhardcore.bypass.ban.spectator:
+    default: false
   augmentedhardcore.bypass.loselives:
     default: false
   augmentedhardcore.bypass.loselifeparts:

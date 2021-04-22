@@ -40,11 +40,11 @@
 # %ban_time_since_previous_death_digital% - Time since previous death in digital format E.g: 1:20:30:40.
 
 #Ban message when banned due to a death containing no killer and not in combat with something.
-EnvironmentBanMessage: "&c&lYou've Died\n\n&rYou %ban_damage_cause_random_message% causing you to be banned.\nYou will be unbanned in &e%ban_time_left_long%&r."
+EnvironmentBanMessage: "&c&lYou've Died\n\n&r&fYou %ban_damage_cause_random_message% causing you to be banned.\nYou will be unbanned in &e%ban_time_left_long%&r."
 
 #Ban message when banned due to a death containing no killer but in combat with a player/monster.
 #Placeholders: %ban_in_combat_with%
-EnvironmentWhileInCombatBanMessage: "&c&lYou've Died\n\n&rYou %ban_damage_cause_random_message% whilst trying to escape &b%ban_in_combat_with%&r causing you to be banned.\nYou will be unbanned in &e%ban_time_left_long%&r."
+EnvironmentWhileInCombatBanMessage: "&c&lYou've Died\n\n&r&fYou %ban_damage_cause_random_message% whilst trying to escape &b%ban_in_combat_with%&r causing you to be banned.\nYou will be unbanned in &e%ban_time_left_long%&r."
 
 #Ban message when banned due to a death containing a killer and not in combat with something.
 #Placeholders: %ban_killer%
@@ -52,19 +52,19 @@ EntityBanMessage: "&c&lYou've Died\n\n&rYou %ban_damage_cause_random_message% by
 
 #Ban message when banned due to a death containing a killer and in combat with another player/monster.
 #Placeholders: %ban_killer% - %ban_in_combat_with%
-EntityWhileInCombatBanMessage: "&c&lYou've Died\n\n&rYou %ban_damage_cause_random_message% by &b%ban_killer%&r whilst trying to escape &b%ban_in_combat_with%&r causing you to be banned.\nYou will be unbanned in &e%ban_time_left_long%&r."
+EntityWhileInCombatBanMessage: "&c&lYou've Died\n\n&r&fYou %ban_damage_cause_random_message% by &b%ban_killer%&r whilst trying to escape &b%ban_in_combat_with%&r causing you to be banned.\nYou will be unbanned in &e%ban_time_left_long%&r."
 
 #Ban message when banned due to reviving someone.
 #Placeholders: %ban_killer%
-ReviveBanMessage: "&c&lYou've Died\n\n&rYou have successfully revived &b%ban_killer%&r, but at what cost?\nYou will be unbanned in &e%ban_time_left_long%&r."
+ReviveBanMessage: "&c&lYou've Died\n\n&r&fYou have successfully revived &b%ban_killer%&r, but at what cost?\nYou will be unbanned in &e%ban_time_left_long%&r."
 
 #Ban message when banned due to reviving someone while in combat with a player/monster.
 #Placeholders: %ban_killer% - %ban_in_combat_with%
-ReviveWhileInCombatBanMessage: "&c&lYou've Died\n\n&rYou have successfully revived &b%ban_killer%&r whilst trying to escape &b%ban_in_combat_with%&r, but at what cost?\nYou will be unbanned in &e%ban_time_left_long%&r."
+ReviveWhileInCombatBanMessage: "&c&lYou've Died\n\n&r&fYou have successfully revived &b%ban_killer%&r whilst trying to escape &b%ban_in_combat_with%&r, but at what cost?\nYou will be unbanned in &e%ban_time_left_long%&r."
 
 #Ban message when banned due to combat logging.
 #Placeholders: %ban_combat_tagger%
-CombatLogBanMessage: "&c&lYou've Died\n\n&rYou have logged out while in combat with &b%ban_combat_tagger%&r causing you to die and be banned.\nYou will be unbanned in &e%ban_time_left_long%&r."
+CombatLogBanMessage: "&c&lYou've Died\n\n&r&fYou have logged out while in combat with &b%ban_combat_tagger%&r causing you to die and be banned.\nYou will be unbanned in &e%ban_time_left_long%&r."
 
 
 ############################################################
