@@ -11,6 +11,7 @@ import com.backtobedrock.augmentedhardcore.domain.data.ServerData;
 import com.backtobedrock.augmentedhardcore.domain.enums.DamageCause;
 import com.backtobedrock.augmentedhardcore.domain.enums.DamageCauseType;
 import com.backtobedrock.augmentedhardcore.domain.enums.Permission;
+import com.backtobedrock.augmentedhardcore.runnables.BanExpiration;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -59,6 +60,12 @@ public class BanUtils {
 
         banList.pardon(banParameter);
         serverData.removeBan(playerData.getPlayer());
+
+        BanExpiration banExpiration = playerData.getBanExpiration();
+        if (banExpiration != null) {
+            banExpiration.finish();
+        }
+
         return true;
     }
 
@@ -100,6 +107,9 @@ public class BanUtils {
         if (player != null) {
             if (player.hasPermission(Permission.BYPASS_BAN_SPECTATOR.getPermissionString())) {
                 Bukkit.getScheduler().runTask(plugin, () -> player.setGameMode(GameMode.SPECTATOR));
+                playerData.stopPlaytimeRunnables();
+                new BanExpiration(playerData, ban).start();
+                playerData.setSpectatorBanned(true);
             } else {
                 Bukkit.getScheduler().runTask(plugin, () -> player.kickPlayer(ban.getBanMessage()));
             }

@@ -84,7 +84,7 @@ public class Configurations {
 
     public ConfigurationRevive getReviveConfiguration() {
         if (this.reviveConfiguration == null) {
-            this.reviveConfiguration = ConfigurationRevive.deserialize(this.config, this.getLivesAndLifePartsConfiguration());
+            this.reviveConfiguration = ConfigurationRevive.deserialize(this.config);
             if (this.reviveConfiguration == null) {
                 this.plugin.getServer().getPluginManager().disablePlugin(this.plugin);
             }

@@ -19,6 +19,13 @@ import java.util.concurrent.CompletableFuture;
 public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
     private static MySQLPlayerMapper instance;
 
+    public static MySQLPlayerMapper getInstance() {
+        if (instance == null) {
+            instance = new MySQLPlayerMapper();
+        }
+        return instance;
+    }
+
     @Override
     public void insertPlayerDataAsync(PlayerData playerData) {
         CompletableFuture.runAsync(() -> this.updatePlayerData(playerData)).exceptionally(ex -> {
@@ -34,10 +41,7 @@ public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
 
     @Override
     public CompletableFuture<PlayerData> getByPlayer(OfflinePlayer player) {
-        return CompletableFuture.supplyAsync(() -> this.getPlayerData(player)).exceptionally(ex -> {
-            ex.printStackTrace();
-            return null;
-        });
+        return CompletableFuture.supplyAsync(() -> this.getPlayerData(player));
     }
 
     private PlayerData getPlayerData(OfflinePlayer player) {
@@ -53,7 +57,7 @@ public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
             PlayerData playerData = null;
             while (resultSet.next()) {
                 if (playerData == null) {
-                    playerData = new PlayerData(player, resultSet.getString("last_known_ip"), resultSet.getInt("lives"), resultSet.getInt("life_parts"), resultSet.getLong("revive_cooldown"), resultSet.getLong("time_till_next_life_part"), resultSet.getLong("time_till_next_max_health"), deathBans);
+                    playerData = new PlayerData(player, resultSet.getString("last_known_ip"), resultSet.getInt("lives"), resultSet.getInt("life_parts"), resultSet.getLong("revive_cooldown"), resultSet.getBoolean("spectator_banned"), resultSet.getLong("time_till_next_life_part"), resultSet.getLong("time_till_next_max_health"), deathBans);
                 }
                 Pair<Integer, Ban> banPair = MySQLBanMapper.getInstance().getBanFromResultSetSync(resultSet);
                 if (banPair != null) {
@@ -85,14 +89,15 @@ public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
     }
 
     private void updatePlayerDateSync(PlayerData playerData) {
-        String sql = "INSERT INTO ah_player (`player_uuid`, `last_known_name`, `last_known_ip`, `lives`, `life_parts`, `revive_cooldown`, `time_till_next_life_part`, `time_till_next_max_health`)"
-                + "VALUES(?,?,?,?,?,?,?,?)"
+        String sql = "INSERT INTO ah_player (`player_uuid`, `last_known_name`, `last_known_ip`, `lives`, `life_parts`, `revive_cooldown`, `spectator_banned`, `time_till_next_life_part`, `time_till_next_max_health`)"
+                + "VALUES(?,?,?,?,?,?,?,?,?)"
                 + "ON DUPLICATE KEY UPDATE "
                 + "`last_known_name` = ?,"
                 + "`last_known_ip` = ?,"
                 + "`lives` = ?,"
                 + "`life_parts` = ?,"
                 + "`revive_cooldown` = ?,"
+                + "`spectator_banned` = ?,"
                 + "`time_till_next_life_part` = ?,"
                 + "`time_till_next_max_health` = ?;";
 
@@ -103,15 +108,17 @@ public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
             preparedStatement.setInt(4, playerData.getLives());
             preparedStatement.setInt(5, playerData.getLifeParts());
             preparedStatement.setLong(6, playerData.getReviveCooldown());
-            preparedStatement.setLong(7, playerData.getTimeTillNextLifePart());
-            preparedStatement.setLong(8, playerData.getTimeTillNextMaxHealth());
-            preparedStatement.setString(9, playerData.getPlayer().getName());
-            preparedStatement.setString(10, playerData.getLastKnownIp());
-            preparedStatement.setInt(11, playerData.getLives());
-            preparedStatement.setInt(12, playerData.getLifeParts());
-            preparedStatement.setLong(13, playerData.getReviveCooldown());
-            preparedStatement.setLong(14, playerData.getTimeTillNextLifePart());
-            preparedStatement.setLong(15, playerData.getTimeTillNextMaxHealth());
+            preparedStatement.setBoolean(7, playerData.isSpectatorBanned());
+            preparedStatement.setLong(8, playerData.getTimeTillNextLifePart());
+            preparedStatement.setLong(9, playerData.getTimeTillNextMaxHealth());
+            preparedStatement.setString(10, playerData.getPlayer().getName());
+            preparedStatement.setString(11, playerData.getLastKnownIp());
+            preparedStatement.setInt(12, playerData.getLives());
+            preparedStatement.setInt(13, playerData.getLifeParts());
+            preparedStatement.setLong(14, playerData.getReviveCooldown());
+            preparedStatement.setBoolean(15, playerData.isSpectatorBanned());
+            preparedStatement.setLong(16, playerData.getTimeTillNextLifePart());
+            preparedStatement.setLong(17, playerData.getTimeTillNextMaxHealth());
             preparedStatement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -134,12 +141,5 @@ public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
             ex.printStackTrace();
             return null;
         });
-    }
-
-    public static MySQLPlayerMapper getInstance() {
-        if (instance == null) {
-            instance = new MySQLPlayerMapper();
-        }
-        return instance;
     }
 }

@@ -30,14 +30,23 @@ public class CommandDeathBans extends AbstractCommand {
         }
 
         if (this.args.length == 0) {
-            this.plugin.getPlayerRepository().getByPlayer(this.sender).thenAcceptAsync(playerData -> PlayerUtils.openInventory(this.sender, new GuiDeathBans(playerData)));
+            this.plugin.getPlayerRepository().getByPlayer(this.sender).thenAcceptAsync(playerData -> PlayerUtils.openInventory(this.sender, new GuiDeathBans(playerData))).exceptionally(ex -> {
+                ex.printStackTrace();
+                return null;
+            });
         } else {
             this.hasPlayedBefore(this.args[0]).thenAcceptAsync(bool -> {
                 if (!bool) {
                     return;
                 }
 
-                this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(playerData -> PlayerUtils.openInventory(this.sender, new GuiDeathBans(playerData)));
+                this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(playerData -> PlayerUtils.openInventory(this.sender, new GuiDeathBans(playerData))).exceptionally(ex -> {
+                    ex.printStackTrace();
+                    return null;
+                });
+            }).exceptionally(ex -> {
+                ex.printStackTrace();
+                return null;
             });
         }
     }

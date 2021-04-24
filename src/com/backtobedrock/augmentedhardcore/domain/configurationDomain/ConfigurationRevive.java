@@ -1,12 +1,9 @@
 package com.backtobedrock.augmentedhardcore.domain.configurationDomain;
 
-import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.utils.ConfigUtils;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
-import java.util.logging.Level;
 
 public class ConfigurationRevive {
     private final boolean useRevive;
@@ -25,18 +22,13 @@ public class ConfigurationRevive {
         this.disableReviveInWorlds = disableReviveInWorlds;
     }
 
-    public static ConfigurationRevive deserialize(ConfigurationSection section, ConfigurationLivesAndLifeParts configuration) {
+    public static ConfigurationRevive deserialize(ConfigurationSection section) {
         boolean cUseRevive = section.getBoolean("UseRevive", true);
         int cLivesLostOnReviving = ConfigUtils.checkMinMax("LivesLostOnReviving", section.getInt("LivesLostOnReviving", 1), 1, Integer.MAX_VALUE);
         int cLivesGainedOnRevive = ConfigUtils.checkMinMax("LivesGainedOnRevive", section.getInt("LivesGainedOnRevive", 1), 1, Integer.MAX_VALUE);
         int cTimeBetweenRevives = ConfigUtils.checkMinMax("TimeBetweenRevives", section.getInt("TimeBetweenRevives", 1440), 0, Integer.MAX_VALUE);
         boolean cReviveOnFirstJoin = section.getBoolean("ReviveOnFirstJoin", false);
         List<String> cDisableReviveInWorlds = ConfigUtils.getWorlds("DisableReviveInWorlds", section.getStringList("DisableReviveInWorlds"));
-
-        if (cUseRevive && !configuration.isUseLives()) {
-            JavaPlugin.getPlugin(AugmentedHardcore.class).getLogger().log(Level.SEVERE, "Reviving cannot be enabled without enabling lives.");
-            cUseRevive = false;
-        }
 
         if (cTimeBetweenRevives == -10 || cLivesLostOnReviving == -10 || cLivesGainedOnRevive == -10) {
             return null;

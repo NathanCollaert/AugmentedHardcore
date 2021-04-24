@@ -5,8 +5,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 
-import java.util.concurrent.ExecutionException;
-
 public class ListenerEntityDeath extends AbstractEventListener {
 
     @EventHandler
@@ -20,7 +18,10 @@ public class ListenerEntityDeath extends AbstractEventListener {
             return;
         }
 
-        this.plugin.getPlayerRepository().getByPlayer((Player) entityDamageByEntityEvent.getDamager()).thenAcceptAsync(playerData -> playerData.onEntityKill(event.getEntity().getType()));
+        this.plugin.getPlayerRepository().getByPlayer((Player) entityDamageByEntityEvent.getDamager()).thenAcceptAsync(playerData -> playerData.onEntityKill(event.getEntity().getType())).exceptionally(ex -> {
+            ex.printStackTrace();
+            return null;
+        });
     }
 
     @Override

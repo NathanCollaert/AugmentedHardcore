@@ -11,12 +11,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class Commands implements TabCompleter {
@@ -65,6 +63,9 @@ public class Commands implements TabCompleter {
                 break;
             case "deathbans":
                 new CommandDeathBans(cs, args).run();
+                break;
+            case "deathbanreset":
+                new CommandDeathBanReset(cs, args).run();
                 break;
         }
         return true;

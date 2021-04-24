@@ -36,9 +36,7 @@ public class ListenerCustomInventory extends AbstractEventListener {
             return;
         }
 
-        icon.getClickActions().forEach(clickAction -> {
-            clickAction.execute(player);
-        });
+        icon.getClickActions().forEach(clickAction -> clickAction.execute(player));
     }
 
     @EventHandler

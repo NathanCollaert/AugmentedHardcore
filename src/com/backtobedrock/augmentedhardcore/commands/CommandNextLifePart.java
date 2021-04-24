@@ -31,14 +31,23 @@ public class CommandNextLifePart extends AbstractCommand {
                 return;
             }
 
-            this.plugin.getPlayerRepository().getByPlayer(this.sender).thenAcceptAsync(this::sendSuccessMessage);
+            this.plugin.getPlayerRepository().getByPlayer(this.sender).thenAcceptAsync(this::sendSuccessMessage).exceptionally(ex -> {
+                ex.printStackTrace();
+                return null;
+            });
         } else {
             this.hasPlayedBefore(this.args[0]).thenAcceptAsync(bool -> {
                 if (!bool) {
                     return;
                 }
 
-                this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(this::sendSuccessMessage);
+                this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(this::sendSuccessMessage).exceptionally(ex -> {
+                    ex.printStackTrace();
+                    return null;
+                });
+            }).exceptionally(ex -> {
+                ex.printStackTrace();
+                return null;
             });
         }
     }

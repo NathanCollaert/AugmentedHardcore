@@ -79,7 +79,9 @@ public class ServerData {
 
     public void removeBan(OfflinePlayer player) {
         Pair<Integer, Ban> banPair = this.ongoingBans.remove(player.getUniqueId());
-        this.plugin.getServerRepository().removeBanFromServerData(player, banPair);
+        if (banPair != null) {
+            this.plugin.getServerRepository().removeBanFromServerData(player, banPair);
+        }
     }
 
     public boolean isDeathBanned(OfflinePlayer player) {

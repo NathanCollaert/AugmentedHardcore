@@ -9,6 +9,6 @@ public class PlaytimeMaxHealth extends AbstractPlaytime {
 
     @Override
     protected void timerTask() {
-        this.data.decreaseTimeTillNextMaxHealth(this.period);
+        this.playerData.decreaseTimeTillNextMaxHealth(this.period);
     }
 }

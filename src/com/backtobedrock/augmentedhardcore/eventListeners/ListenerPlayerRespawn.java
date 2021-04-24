@@ -8,7 +8,10 @@ public class ListenerPlayerRespawn extends AbstractEventListener {
 
     @EventHandler
     public void OnPlayerRespawn(PlayerRespawnEvent event) {
-        this.plugin.getPlayerRepository().getByPlayer(event.getPlayer()).thenAcceptAsync(PlayerData::onRespawn);
+        this.plugin.getPlayerRepository().getByPlayer(event.getPlayer()).thenAcceptAsync(PlayerData::onRespawn).exceptionally(ex -> {
+            ex.printStackTrace();
+            return null;
+        });
     }
 
     @Override

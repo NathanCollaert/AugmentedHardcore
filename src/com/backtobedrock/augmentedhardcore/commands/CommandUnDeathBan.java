@@ -13,11 +13,13 @@ public class CommandUnDeathBan extends AbstractCommand {
     public void run() {
         Command command = Command.UNDEATHBAN;
 
-        if (!this.hasPermission(command))
+        if (!this.hasPermission(command)) {
             return;
+        }
 
-        if (!this.hasCorrectAmountOfArguments(command))
+        if (!this.hasCorrectAmountOfArguments(command)) {
             return;
+        }
 
         this.hasPlayedBefore(this.args[0]).thenAcceptAsync(bool -> {
             if (!bool) {
@@ -30,7 +32,13 @@ public class CommandUnDeathBan extends AbstractCommand {
                 } else {
                     this.cs.sendMessage(String.format("§c%s is not death banned by %s.", this.target.getName(), this.plugin.getDescription().getName()));
                 }
+            }).exceptionally(ex -> {
+                ex.printStackTrace();
+                return null;
             });
+        }).exceptionally(ex -> {
+            ex.printStackTrace();
+            return null;
         });
     }
 }

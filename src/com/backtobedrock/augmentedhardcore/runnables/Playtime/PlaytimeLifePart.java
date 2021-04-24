@@ -9,6 +9,6 @@ public class PlaytimeLifePart extends AbstractPlaytime {
 
     @Override
     protected void timerTask() {
-        this.data.decreaseTimeTillNextLifePart(this.period);
+        this.playerData.decreaseTimeTillNextLifePart(this.period);
     }
 }

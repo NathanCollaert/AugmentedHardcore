@@ -42,10 +42,7 @@ public class ServerRepository {
         if (this.serverData == null) {
             return this.mapper.getServerData(server).thenApplyAsync(this::getFromDataAndCache);
         } else {
-            return CompletableFuture.supplyAsync(this::getFromCache).exceptionally(ex -> {
-                ex.printStackTrace();
-                return null;
-            });
+            return CompletableFuture.supplyAsync(this::getFromCache);
         }
     }
 

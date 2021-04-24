@@ -6,11 +6,9 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class CommandAugmentedHardcore extends AbstractCommand {
     public CommandAugmentedHardcore(CommandSender cs, String[] args) {
@@ -57,7 +55,13 @@ public class CommandAugmentedHardcore extends AbstractCommand {
                         );
 
                         this.plugin.getPlayerRepository().updatePlayerData(playerData);
+                    }).exceptionally(ex -> {
+                        ex.printStackTrace();
+                        return null;
                     });
+                }).exceptionally(ex -> {
+                    ex.printStackTrace();
+                    return null;
                 });
                 break;
             case ADDLIFEPARTS:

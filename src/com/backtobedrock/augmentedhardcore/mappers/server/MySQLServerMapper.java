@@ -24,6 +24,13 @@ public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
 
     private static MySQLServerMapper instance;
 
+    public static MySQLServerMapper getInstance() {
+        if (instance == null) {
+            instance = new MySQLServerMapper();
+        }
+        return instance;
+    }
+
     @Override
     public void insertServerDataAsync(ServerData serverData) {
         CompletableFuture.runAsync(() -> this.updateServerData(serverData)).exceptionally(ex -> {
@@ -67,9 +74,6 @@ public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
             } catch (SQLException | UnknownHostException e) {
                 e.printStackTrace();
             }
-            return null;
-        }).exceptionally(ex -> {
-            ex.printStackTrace();
             return null;
         });
     }
@@ -120,12 +124,5 @@ public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
     @Override
     public void deleteBanFromServerData(OfflinePlayer player, Pair<Integer, Ban> ban) {
         MySQLBanMapper.getInstance().updateBan(null, player.getUniqueId(), ban);
-    }
-
-    public static MySQLServerMapper getInstance() {
-        if (instance == null) {
-            instance = new MySQLServerMapper();
-        }
-        return instance;
     }
 }

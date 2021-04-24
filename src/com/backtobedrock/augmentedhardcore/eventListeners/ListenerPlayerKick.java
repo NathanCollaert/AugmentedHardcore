@@ -4,8 +4,6 @@ import com.backtobedrock.augmentedhardcore.domain.data.PlayerData;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerKickEvent;
 
-import java.util.concurrent.ExecutionException;
-
 public class ListenerPlayerKick extends AbstractEventListener {
 
     @EventHandler
@@ -14,7 +12,10 @@ public class ListenerPlayerKick extends AbstractEventListener {
             return;
         }
 
-        this.plugin.getPlayerRepository().getByPlayer(event.getPlayer()).thenAcceptAsync(PlayerData::onKick);
+        this.plugin.getPlayerRepository().getByPlayer(event.getPlayer()).thenAcceptAsync(PlayerData::onKick).exceptionally(ex -> {
+            ex.printStackTrace();
+            return null;
+        });
     }
 
     @Override

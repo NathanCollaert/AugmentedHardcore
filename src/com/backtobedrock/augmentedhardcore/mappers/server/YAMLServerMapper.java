@@ -44,10 +44,7 @@ public class YAMLServerMapper implements IServerMapper {
 
     @Override
     public CompletableFuture<ServerData> getServerData(Server server) {
-        return CompletableFuture.supplyAsync(() -> ServerData.deserialize(getConfig())).exceptionally(ex -> {
-            ex.printStackTrace();
-            return null;
-        });
+        return CompletableFuture.supplyAsync(() -> ServerData.deserialize(getConfig()));
     }
 
     @Override

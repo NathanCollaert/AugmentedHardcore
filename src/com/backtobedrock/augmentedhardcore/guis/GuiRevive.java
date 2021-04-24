@@ -15,8 +15,8 @@ import java.util.concurrent.TimeUnit;
 public class GuiRevive extends AbstractGui {
     private final PlayerData reviverData;
     private final OfflinePlayer reviving;
-    private PlayerData revivingData;
     private final Map<String, String> placeholders;
+    private PlayerData revivingData;
 
     public GuiRevive(PlayerData reviverData, OfflinePlayer reviving) {
         super(new CustomHolder(54, String.format("Reviving %s", reviving.getName())));
@@ -29,6 +29,9 @@ public class GuiRevive extends AbstractGui {
             this.revivingData = playerData;
             this.updatePlayerHead(true);
             this.updateConfirmation(true);
+        }).exceptionally(ex -> {
+            ex.printStackTrace();
+            return null;
         });
         this.initialize();
     }

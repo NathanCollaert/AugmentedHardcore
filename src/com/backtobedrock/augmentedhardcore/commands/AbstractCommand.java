@@ -9,9 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.sql.SQLException;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 public abstract class AbstractCommand {
 
@@ -27,7 +25,7 @@ public abstract class AbstractCommand {
         this.args = args;
     }
 
-    public abstract void run() throws ExecutionException, InterruptedException, SQLException;
+    public abstract void run();
 
     protected boolean hasPermission(Command command) {
         return this.hasPermission(command.getPermission());
@@ -67,9 +65,6 @@ public abstract class AbstractCommand {
             }
             this.target = player;
             return true;
-        }).exceptionally(ex -> {
-            ex.printStackTrace();
-            return null;
         });
     }
 

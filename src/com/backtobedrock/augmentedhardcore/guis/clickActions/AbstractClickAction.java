@@ -4,8 +4,6 @@ import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.concurrent.ExecutionException;
-
 public abstract class AbstractClickAction {
 
     protected final AugmentedHardcore plugin;

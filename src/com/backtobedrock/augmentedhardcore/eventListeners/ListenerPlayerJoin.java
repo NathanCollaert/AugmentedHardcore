@@ -12,7 +12,10 @@ public class ListenerPlayerJoin extends AbstractEventListener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
-        this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(PlayerData::onJoin);
+        this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(PlayerData::onJoin).exceptionally(ex -> {
+            ex.printStackTrace();
+            return null;
+        });
     }
 
     @Override

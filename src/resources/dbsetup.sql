@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS ah_player
     lives INT UNSIGNED NOT NULL,
     life_parts INT UNSIGNED NOT NULL,
     revive_cooldown BIGINT NOT NULL,
+    spectator_banned TINYINT NOT NULL,
     time_till_next_life_part BIGINT UNSIGNED NOT NULL,
     time_till_next_max_health BIGINT UNSIGNED NOT NULL,
     PRIMARY KEY (player_uuid)

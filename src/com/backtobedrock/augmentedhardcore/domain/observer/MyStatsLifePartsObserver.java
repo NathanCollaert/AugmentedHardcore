@@ -2,7 +2,7 @@ package com.backtobedrock.augmentedhardcore.domain.observer;
 
 import com.backtobedrock.augmentedhardcore.guis.GuiMyStats;
 
-public class MyStatsLifePartsObserver implements IObserver{
+public class MyStatsLifePartsObserver implements IObserver {
     private final GuiMyStats gui;
 
     public MyStatsLifePartsObserver(GuiMyStats gui) {

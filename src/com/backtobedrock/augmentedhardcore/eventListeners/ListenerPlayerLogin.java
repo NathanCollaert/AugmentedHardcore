@@ -17,20 +17,28 @@ public class ListenerPlayerLogin extends AbstractEventListener {
         Player player = event.getPlayer();
         Pair<Integer, Ban> ban = serverData.getBan(player);
 
-        if (event.getResult() == PlayerLoginEvent.Result.KICK_BANNED && ban != null) {
-            if (player.hasPermission(Permission.BYPASS_BAN_SPECTATOR.getPermissionString())) {
-                if (player.getGameMode() != GameMode.SPECTATOR) {
-                    player.setGameMode(GameMode.SPECTATOR);
-                }
-                event.allow();
-            } else {
-                event.setKickMessage(ban.getValue().getBanMessage());
+        if (ban == null) {
+            return;
+        }
+
+        boolean hasPermission = player.hasPermission(Permission.BYPASS_BAN_SPECTATOR.getPermissionString());
+
+        if (event.getResult() != PlayerLoginEvent.Result.KICK_BANNED) {
+            if (!hasPermission) {
+                serverData.removeBan(player);
             }
+            return;
         }
-        //check if death ban and actual ban are still in sync
-        else if (ban != null) {
-            serverData.removeBan(player);
+
+        if (hasPermission) {
+            if (player.getGameMode() != GameMode.SPECTATOR) {
+                player.setGameMode(GameMode.SPECTATOR);
+            }
+            event.allow();
+            return;
         }
+
+        event.setKickMessage(ban.getValue().getBanMessage());
     }
 
     @Override

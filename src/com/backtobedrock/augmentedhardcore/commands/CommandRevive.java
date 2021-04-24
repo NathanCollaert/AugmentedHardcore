@@ -37,7 +37,13 @@ public class CommandRevive extends AbstractCommand {
                 }
 
                 PlayerUtils.openInventory(this.sender, new GuiRevive(playerData, this.target));
+            }).exceptionally(ex -> {
+                ex.printStackTrace();
+                return null;
             });
+        }).exceptionally(ex -> {
+            ex.printStackTrace();
+            return null;
         });
     }
 }

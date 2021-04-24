@@ -23,7 +23,8 @@ public enum Command {
     NEXTREVIVE(Permission.NEXTREVIVE, null, Collections.emptyList(), Collections.singletonList("player"), "Check how much cooldown is left on the revive command"),
     LIFEPARTS(Permission.LIFEPARTS, null, Collections.emptyList(), Collections.singletonList("player"), "Check how many life parts you currently own"),
     LIVES(Permission.LIVES, null, Collections.emptyList(), Collections.singletonList("player"), "Check how many lives you currently own"),
-    DEATHBANS(Permission.DEATHBANS, null, Collections.emptyList(), Collections.singletonList("player"), "Check your previous death bans");
+    DEATHBANS(Permission.DEATHBANS, null, Collections.emptyList(), Collections.singletonList("player"), "Check your previous death bans"),
+    DEATHBANRESET(Permission.BYPASS_BAN_SPECTATOR, null, Collections.emptyList(), Collections.emptyList(), "Reset your game mode when death banned to spectator");
 
     private final Permission permission;
     private final Command parent;
