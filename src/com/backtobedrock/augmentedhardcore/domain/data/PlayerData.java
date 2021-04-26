@@ -5,6 +5,7 @@ import com.backtobedrock.augmentedhardcore.domain.Ban;
 import com.backtobedrock.augmentedhardcore.domain.Killer;
 import com.backtobedrock.augmentedhardcore.domain.enums.DamageCause;
 import com.backtobedrock.augmentedhardcore.domain.enums.Permission;
+import com.backtobedrock.augmentedhardcore.domain.enums.TimePattern;
 import com.backtobedrock.augmentedhardcore.domain.observer.*;
 import com.backtobedrock.augmentedhardcore.guis.AbstractGui;
 import com.backtobedrock.augmentedhardcore.guis.GuiMyStats;
@@ -13,6 +14,7 @@ import com.backtobedrock.augmentedhardcore.runnables.CombatTag.AbstractCombatTag
 import com.backtobedrock.augmentedhardcore.runnables.Playtime.AbstractPlaytime;
 import com.backtobedrock.augmentedhardcore.runnables.Playtime.PlaytimeLifePart;
 import com.backtobedrock.augmentedhardcore.runnables.Playtime.PlaytimeMaxHealth;
+import com.backtobedrock.augmentedhardcore.runnables.Playtime.PlaytimeRevive;
 import com.backtobedrock.augmentedhardcore.utils.BanUtils;
 import com.backtobedrock.augmentedhardcore.utils.EventUtils;
 import com.backtobedrock.augmentedhardcore.utils.MessageUtils;
@@ -31,7 +33,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.net.InetSocketAddress;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 public class PlayerData {
     //misc
@@ -40,17 +41,17 @@ public class PlayerData {
     //helpers
     private final List<AbstractPlaytime> playtime = new ArrayList<>();
     private final Map<UUID, Map<Class<?>, IObserver>> observers;
+    //serializable
+    private final String lastKnownIp;
+    private final NavigableMap<Integer, Ban> bans;
     private BanExpiration banExpiration;
     private List<AbstractCombatTag> combatTag = new ArrayList<>();
     private boolean kicked = false;
     private boolean combatLogged = false;
     private Killer reviving = null;
-    //serializable
-    private final String lastKnownIp;
-    private final NavigableMap<Integer, Ban> bans;
     private int lives;
     private int lifeParts;
-    private long reviveCooldown;
+    private long timeTillNextRevive;
     private long timeTillNextLifePart;
     private long timeTillNextMaxHealth;
     private boolean spectatorBanned;
@@ -61,15 +62,15 @@ public class PlayerData {
                 null,
                 JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getLivesAtStart(),
                 JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getLifePartsAtStart(),
-                -1L,
                 false,
+                JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getReviveConfiguration().getTimeBetweenRevives(),
                 JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getPlaytimePerLifePart(),
                 JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getMaxHealthConfiguration().getPlaytimePerHalfHeart(),
                 new TreeMap<>()
         );
     }
 
-    public PlayerData(OfflinePlayer player, String lastKnownIp, int lives, int lifeParts, long reviveCooldown, boolean spectatorBanned, long timeTillNextLifePart, long timeTillNextMaxHealth, NavigableMap<Integer, Ban> bans) {
+    public PlayerData(OfflinePlayer player, String lastKnownIp, int lives, int lifeParts, boolean spectatorBanned, long timeTillNextRevive, long timeTillNextLifePart, long timeTillNextMaxHealth, NavigableMap<Integer, Ban> bans) {
         //serializable
         this.player = player;
         this.bans = bans;
@@ -77,6 +78,7 @@ public class PlayerData {
         this.spectatorBanned = spectatorBanned;
         this.setTimeTillNextLifePart(timeTillNextLifePart);
         this.setTimeTillNextMaxHealth(timeTillNextMaxHealth);
+        this.setTimeTillNextRevive(timeTillNextRevive);
         this.setLives(lives);
         this.setLifeParts(lifeParts);
         if (player.getPlayer() != null) {
@@ -84,10 +86,8 @@ public class PlayerData {
                 InetSocketAddress address = player.getPlayer().getAddress();
                 lastKnownIp = address.getHostName() == null ? address.getHostString() : address.getHostName();
             }
-            reviveCooldown = this.checkReviveCooldown(reviveCooldown);
         }
         this.lastKnownIp = lastKnownIp;
-        this.setReviveCooldown(reviveCooldown);
     }
 
     public static PlayerData deserialize(ConfigurationSection section, OfflinePlayer player) {
@@ -100,7 +100,7 @@ public class PlayerData {
         boolean cSpectatorBanned = section.getBoolean("SpectatorBanned", false);
         int cTimeTillNextLifePart = section.getInt("TimeTillNextLifePart", plugin.getConfigurations().getLivesAndLifePartsConfiguration().getPlaytimePerLifePart());
         int cTimeTillNextMaxHealth = section.getInt("TimeTillNextMaxHealth", plugin.getConfigurations().getMaxHealthConfiguration().getPlaytimePerHalfHeart());
-        long cReviveCooldown = section.getLong("ReviveCooldown", -1L);
+        long cTimeTillNextRevive = section.getLong("TimeTillNextRevive", plugin.getConfigurations().getReviveConfiguration().getTimeBetweenRevives());
 
         //get all bans
         ConfigurationSection bansSection = section.getConfigurationSection("Bans");
@@ -113,28 +113,16 @@ public class PlayerData {
             }
         }
 
-        return new PlayerData(player, cLastKnownIp, cLives, cLifeParts, cReviveCooldown, cSpectatorBanned, cTimeTillNextLifePart, cTimeTillNextMaxHealth, cBans);
+        return new PlayerData(player, cLastKnownIp, cLives, cLifeParts, cSpectatorBanned, cTimeTillNextRevive, cTimeTillNextLifePart, cTimeTillNextMaxHealth, cBans);
     }
 
-    public long checkReviveCooldown(long reviveCooldown) {
-        if (this.plugin.getConfigurations().getReviveConfiguration().isUseRevive() && reviveCooldown == -1L) {
-            GregorianCalendar cal = new GregorianCalendar();
-            if (!this.plugin.getConfigurations().getReviveConfiguration().isReviveOnFirstJoin()) {
-                cal.add(Calendar.MINUTE, this.plugin.getConfigurations().getReviveConfiguration().getTimeBetweenRevives());
-            }
-            return cal.getTime().getTime();
-        }
-        return reviveCooldown;
+    public long getTimeTillNextRevive() {
+        return timeTillNextRevive;
     }
 
-    public long getReviveCooldown() {
-        return reviveCooldown;
-    }
-
-    private void setReviveCooldown(long reviveCooldown) {
-        GregorianCalendar cal = new GregorianCalendar();
-        cal.add(Calendar.MINUTE, this.plugin.getConfigurations().getReviveConfiguration().getTimeBetweenRevives());
-        this.reviveCooldown = Math.min(reviveCooldown, cal.getTime().getTime());
+    private void setTimeTillNextRevive(long timeTillNextRevive) {
+        this.timeTillNextRevive = Math.max(0, Math.min(timeTillNextRevive, this.plugin.getConfigurations().getReviveConfiguration().getTimeBetweenRevives()));
+        this.observers.forEach((key, value) -> value.get(MyStatsTimeTillNextReviveObserver.class).update());
     }
 
     public String getLastKnownIp() {
@@ -582,6 +570,10 @@ public class PlayerData {
                 this.playtime.add(new PlaytimeMaxHealth(this));
             }
 
+            if (this.plugin.getConfigurations().getReviveConfiguration().isUseRevive() && this.plugin.getConfigurations().getReviveConfiguration().getTimeBetweenRevives() > 0 && !this.isSpectatorBanned()) {
+                this.playtime.add(new PlaytimeRevive(this));
+            }
+
             this.playtime.forEach(AbstractPlaytime::start);
         }).exceptionally(ex -> {
             ex.printStackTrace();
@@ -667,12 +659,32 @@ public class PlayerData {
         }
     }
 
+    public void decreaseTimeTillNextRevive(int amount) {
+        if (this.isSpectatorBanned()) {
+            return;
+        }
+
+        if (this.player.getPlayer() == null) {
+            return;
+        }
+
+        if (!this.plugin.getConfigurations().getReviveConfiguration().isUseRevive()) {
+            return;
+        }
+
+        if (this.timeTillNextRevive == 0) {
+            return;
+        }
+
+        this.setTimeTillNextRevive(this.getTimeTillNextRevive() - amount);
+    }
+
     public long getTimeTillNextMaxHealth() {
         return this.timeTillNextMaxHealth;
     }
 
     private void setTimeTillNextMaxHealth(long timeTillNextMaxHealth) {
-        this.timeTillNextMaxHealth = Math.min(timeTillNextMaxHealth, this.plugin.getConfigurations().getMaxHealthConfiguration().getPlaytimePerHalfHeart());
+        this.timeTillNextMaxHealth = Math.max(0, Math.min(timeTillNextMaxHealth, this.plugin.getConfigurations().getMaxHealthConfiguration().getPlaytimePerHalfHeart()));
         this.observers.forEach((key, value) -> value.get(MyStatsTimeTillNextMaxHealthObserver.class).update());
     }
 
@@ -739,7 +751,7 @@ public class PlayerData {
         }
         revivingData.onRevive(this.player);
 
-        this.setReviveCooldown(Long.MAX_VALUE);
+        this.setTimeTillNextRevive(this.plugin.getConfigurations().getReviveConfiguration().getTimeBetweenRevives());
 
         if (this.getLives() == 1) {
             this.reviving = new Killer(revivingData.getPlayer().getName(), revivingData.getPlayer().getPlayer() == null ? null : revivingData.getPlayer().getPlayer().getDisplayName(), EntityType.PLAYER);
@@ -805,20 +817,12 @@ public class PlayerData {
         }
 
         //check if revive on cooldown
-        if (this.isReviveOnCooldown()) {
-            this.player.getPlayer().sendMessage(String.format("§cYou cannot revive %s for another %s.", reviving.getName(), MessageUtils.getTimeFromTicks(this.getReviveCooldownLeftInTicks(), false, true)));
+        if (this.timeTillNextRevive > 0) {
+            this.player.getPlayer().sendMessage(String.format("§cYou cannot revive %s for another %s.", reviving.getName(), MessageUtils.getTimeFromTicks(this.getTimeTillNextRevive(), TimePattern.LONG)));
             return false;
         }
 
         return true;
-    }
-
-    private boolean isReviveOnCooldown() {
-        return this.getReviveCooldownLeftInTicks() > 0;
-    }
-
-    public long getReviveCooldownLeftInTicks() {
-        return Math.max(MessageUtils.timeUnitToTicks(this.reviveCooldown - new Date().getTime(), TimeUnit.MILLISECONDS), 0L);
     }
 
     public void onRevive(OfflinePlayer reviver) {
@@ -840,13 +844,12 @@ public class PlayerData {
     }
 
     private void setTimeTillNextLifePart(long timeTillNextLifePart) {
-        this.timeTillNextLifePart = Math.min(timeTillNextLifePart, this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getPlaytimePerLifePart());
+        this.timeTillNextLifePart = Math.max(0, Math.min(timeTillNextLifePart, this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getPlaytimePerLifePart()));
         this.observers.forEach((key, value) -> value.get(MyStatsTimeTillNextLifePartObserver.class).update());
     }
 
     public void onReload() {
         this.onJoin();
-        this.setReviveCooldown(this.checkReviveCooldown(this.reviveCooldown));
     }
 
     public Map<String, Object> serialize() {
@@ -859,7 +862,7 @@ public class PlayerData {
         map.put("TimeTillNextMaxHealth", this.timeTillNextMaxHealth);
         map.put("TimeTillNextLifePart", this.timeTillNextLifePart);
         map.put("SpectatorBanned", this.spectatorBanned);
-        map.put("ReviveCooldown", this.reviveCooldown);
+        map.put("TimeTillNextRevive", this.timeTillNextRevive);
         map.put("LifeParts", this.lifeParts);
         map.put("Lives", this.lives);
         map.put("LastKnownIp", this.lastKnownIp);
@@ -906,7 +909,8 @@ public class PlayerData {
                     new MyStatsLivesObserver(guiMyStats),
                     new MyStatsMaxHealthObserver(guiMyStats),
                     new MyStatsTimeTillNextLifePartObserver(guiMyStats),
-                    new MyStatsTimeTillNextMaxHealthObserver(guiMyStats)
+                    new MyStatsTimeTillNextMaxHealthObserver(guiMyStats),
+                    new MyStatsTimeTillNextReviveObserver(guiMyStats)
             ).forEach(e -> observers.put(e.getClass(), e));
         }
         if (!observers.isEmpty()) {

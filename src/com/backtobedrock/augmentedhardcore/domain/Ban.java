@@ -4,6 +4,7 @@ import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.configurationDomain.configurationHelperClasses.BanConfiguration;
 import com.backtobedrock.augmentedhardcore.domain.enums.DamageCause;
 import com.backtobedrock.augmentedhardcore.domain.enums.DamageCauseType;
+import com.backtobedrock.augmentedhardcore.domain.enums.TimePattern;
 import com.backtobedrock.augmentedhardcore.utils.ConfigUtils;
 import com.backtobedrock.augmentedhardcore.utils.MessageUtils;
 import org.bukkit.configuration.ConfigurationSection;
@@ -175,9 +176,9 @@ public class Ban {
         placeholders.put("ban_start_date_short", this.startDate != null ? MessageUtils.SHORT_FORMATTER.format(this.startDate) : "-");
 
         long ticksTillExpiration = MessageUtils.timeUnitToTicks(ChronoUnit.SECONDS.between(LocalDateTime.now(), this.expirationDate), TimeUnit.SECONDS);
-        placeholders.put("ban_time_left_long", MessageUtils.getTimeFromTicks(ticksTillExpiration, false, true));
-        placeholders.put("ban_time_left_short", MessageUtils.getTimeFromTicks(ticksTillExpiration, false, false));
-        placeholders.put("ban_time_left_digital", MessageUtils.getTimeFromTicks(ticksTillExpiration, true, false));
+        placeholders.put("ban_time_left_long", MessageUtils.getTimeFromTicks(ticksTillExpiration, TimePattern.LONG));
+        placeholders.put("ban_time_left_short", MessageUtils.getTimeFromTicks(ticksTillExpiration, TimePattern.SHORT));
+        placeholders.put("ban_time_left_digital", MessageUtils.getTimeFromTicks(ticksTillExpiration, TimePattern.DIGITAL));
         placeholders.put("ban_expiration_date_long", MessageUtils.LONG_FORMATTER.format(this.expirationDate));
         placeholders.put("ban_expiration_date_medium", MessageUtils.MEDIUM_FORMATTER.format(this.expirationDate));
         placeholders.put("ban_expiration_date_short", MessageUtils.SHORT_FORMATTER.format(this.expirationDate));
@@ -188,17 +189,17 @@ public class Ban {
         placeholders.put("ban_in_combat_with", this.inCombatWith != null ? this.inCombatWith.getFormattedName() : "-");
 
         ticksTillExpiration = MessageUtils.timeUnitToTicks(this.banTime, TimeUnit.MINUTES);
-        placeholders.put("ban_time_long", MessageUtils.getTimeFromTicks(ticksTillExpiration, false, true));
-        placeholders.put("ban_time_short", MessageUtils.getTimeFromTicks(ticksTillExpiration, false, false));
-        placeholders.put("ban_time_digital", MessageUtils.getTimeFromTicks(ticksTillExpiration, true, false));
+        placeholders.put("ban_time_long", MessageUtils.getTimeFromTicks(ticksTillExpiration, TimePattern.LONG));
+        placeholders.put("ban_time_short", MessageUtils.getTimeFromTicks(ticksTillExpiration, TimePattern.SHORT));
+        placeholders.put("ban_time_digital", MessageUtils.getTimeFromTicks(ticksTillExpiration, TimePattern.DIGITAL));
 
-        placeholders.put("ban_time_since_previous_death_ban_long", MessageUtils.getTimeFromTicks(this.timeSincePreviousDeathBan, false, true));
-        placeholders.put("ban_time_since_previous_death_ban_short", MessageUtils.getTimeFromTicks(this.timeSincePreviousDeathBan, false, false));
-        placeholders.put("ban_time_since_previous_death_ban_digital", MessageUtils.getTimeFromTicks(this.timeSincePreviousDeathBan, true, false));
+        placeholders.put("ban_time_since_previous_death_ban_long", MessageUtils.getTimeFromTicks(this.timeSincePreviousDeathBan, TimePattern.LONG));
+        placeholders.put("ban_time_since_previous_death_ban_short", MessageUtils.getTimeFromTicks(this.timeSincePreviousDeathBan, TimePattern.SHORT));
+        placeholders.put("ban_time_since_previous_death_ban_digital", MessageUtils.getTimeFromTicks(this.timeSincePreviousDeathBan, TimePattern.DIGITAL));
 
-        placeholders.put("ban_time_since_previous_death_long", MessageUtils.getTimeFromTicks(this.timeSincePreviousDeath, false, true));
-        placeholders.put("ban_time_since_previous_death_short", MessageUtils.getTimeFromTicks(this.timeSincePreviousDeath, false, false));
-        placeholders.put("ban_time_since_previous_death_digital", MessageUtils.getTimeFromTicks(this.timeSincePreviousDeath, true, false));
+        placeholders.put("ban_time_since_previous_death_long", MessageUtils.getTimeFromTicks(this.timeSincePreviousDeath, TimePattern.LONG));
+        placeholders.put("ban_time_since_previous_death_short", MessageUtils.getTimeFromTicks(this.timeSincePreviousDeath, TimePattern.SHORT));
+        placeholders.put("ban_time_since_previous_death_digital", MessageUtils.getTimeFromTicks(this.timeSincePreviousDeath, TimePattern.DIGITAL));
 
         return placeholders;
     }

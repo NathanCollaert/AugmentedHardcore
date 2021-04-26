@@ -22,6 +22,7 @@ public class ConfigurationGuis {
     private final Display livesAndLifePartsDisplay;
     private final Display maxHealthDisplay;
     private final Display reviveDisplay;
+    private final Display reviveOnCooldownDisplay;
     private final Display lifePartDisplay;
     private final Display previousBansDisplay;
     private final Display PlayerDisplay;
@@ -29,7 +30,7 @@ public class ConfigurationGuis {
     private final Display confirmationDisplay;
     private final Display cancellationDisplay;
 
-    public ConfigurationGuis(Display fillerDisplay, Display accentDisplay, Display loadingDisplay, Display notAvailableDisplay, Display nextPageDisplay, Display previousPageDisplay, Display pageInformationDisplay, Display previousGuiDisplay, Display livesAndLifePartsDisplay, Display maxHealthDisplay, Display reviveDisplay, Display lifePartDisplay, Display previousBansDisplay, Display playerDisplay, Display banDisplay, Display confirmationDisplay, Display cancellationDisplay) {
+    public ConfigurationGuis(Display fillerDisplay, Display accentDisplay, Display loadingDisplay, Display notAvailableDisplay, Display nextPageDisplay, Display previousPageDisplay, Display pageInformationDisplay, Display previousGuiDisplay, Display livesAndLifePartsDisplay, Display maxHealthDisplay, Display reviveDisplay, Display reviveOnCooldownDisplay, Display lifePartDisplay, Display previousBansDisplay, Display playerDisplay, Display banDisplay, Display confirmationDisplay, Display cancellationDisplay) {
         this.fillerDisplay = fillerDisplay;
         this.accentDisplay = accentDisplay;
         this.loadingDisplay = loadingDisplay;
@@ -41,6 +42,7 @@ public class ConfigurationGuis {
         this.livesAndLifePartsDisplay = livesAndLifePartsDisplay;
         this.maxHealthDisplay = maxHealthDisplay;
         this.reviveDisplay = reviveDisplay;
+        this.reviveOnCooldownDisplay = reviveOnCooldownDisplay;
         this.lifePartDisplay = lifePartDisplay;
         this.previousBansDisplay = previousBansDisplay;
         this.PlayerDisplay = playerDisplay;
@@ -66,6 +68,7 @@ public class ConfigurationGuis {
                 "LivesAndLifePartsDisplay",
                 "MaxHealthDisplay",
                 "ReviveDisplay",
+                "ReviveOnCooldownDisplay",
                 "LifePartDisplay",
                 "PreviousBansDisplay",
                 "PlayerDisplay",
@@ -98,6 +101,7 @@ public class ConfigurationGuis {
                 cDisplays.get("LivesAndLifePartsDisplay"),
                 cDisplays.get("MaxHealthDisplay"),
                 cDisplays.get("ReviveDisplay"),
+                cDisplays.get("ReviveOnCooldownDisplay"),
                 cDisplays.get("LifePartDisplay"),
                 cDisplays.get("PreviousBansDisplay"),
                 cDisplays.get("PlayerDisplay"),
@@ -173,5 +177,9 @@ public class ConfigurationGuis {
 
     public Display getPlayerDisplay() {
         return PlayerDisplay;
+    }
+
+    public Display getReviveOnCooldownDisplay() {
+        return reviveOnCooldownDisplay;
     }
 }

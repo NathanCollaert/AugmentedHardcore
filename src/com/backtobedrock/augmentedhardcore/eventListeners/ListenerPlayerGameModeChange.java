@@ -1,6 +1,7 @@
 package com.backtobedrock.augmentedhardcore.eventListeners;
 
 import com.backtobedrock.augmentedhardcore.domain.Ban;
+import com.backtobedrock.augmentedhardcore.domain.enums.TimePattern;
 import com.backtobedrock.augmentedhardcore.utils.MessageUtils;
 import javafx.util.Pair;
 import org.bukkit.GameMode;
@@ -24,7 +25,7 @@ public class ListenerPlayerGameModeChange extends AbstractEventListener {
         Pair<Integer, Ban> ban = this.plugin.getServerRepository().getServerDataSync().getBan(player);
 
         if (ban != null && event.getNewGameMode() != GameMode.SPECTATOR) {
-            player.sendMessage(String.format("§cCannot change game mode, you are still banned for another %s.", MessageUtils.getTimeFromTicks(MessageUtils.timeUnitToTicks(ChronoUnit.SECONDS.between(LocalDateTime.now(), ban.getValue().getExpirationDate()), TimeUnit.SECONDS), false, true)));
+            player.sendMessage(String.format("§cCannot change game mode, you are still banned for another %s.", MessageUtils.getTimeFromTicks(MessageUtils.timeUnitToTicks(ChronoUnit.SECONDS.between(LocalDateTime.now(), ban.getValue().getExpirationDate()), TimeUnit.SECONDS), TimePattern.LONG)));
             event.setCancelled(true);
         }
     }

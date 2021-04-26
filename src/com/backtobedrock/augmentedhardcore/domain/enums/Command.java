@@ -16,7 +16,7 @@ public enum Command {
     SETLIFEPARTS(Permission.SETLIFEPARTS, AUGMENTEDHARDCORE, Arrays.asList("player", "amount"), Collections.emptyList(), "Set the life parts of a player"),
     RELOAD(Permission.RELOAD, AUGMENTEDHARDCORE, Collections.emptyList(), Collections.emptyList(), "Reload " + JavaPlugin.getPlugin(AugmentedHardcore.class).getDescription().getName()),
     UNDEATHBAN(Permission.UNDEATHBAN, null, Collections.singletonList("player"), Collections.emptyList(), "Unban a player that was death banned"),
-    REVIVE(Permission.REVIVE, null, Collections.singletonList("player"), Collections.emptyList(), "Give a life of yours to someone else"),
+    REVIVE(Permission.REVIVE, null, Collections.singletonList("player"), Collections.emptyList(), "Give a life of your own to someone else"),
     MYSTATS(Permission.MYSTATS, null, Collections.emptyList(), Collections.singletonList("player"), "Check your " + JavaPlugin.getPlugin(AugmentedHardcore.class).getDescription().getName() + " statistics"),
     NEXTLIFEPART(Permission.NEXTLIFEPART, null, Collections.emptyList(), Collections.singletonList("player"), "Check when you will receive your next life part"),
     NEXTMAXHEALTH(Permission.NEXTMAXHEALTH, null, Collections.emptyList(), Collections.singletonList("player"), "Check when you will receive your next max health increase"),

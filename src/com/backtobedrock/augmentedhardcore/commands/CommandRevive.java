@@ -1,6 +1,7 @@
 package com.backtobedrock.augmentedhardcore.commands;
 
 import com.backtobedrock.augmentedhardcore.domain.enums.Command;
+import com.backtobedrock.augmentedhardcore.guis.AbstractGui;
 import com.backtobedrock.augmentedhardcore.guis.GuiRevive;
 import com.backtobedrock.augmentedhardcore.utils.PlayerUtils;
 import org.bukkit.command.CommandSender;
@@ -36,7 +37,8 @@ public class CommandRevive extends AbstractCommand {
                     return;
                 }
 
-                PlayerUtils.openInventory(this.sender, new GuiRevive(playerData, this.target));
+                AbstractGui gui = new GuiRevive(playerData, this.target);
+                PlayerUtils.openInventory(this.sender, gui);
             }).exceptionally(ex -> {
                 ex.printStackTrace();
                 return null;

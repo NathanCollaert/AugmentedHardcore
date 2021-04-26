@@ -34,7 +34,14 @@ public class ConfigurationRevive {
             return null;
         }
 
-        return new ConfigurationRevive(cUseRevive, cLivesLostOnReviving, cLivesGainedOnRevive, cTimeBetweenRevives, cReviveOnFirstJoin, cDisableReviveInWorlds);
+        return new ConfigurationRevive(
+                cUseRevive,
+                cLivesLostOnReviving,
+                cLivesGainedOnRevive,
+                cTimeBetweenRevives * 1200,
+                cReviveOnFirstJoin,
+                cDisableReviveInWorlds
+        );
     }
 
     public boolean isUseRevive() {

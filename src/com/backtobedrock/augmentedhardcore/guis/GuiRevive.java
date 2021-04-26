@@ -1,6 +1,7 @@
 package com.backtobedrock.augmentedhardcore.guis;
 
 import com.backtobedrock.augmentedhardcore.domain.data.PlayerData;
+import com.backtobedrock.augmentedhardcore.domain.enums.TimePattern;
 import com.backtobedrock.augmentedhardcore.guis.clickActions.ClickActionCloseInventory;
 import com.backtobedrock.augmentedhardcore.guis.clickActions.ClickActionConfirmRevive;
 import com.backtobedrock.augmentedhardcore.utils.BanUtils;
@@ -62,7 +63,7 @@ public class GuiRevive extends AbstractGui {
             lore.add(String.format("    • Lives left: %d", this.revivingData.getLives()));
             BanEntry banEntry = BanUtils.isBanned(this.revivingData);
             if (banEntry != null) {
-                lore.add(String.format("    • Death banned for another: %s", MessageUtils.getTimeFromTicks(MessageUtils.timeUnitToTicks(banEntry.getExpiration().getTime() - new Date().getTime(), TimeUnit.MILLISECONDS), false, false)));
+                lore.add(String.format("    • Death banned for another: %s", MessageUtils.getTimeFromTicks(MessageUtils.timeUnitToTicks(banEntry.getExpiration().getTime() - new Date().getTime(), TimeUnit.MILLISECONDS), TimePattern.SHORT)));
             }
             icon = new Icon(InventoryUtils.createPlayerSkull(this.reviving.getName(), lore, this.reviving), Collections.emptyList());
         } else {

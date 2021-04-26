@@ -653,6 +653,15 @@ ReviveDisplay:
     - "&bClick to revive someone"
   Amount: 1
 
+#What should the revive on cooldown button look like?
+#Placeholders: %time_till_next_revive_long% - %time_till_next_revive_short% - %time_till_next_revive_digital%
+ReviveOnCooldownDisplay:
+  Material: "orange_stained_glass_pane"
+  Name: "&eYour revive is still on cooldown"
+  Lore:
+    - "&bYou can revive in %time_till_next_revive_short%"
+  Amount: 1
+
 #What should the life part item look like?
 #Placeholders: %max_life_parts% - %life_parts_number% - %life_parts% - %time_till_next_life_part_long% - %time_till_next_life_part_short% - %time_till_next_life_part_digital%
 LifePartDisplay:
@@ -683,7 +692,7 @@ PreviousBansDisplay:
 PlayerDisplay:
   #Will be overridden
   Material: "player_head"
-  Name: "&6&l%player%"
+  Name: "&6&l%player_name%"
   Lore:
     - "  &6♦ &aYou've died &b%total_deaths% &atimes on this server"
     - "  &6♦ &aYour last death was &b%last_death_time_long% &aago"

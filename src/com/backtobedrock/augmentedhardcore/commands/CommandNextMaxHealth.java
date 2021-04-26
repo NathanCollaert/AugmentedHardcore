@@ -3,6 +3,7 @@ package com.backtobedrock.augmentedhardcore.commands;
 import com.backtobedrock.augmentedhardcore.domain.data.PlayerData;
 import com.backtobedrock.augmentedhardcore.domain.enums.Command;
 import com.backtobedrock.augmentedhardcore.domain.enums.Permission;
+import com.backtobedrock.augmentedhardcore.domain.enums.TimePattern;
 import com.backtobedrock.augmentedhardcore.utils.MessageUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -57,6 +58,6 @@ public class CommandNextMaxHealth extends AbstractCommand {
         this.cs.sendMessage(String.format("§a%s will receive extra §emax health %s§a", this.cs instanceof Player && ((Player) this.cs).getUniqueId() == playerData.getPlayer().getUniqueId()
                         ? "You"
                         : playerData.getPlayer().getName()
-                , nextMaxHealth == 0 ? "§6now" : "§ain §6" + MessageUtils.getTimeFromTicks(nextMaxHealth, false, true)));
+                , nextMaxHealth == 0 ? "§6now" : "§ain §6" + MessageUtils.getTimeFromTicks(nextMaxHealth, TimePattern.LONG)));
     }
 }

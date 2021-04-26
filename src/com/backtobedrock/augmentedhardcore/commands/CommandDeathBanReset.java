@@ -2,6 +2,7 @@ package com.backtobedrock.augmentedhardcore.commands;
 
 import com.backtobedrock.augmentedhardcore.domain.Ban;
 import com.backtobedrock.augmentedhardcore.domain.enums.Command;
+import com.backtobedrock.augmentedhardcore.domain.enums.TimePattern;
 import com.backtobedrock.augmentedhardcore.utils.MessageUtils;
 import javafx.util.Pair;
 import org.bukkit.Bukkit;
@@ -36,7 +37,7 @@ public class CommandDeathBanReset extends AbstractCommand {
         this.plugin.getServerRepository().getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> {
             Pair<Integer, Ban> banPair = serverData.getBan(this.sender);
             if (banPair != null) {
-                this.sender.sendMessage(String.format("§cYou cannot use this command for another %s.", MessageUtils.getTimeFromTicks(MessageUtils.timeUnitToTicks(ChronoUnit.SECONDS.between(LocalDateTime.now(), banPair.getValue().getExpirationDate()), TimeUnit.SECONDS), false, true)));
+                this.sender.sendMessage(String.format("§cYou cannot use this command for another %s.", MessageUtils.getTimeFromTicks(MessageUtils.timeUnitToTicks(ChronoUnit.SECONDS.between(LocalDateTime.now(), banPair.getValue().getExpirationDate()), TimeUnit.SECONDS), TimePattern.LONG)));
                 return;
             }
 

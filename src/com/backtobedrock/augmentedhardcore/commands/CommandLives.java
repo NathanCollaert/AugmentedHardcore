@@ -53,7 +53,7 @@ public class CommandLives extends AbstractCommand {
 
     private void sendSuccessMessage(PlayerData playerData) {
         boolean isSender = this.cs instanceof Player && ((Player) this.cs).getUniqueId() == playerData.getPlayer().getUniqueId();
-        this.cs.sendMessage(String.format("§a%s currently %s §6%s §a.",
+        this.cs.sendMessage(String.format("§a%s currently %s §6%s§a.",
                 isSender ? "You" : playerData.getPlayer().getName(),
                 isSender ? "have" : "has",
                 playerData.getLives() + "§e" + (playerData.getLives() == 1 ? " life" : " lives")));

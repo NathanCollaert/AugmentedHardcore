@@ -13,8 +13,8 @@ CREATE TABLE IF NOT EXISTS ah_player
     last_known_ip VARCHAR(32),
     lives INT UNSIGNED NOT NULL,
     life_parts INT UNSIGNED NOT NULL,
-    revive_cooldown BIGINT NOT NULL,
     spectator_banned TINYINT NOT NULL,
+    time_till_next_revive BIGINT UNSIGNED NOT NULL,
     time_till_next_life_part BIGINT UNSIGNED NOT NULL,
     time_till_next_max_health BIGINT UNSIGNED NOT NULL,
     PRIMARY KEY (player_uuid)

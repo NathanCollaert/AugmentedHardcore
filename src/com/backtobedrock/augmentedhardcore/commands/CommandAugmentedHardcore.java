@@ -18,13 +18,13 @@ public class CommandAugmentedHardcore extends AbstractCommand {
     @Override
     public void run() {
         if (this.args.length < 1) {
-            this.sendHelpMessage();
+            this.sendHelpMessage(this.sender);
             return;
         }
 
         Command command = CommandUtils.getCommand(this.args[0]);
         if (command == null) {
-            this.sendHelpMessage();
+            this.sendHelpMessage(this.sender);
             return;
         }
 
@@ -138,14 +138,19 @@ public class CommandAugmentedHardcore extends AbstractCommand {
                 this.cs.sendMessage("§aAugmentedHardcore has successfully been reloaded.");
                 break;
             default:
-                this.sendHelpMessage();
+                this.sendHelpMessage(this.cs);
         }
     }
 
-    private void sendHelpMessage() {
+    private void sendHelpMessage(CommandSender sender) {
         List<String> helpMessage = new ArrayList<>();
         helpMessage.add("§8§m----------§6 Augmented Hardcore §fHelp §8§m----------");
-        Arrays.stream(Command.values()).filter(e -> e.getPermission() != null).forEach(e -> helpMessage.add(e.getFancyVersion()));
+        Arrays.stream(Command.values()).filter(e -> e.getPermission() != null).filter(e -> {
+            if (sender instanceof Player) {
+                return sender.hasPermission(e.getPermission().getPermissionString());
+            }
+            return true;
+        }).forEach(e -> helpMessage.add(e.getFancyVersion()));
         helpMessage.add("§8§m------------------------------------------");
         this.cs.sendMessage(helpMessage.toArray(new String[0]));
     }

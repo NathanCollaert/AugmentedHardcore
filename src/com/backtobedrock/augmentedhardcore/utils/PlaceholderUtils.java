@@ -2,6 +2,7 @@ package com.backtobedrock.augmentedhardcore.utils;
 
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.data.PlayerData;
+import com.backtobedrock.augmentedhardcore.domain.enums.TimePattern;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -39,23 +40,23 @@ public class PlaceholderUtils extends PlaceholderExpansion {
 
         switch (identifier) {
             case "time_till_next_max_health_short":
-                return MessageUtils.getTimeFromTicks(playerData.getTimeTillNextMaxHealth(), false, false);
+                return MessageUtils.getTimeFromTicks(playerData.getTimeTillNextMaxHealth(), TimePattern.SHORT);
             case "time_till_next_life_part_short":
-                return MessageUtils.getTimeFromTicks(playerData.getTimeTillNextLifePart(), false, false);
+                return MessageUtils.getTimeFromTicks(playerData.getTimeTillNextLifePart(), TimePattern.SHORT);
             case "time_till_next_revive_short":
-                return MessageUtils.getTimeFromTicks(playerData.getReviveCooldownLeftInTicks(), false, false);
+                return MessageUtils.getTimeFromTicks(playerData.getTimeTillNextRevive(), TimePattern.SHORT);
             case "time_till_next_max_health_long":
-                return MessageUtils.getTimeFromTicks(playerData.getTimeTillNextMaxHealth(), false, true);
+                return MessageUtils.getTimeFromTicks(playerData.getTimeTillNextMaxHealth(), TimePattern.LONG);
             case "time_till_next_life_part_long":
-                return MessageUtils.getTimeFromTicks(playerData.getTimeTillNextLifePart(), false, true);
+                return MessageUtils.getTimeFromTicks(playerData.getTimeTillNextLifePart(), TimePattern.LONG);
             case "time_till_next_revive_long":
-                return MessageUtils.getTimeFromTicks(playerData.getReviveCooldownLeftInTicks(), false, true);
+                return MessageUtils.getTimeFromTicks(playerData.getTimeTillNextRevive(), TimePattern.LONG);
             case "time_till_next_max_health_digital":
-                return MessageUtils.getTimeFromTicks(playerData.getTimeTillNextMaxHealth(), true, false);
+                return MessageUtils.getTimeFromTicks(playerData.getTimeTillNextMaxHealth(), TimePattern.DIGITAL);
             case "time_till_next_life_part_digital":
-                return MessageUtils.getTimeFromTicks(playerData.getTimeTillNextLifePart(), true, false);
+                return MessageUtils.getTimeFromTicks(playerData.getTimeTillNextLifePart(), TimePattern.DIGITAL);
             case "time_till_next_revive_digital":
-                return MessageUtils.getTimeFromTicks(playerData.getReviveCooldownLeftInTicks(), true, false);
+                return MessageUtils.getTimeFromTicks(playerData.getTimeTillNextRevive(), TimePattern.DIGITAL);
             case "life_parts":
                 return Integer.toString(playerData.getLifeParts());
             case "lives":

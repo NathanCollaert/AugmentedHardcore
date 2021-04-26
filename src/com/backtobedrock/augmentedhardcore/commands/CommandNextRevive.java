@@ -3,6 +3,7 @@ package com.backtobedrock.augmentedhardcore.commands;
 import com.backtobedrock.augmentedhardcore.domain.data.PlayerData;
 import com.backtobedrock.augmentedhardcore.domain.enums.Command;
 import com.backtobedrock.augmentedhardcore.domain.enums.Permission;
+import com.backtobedrock.augmentedhardcore.domain.enums.TimePattern;
 import com.backtobedrock.augmentedhardcore.utils.MessageUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -53,10 +54,10 @@ public class CommandNextRevive extends AbstractCommand {
     }
 
     private void sendSuccessMessage(PlayerData playerData) {
-        long reviveCooldown = playerData.getReviveCooldownLeftInTicks();
+        long reviveCooldown = playerData.getTimeTillNextRevive();
         this.cs.sendMessage(String.format("§a%s will be able to §erevive %s§a.", this.cs instanceof Player && ((Player) this.cs).getUniqueId() == playerData.getPlayer().getUniqueId()
                         ? "You"
                         : playerData.getPlayer().getName()
-                , reviveCooldown == 0 ? "§6now" : "§ain §6" + MessageUtils.getTimeFromTicks(reviveCooldown, false, true)));
+                , reviveCooldown == 0 ? "§6now" : "§ain §6" + MessageUtils.getTimeFromTicks(reviveCooldown, TimePattern.LONG)));
     }
 }
