@@ -1,53 +1,114 @@
-main: com.backtobedrock.LiteDeathBan.LiteDeathBan
-name: LiteDeathBan
-version: 2.0.5
+main: com.backtobedrock.augmentedhardcore.AugmentedHardcore
+name: AugmentedHardcore
+version: ${project.version}
 author: Nathan
 website: www.backtobedrock.com
-prefix: LiteDeathBan
-description: A very customizable and lightweight plugin that bans players on death
+prefix: AugmentedHardcore
+description: A very customizable and lightweight plugin that enhances the hardcore aspect of Minecraft.
 api-version: 1.13
+softdepend: [ PlaceholderAPI ]
 commands:
-    revive:
-        description: Transfer one of your lives to another player.
-        permission: litedeathban.revive
-        usage: /<command> <player>
-    setlives:
-        description: Set the amount of lives for a player.
-        permission: litedeathban.setlives
-        usage: /<command> <player> <amount>
-    lives:
-        description: Check your current amount of lives.
-        permission: litedeathban.lives
-        usage: /<command> [player]
-    addlives:
-        description: Add an amount of lives to a player.
-        permission: litedeathban.addlives
-        usage: /<command> <player> <amount>
-    lifeparts:
-        description: Check your current amount of life parts.
-        permission: litedeathban.lifeparts
-        usage: /<command> [player]
-    
+  augmentedhardcore:
+    aliases:
+      - ah
+  undeathban:
+    aliases:
+      - udb
+  deathbanreset:
+    aliases:
+      - dbr
+  revive:
+    aliases:
+      - rev
+  mystats:
+    aliases:
+      - ms
+  nextlifepart:
+    aliases:
+      - nlp
+  nextmaxhealth:
+    aliases:
+      - nmh
+  nextrevive:
+    aliases:
+      - nr
+  lifeparts:
+    aliases:
+      - lp
+  deathbans:
+    aliases:
+      - db
+  lives:
+    usage: /<command>
 permissions:
-    litedeathban.bypass.ban:
-        default: op
-    litedeathban.bypass.combattag:
-        default: op
-    litedeathban.bypass.loseparts:
-        deafult: op
-    litedeathban.bypass.loselives:
-        deafult: op
-    litedeathban.revive:
-        default: op
-    litedeathban.setlives:
-        default: op
-    litedeathban.lives:
-        default: op
-    litedeathban.lives.other:
-        default: op
-    litedeathban.lifeparts:
-        default: op
-    litedeathban.lifeparts.other:
-        default: op
-    litedeathban.addlives:
-        default: op
+  #BYPASSES
+  augmentedhardcore.bypass.ban:
+    default: false
+  augmentedhardcore.bypass.ban.spectator:
+    default: false
+  augmentedhardcore.bypass.loselives:
+    default: false
+  augmentedhardcore.bypass.loselifeparts:
+    default: false
+  augmentedhardcore.bypass.gainlifeparts.kill:
+    default: false
+  augmentedhardcore.bypass.gainlifeparts.playtime:
+    default: false
+  augmentedhardcore.bypass.losemaxhealth:
+    default: false
+  augmentedhardcore.bypass.gainmaxhealth.kill:
+    default: false
+  augmentedhardcore.bypass.gainmaxhealth.playtime:
+    default: false
+  augmentedhardcore.bypass.artificialregeneration:
+    default: false
+  #GAINS
+  augmentedhardcore.gain.revive.death:
+    default: true
+  augmentedhardcore.gain.revive.alive:
+    default: true
+  #COMMANDS
+  augmentedhardcore.help:
+    default: op
+  augmentedhardcore.revive:
+    default: op
+  augmentedhardcore.undeathban:
+    default: op
+  augmentedhardcore.mystats:
+    default: op
+  augmentedhardcore.mystats.other:
+    default: op
+  augmentedhardcore.nextlifepart:
+    default: op
+  augmentedhardcore.nextlifepart.other:
+    default: op
+  augmentedhardcore.nextmaxhealth:
+    default: op
+  augmentedhardcore.nextmaxhealth.other:
+    default: op
+  augmentedhardcore.nextrevive:
+    default: op
+  augmentedhardcore.nextrevive.other:
+    default: op
+  augmentedhardcore.lifeparts:
+    default: op
+  augmentedhardcore.lifeparts.other:
+    default: op
+  augmentedhardcore.lives:
+    default: op
+  augmentedhardcore.lives.other:
+    default: op
+  augmentedhardcore.deathbans:
+    default: op
+  augmentedhardcore.deathbans.other:
+    default: op
+  augmentedhardcore.reload:
+    default: op
+  augmentedhardcore.setlives:
+    default: op
+  augmentedhardcore.addlives:
+    default: op
+  augmentedhardcore.addlifeparts:
+    default: op
+  augmentedhardcore.setlifeparts:
+    default: op

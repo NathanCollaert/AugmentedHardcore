@@ -1,5 +1,19 @@
-#Should the plugin check for updates?
-UpdateChecker: true
+############################################################
+# +------------------------------------------------------+ #
+# |                        Data                          | #
+# +------------------------------------------------------+ #
+############################################################
+
+#YAML or MySQL
+StorageType: "YAML"
+
+#Only necessary if using MySQL
+Connection:
+  Hostname: "localhost"
+  Port: "3306"
+  Database: "minecraft"
+  Username: "root"
+  Password: "root"
 
 
 ############################################################
@@ -8,92 +22,451 @@ UpdateChecker: true
 # +------------------------------------------------------+ #
 ############################################################
 
-#What should the max amount of lives a player can have be?
-#Minimum is 1, 0 is unlimited.
+#Should the plugin use the lives system configured below?
+UseLives: true
+
+#What should the maximum amount of lives a player can have be?
+#Minimum is 1.
 MaxLives: 5
 
-#What amount of lives should players start at when first joining?
+#What amount of lives should players start with when first joining the server?
 #Minimum is 1.
 LivesAtStart: 1
 
+#How many lives should a player start with when joining the server for the first time after a death ban?
+#Minimum is 1.
+LivesAfterBan: 1
+
+#How many lives should a player lose on death?
+#Minimum is 1.
+LivesLostPerDeath: 1
+
 #Should losing lives be disabled in any worlds?
-#This will also disable banning of players and reviving of players in these worlds.
-#Combat tagging will still be enabled (if not also disabled for these worlds) and players will die on leaving when combat tagged but won't lose lives or get banned.
-#Players will still lose part of lives (if enabled)
-DisableLosingLivesInWorlds:
-    #- world
-    #- world_nether
-    #- world_the_end
-
-#Should players be unable to die in these disabled worlds (only the list above)?
-DisableDyingInDisabledWorlds: false
+DisableLosingLivesInWorlds: [ ]
+#- world
+#- world_nether
+#- world_the_end
 
 
 ############################################################
 # +------------------------------------------------------+ #
-# |                      Ban Times                       | #
+# |                     Life Parts                       | #
 # +------------------------------------------------------+ #
 ############################################################
 
-#What bantime should players get if killed by players?
-#In Minutes, -1 is disable (0 is unlimited but can only be used if BantimeByPlaytime: true).
-PlayerDeathBantime: 7200
+#Should the plugin use the life parts system configured below?
+#Life parts can used to gain a full life when enough are collected.
+UseLifeParts: true
 
-#What bantime should players get if killed by monsters?
-#In Minutes, -1 is disable (0 is unlimited but can only be used if BantimeByPlaytime: true).
-MonsterDeathBantime: 2880
+#What should the maximum amount of life parts a player can have be?
+#Life parts are not converted to lives when max lives is reached.
+#Minimum is 0. -1 is unlimited.
+MaxLifeParts: 6
 
-#What bantime should players get if killed by environment?
-#In Minutes, -1 is disable (0 is unlimited but can only be used if BantimeByPlaytime: true).
-EnvironmentDeathBantime: 4320
+#How many life parts does it take to get a full life?
+#Minimum is 1.
+LifePartsPerLife: 3
+
+#What amount of life parts should players start with when first joining the server?
+#Minimum is 0.
+LifePartsAtStart: 0
+
+#How many life parts should a player start with when joining the server for the first time after a death ban?
+#Minimum is 0, -1 to keep the current amount.
+LifePartsAfterBan: 0
+
+#How many life parts should be lost on death?
+#Minimum is 0, -1 is all life parts.
+LifePartsLostPerDeath: 1
+
+#How many life parts should be lost upon death ban?
+#Minimum is 0, -1 is all life parts.
+LifePartsLostPerDeathBan: -1
+
+#Should players receive life parts when killing another entity?
+LifePartsOnKill: true
+
+#How many life parts should a player receive when killing another entity?
+#Any living entity type can be added to the list followed by the amount of life parts it would give. (https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/entity/EntityType.html)
+#Any living entity type not listed will give 0 life parts.
+#Minimum is 0
+LifePartsPerKill:
+  PLAYER: 3
+  ZOMBIE: 2
+  SKELETON: 2
+  CREEPER: 2
+  COW: 1
+  PIG: 1
+  CHICKEN: 1
+
+#Should players receive life parts by playtime?
+GetLifePartByPlaytime: false
+
+#How long should a player have to play in order to gain 1 life part?
+#In minutes, minimum is 1.
+PlaytimePerLifePart: 30
+
+#Should getting parts of a life be disabled in any worlds?
+DisableGainingLifePartsInWorlds: [ ]
+#- world
+#- world_nether
+#- world_the_end
+
+#Should losing parts of a life be disabled in any worlds?
+DisableLosingLifePartsInWorlds: [ ]
+#- world
+#- world_nether
+#- world_the_end
+
+
+############################################################
+# +------------------------------------------------------+ #
+# |                      Death Ban                       | #
+# +------------------------------------------------------+ #
+############################################################
+
+#Should the plugin use the death ban system configured below?
+UseDeathBan: true
+
+#What ban times should these death causes have when a player reaches 0 lives?
+#Bantime:         The ban time in minutes this damage cause will give the player.
+#                 Minimum is 0, -1 will ban permanently
+#DisplayMessages: A list of possible ban messages that can be used in the ban reason of a player.
+#                 These ban messages can use ALL placeholders available (if present in the ban cause) in the Ban section of the messages.yml config.
+BanTimes:
+  #Death caused by being in the area when a block explodes.
+  BLOCK_EXPLOSION:
+    BanTime: 4320
+    DisplayMessages:
+      - "blew up"
+      - "got caught in an explosion"
+
+  #Death caused by contacting a block such as a Cactus.
+  CONTACT:
+    BanTime: 4320
+    DisplayMessages:
+      - "were pricked to death"
+      - "were poked to death"
+
+  #Death caused by colliding with too many entities due to the maxEntityCramming game rule.
+  CRAMMING:
+    BanTime: 4320
+    DisplayMessages:
+      - "were squished too much"
+      - "were flattened"
+
+  #Death caused by a dragon breathing fire.
+  DRAGON_BREATH:
+    BanTime: 2880
+    DisplayMessages:
+      - "were roasted in dragon breath"
+
+  #Death caused by running out of air while in water
+  DROWNING:
+    BanTime: 4320
+    DisplayMessages:
+      - "drowned"
+      - "weren't able to find air"
+
+  #Death caused by a monster attack.
+  ENTITY_ATTACK:
+    BanTime: 2880
+    DisplayMessages:
+      - "were slain"
+      - "were doomed"
+
+  #Death caused by a player attack.
+  PLAYER_ENTITY_ATTACK:
+    BanTime: 7200
+    DisplayMessages:
+      - "were slain"
+      - "were doomed"
+
+  #Death caused by being in the area when an entity, such as a Creeper, explodes.
+  ENTITY_EXPLOSION:
+    BanTime: 2880
+    DisplayMessages:
+      - "blew up"
+      - "got caught in an explosion"
+      - "went off with a bang"
+
+  #Death caused by being in the area when TNT explodes placed by a player.
+  PLAYER_ENTITY_EXPLOSION:
+    BanTime: 7200
+    DisplayMessages:
+      - "blew up"
+      - "got caught in an explosion"
+      - "went off with a bang"
+
+  #Death caused by a monster attacking with a sweep attack.
+  ENTITY_SWEEP_ATTACK:
+    BanTime: 2880
+    DisplayMessages:
+      - "were slain during a sweep attack"
+      - "were caught in a sweep attack"
+
+  #Death caused by a player attacking with a sweep attack.
+  PLAYER_ENTITY_SWEEP_ATTACK:
+    BanTime: 7200
+    DisplayMessages:
+      - "were slain during a sweep attack"
+      - "were caught in a sweep attack"
+
+  #Death caused by falling a distance greater than 3 blocks
+  FALL:
+    BanTime: 4320
+    DisplayMessages:
+      - "hit the ground too hard"
+      - "fell from a high place"
+      - "fell too far"
+
+  #Death caused by being hit by a falling block which deals damage
+  FALLING_BLOCK:
+    BanTime: 4320
+    DisplayMessages:
+      - "were squashed"
+      - "were crushed"
+      - "were shattered"
+
+  #Death caused by direct exposure to fire
+  FIRE:
+    BanTime: 4320
+    DisplayMessages:
+      - "went up in flames"
+      - "walked into fire"
+
+  #Death caused due to burns caused by fire
+  FIRE_TICK:
+    BanTime: 4320
+    DisplayMessages:
+      - "burned to death"
+      - "burned to a crisp"
+
+  #Death caused by running/flying into a wall.
+  FLY_INTO_WALL:
+    BanTime: 4320
+    DisplayMessages:
+      - "experienced kinetic energy"
+
+  #Death caused by stepping on MAGMA_BLOCK.
+  HOT_FLOOR:
+    BanTime: 4320
+    DisplayMessages:
+      - "discovered the floor was %killer% and hot"
+      - "walked into %killer% and melted"
+
+  #Death caused by direct exposure to lava
+  LAVA:
+    BanTime: 4320
+    DisplayMessages:
+      - "tried to swim in lava"
+      - "lost the floor is lava game"
+
+  #Death caused by being struck by lightning
+  #(Lightning is an entity)
+  LIGHTNING:
+    BanTime: 4320
+    DisplayMessages:
+      - "were struck by"
+
+  #Death caused by being hit by a damage potion or spell from a monster or block
+  MAGIC:
+    BanTime: 2880
+    DisplayMessages:
+      - "were killed with magic"
+
+  #Death caused by being hit by a damage potion or spell from a player
+  PLAYER_MAGIC:
+    BanTime: 7200
+    DisplayMessages:
+      - "were killed with magic"
+
+  #Death caused due to an ongoing poison effect
+  POISON:
+    BanTime: 4320
+    DisplayMessages:
+      - "drank the wrong potion"
+      - "got injected by poison"
+
+  #Death caused when attacked by a projectile from monster or block.
+  PROJECTILE:
+    BanTime: 2880
+    DisplayMessages:
+      - "were shot"
+      - "were impaled"
+
+  #Death caused when attacked by a projectile from player.
+  PLAYER_PROJECTILE:
+    BanTime: 7200
+    DisplayMessages:
+      - "were shot"
+      - "were impaled"
+
+  #Death caused by starving due to having an empty hunger bar
+  STARVATION:
+    BanTime: 4320
+    DisplayMessages:
+      - "starved to death"
+      - "couldn't find food"
+
+  #Death caused by being put in a block
+  SUFFOCATION:
+    BanTime: 4320
+    DisplayMessages:
+      - "suffocated"
+      - "were too soft for this world"
+
+  #Death caused by committing suicide using the command "/kill"
+  SUICIDE:
+    BanTime: 0
+    DisplayMessages:
+      - "died"
+      - "committed suicide"
+
+  #Death caused in retaliation to another attack by the Thorns enchantment from armour worn by a monster.
+  THORNS:
+    BanTime: 2880
+    DisplayMessages:
+      - "were killed due to deflected damage"
+
+  #Death caused in retaliation to another attack by the Thorns enchantment from armour worn by a player.
+  PLAYER_THORNS:
+    BanTime: 7200
+    DisplayMessages:
+      - "were killed due to deflected damage"
+
+  #Death caused by falling into the void
+  VOID:
+    BanTime: 4320
+    DisplayMessages:
+      - "fell out of the world"
+      - "didn't want to live in this world anymore"
+      - "were sucked into the void"
+
+  #Death caused by Wither potion effect
+  WITHER:
+    BanTime: 2880
+    DisplayMessages:
+      - "withered away"
+
+  #Death caused by combat logging from a monster
+  COMBAT_LOG:
+    BanTime: 2880
+    DisplayMessages:
+      - "combat logged"
+
+  #Death caused by combat logging from a player
+  PLAYER_COMBAT_LOG:
+    BanTime: 7200
+    DisplayMessages:
+      - "combat logged"
+
+  #Death caused by reviving someone
+  REVIVE:
+    BanTime: 7200
+    DisplayMessages:
+      - "revived"
+
+#Which type of ban should LiteDeathBan enforce when death banning a player?
+# -> name/ip
+BanType: name
+
+#What ban time type should be used for calculating the bantime?
+#Static:             Above times will be used for bans.
+#BanCount:           The amount of (times death banned * 35) will be used for determining the bantime.
+#                    Bantimes will increase the more death banned the player has been.
+#                    Above times will be used as maximum ban time.
+#Playtime:           Playtime will be used for determining the bantime.
+#                    Bantimes will increase the more playtime the player has.
+#                    Above times will be used as maximum ban time.
+#Timesincelastdeath: Time since last death will be used for determining the bantime.
+#                    Bantimes will increase the longer the player stays alive.
+#                    Every death will reset the bantime back to 0, above times will be used as maximum ban time.
+# -> static/bancount/playtime/timesincelastdeath
+BanTimeType: static
+
+#At what rate should the ban time by playtime grow?
+#Linear:      a constant increase in bantime the more bancount/playtime/timesincelastdeath(P) you have (constant increase).
+#             Function: [(P+MBT/60) OR MBT]. MBT -> max ban time
+#exponential: a proportional growth to the current bancount/playtime/timesincelastdeath(P) (slow increase at start, rapid increase at the middle/end).
+#             Function: [(60*(P)^(P/MBT)) OR MBT]. MBT -> max ban time
+# -> linear/exponential
+BanTimeByPlaytimeGrowthType: exponential
+
+#Should players be banned if killed by themselves (excluding /kill)?
+SelfHarmBan: false
+
+#Should a lightning strike at the players position on death ban?
+LightningOnDeathBan: false
+
+#Should any commands be executed on death ban?
+#Placeholders: %player%
+CommandsOnDeathBan: [ ]
+#- "minecraft:advancement revoke %player% everything"
 
 #Should banning players be disabled in any worlds?
-#This does also count for Ban By Playtime. Players will still lose lives and part of lives (if enabled).
-#Reviving and logging of deathbans will also be disabled in these worlds.
-#Combat tagging will still be enabled (if not also disabled for these worlds) and players will die on leaving when combat tagged but won't get banned.
-DisableBanInWorlds:
-    #- world
-    #- world_nether
-    #- world_the_end
+DisableBanInWorlds: [ ]
+#- world
+#- world_nether
+#- world_the_end
 
 
 ############################################################
 # +------------------------------------------------------+ #
-# |                   Ban By Playtime                    | #
+# |                      Max Health                      | #
 # +------------------------------------------------------+ #
 ############################################################
 
-#Should the ban time be calculated by playtime instead?
-#If true, above times are used as max ban time.
-BantimeByPlaytime: false
+#Should the plugin use the max health system configured below?
+UseMaxHealth: false
 
-#Should time since last death be used instead of total playtime for calculating the bantime?
-BantimeByPlaytimeSinceLastDeath: false
+#What should the highest amount of half hearts be that a player is able to get?
+#In half hearts, minimum is 1 (Minecraft will not display health over 1024 but it's still there)
+MaxHealth: 20
 
-#How much % of the BantimeByPlaytimeMinimum will be added to the bantime each BantimeByPlaytimeInterval?
-#In Percent, minimum is 1.
-BantimeByPlaytimePercent: 10
+#What should the lowest amount of half hearts be that a player is able to get?
+#In half hearts, minimum is 1 (Minecraft will not display health over 1024 but it's still there)
+MinHealth: 6
 
-#At what rate of playtime/time since last death should the bantime increase?
-#In Minutes, minimum is 1
-BantimeByPlaytimeInterval: 60
+#How many half hearts should a player respawn with after a death ban?
+#In half hearts, minimum is 1, -1 to keep the current amount (Minecraft will not display health over 1024 but it's still there)
+MaxHealthAfterBan: 20
 
-#At what rate should the bantime by playtime grow?
-#Linear is slow overall, exponential is slow at start but quickly rises.
-# -> linear/exponential
-BantimeByPlaytimeGrowth: exponential
+#With how many half hearts should the max health drop per death?
+#In half hearts, minimum is 0
+MaxHealthDecreasePerDeath: 2
 
-#What should be the minimum amount of bantime for player deaths?
+#Should players be able to increase their max health by killing other entities?
+MaxHealthIncreaseOnKill: true
+
+#How many max health should a player receive when killing another entity?
+#Any living entity type can be added to the list followed by the amount of max health it would give. (https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/entity/EntityType.html)
+#Any living entity type not listed will give 0 max health.
+#In half hearts, minimum is 0
+MaxHealthIncreasePerKill:
+  PLAYER: 2
+  ENDER_DRAGON: 2
+  ELDER_GUARDIAN: 2
+  PIGLIN_BRUTE: 1
+
+#Should players receive max health by playtime?
+GetMaxHealthByPlaytime: false
+
+#How long should a player have to play in order to gain half a heart?
 #In minutes, minimum is 1.
-BantimeByPlaytimeMinimumPlayerDeath: 72
+PlaytimePerHalfHeart: 30
 
-#What should be the minimum amount of bantime for monster deaths?
-#In minutes, minimum is 1.
-BantimeByPlaytimeMinimumMonsterDeath: 28
+#Should losing max health be disabled in any world?
+DisableLosingMaxHealthInWorlds: [ ]
+#- world
+#- world_nether
+#- world_the_end
 
-#What should be the minimum amount of bantime for environment deaths?
-#In minutes, minimum is 1.
-BantimeByPlaytimeMinimumEnvironmentDeath: 43
+#Should gaining max health be disabled in any world?
+DisableGainingMaxHealthInWorlds: [ ]
+#- world
+#- world_nether
+#- world_the_end
 
 
 ############################################################
@@ -102,29 +475,27 @@ BantimeByPlaytimeMinimumEnvironmentDeath: 43
 # +------------------------------------------------------+ #
 ############################################################
 
-#Should players die and receive PlayerDeathBantime if they log out while in combat with another player?
-#They will also receive PlayerDeathBantime if killed by a monster or environment during this time.
-CombatTag: true
+#Should players die and be banned if they log out while in combat with another player?
+PlayerCombatTag: false
+
+#Should players die and be banned if they log out while in combat with a monster?
+MonsterCombatTag: false
 
 #Should players be able to combat tag themselves?
 CombatTagSelf: false
 
-#How long should a player be tagged for after combat?
+#How long should a player be combat tagged for?
 #In Seconds, minimum is 1.
-CombatTagTime: 10
-
-#How should the player be notified when tagged in combat?
-# -> chat/bossbar/none
-CombatTagWarningStyle: bossbar
+CombatTagTime: 15
 
 #Should players tagged in combat be killed on kick?
 CombatTagPlayerKickDeath: false
 
 #Should combat tagging be disabled in any worlds?
-DisableCombatTagInWorlds:
-    #- world
-    #- world_nether
-    #- world_the_end
+DisableCombatTagInWorlds: [ ]
+#- world
+#- world_nether
+#- world_the_end
 
 
 ############################################################
@@ -133,14 +504,17 @@ DisableCombatTagInWorlds:
 # +------------------------------------------------------+ #
 ############################################################
 
-#Should players be able to give a life of their own to someone else (players will still need permission to use the revive command)?
-#Players who were previously deathbanned will be unbanned if given a life.
-Revive: true
+#Should players be able to give a lives of their own to someone else?
+#Players who were previously banned by the plugin will be unbanned if given a life.
+UseRevive: false
 
-#How long should a player be banned for if the player has 0 lives left after giving a revive?
-#If player is combat tagged, the player will receive PlayerDeathBantime if BantimeOnReviveDeath has a lower value.
-#In minutes, minimum is 1.
-BantimeOnReviveDeath: 7200
+#How many lives should be lost when reviving another player?
+#Minimum is 1
+LivesLostOnReviving: 1
+
+#How many lives should a player gain when revived?
+#Minimum is 1
+LivesGainedOnRevive: 1
 
 #How much time should the revive option go on cooldown for after using it?
 #In minutes, minumum is 0.
@@ -148,97 +522,246 @@ TimeBetweenRevives: 1440
 
 #Should players be able to use the revive option directly on first join?
 #If false, players will be able to use revive after TimeBetweenRevives minutes.
-ReviveOptionOnFirstJoin: false
+ReviveOnFirstJoin: false
 
 #Should reviving be disabled in any worlds?
-DisableReviveInWorlds:
-    #- world
-    #- world_nether
-    #- world_the_end
+DisableReviveInWorlds: [ ]
+#- world
+#- world_nether
+#- world_the_end
 
 
 ############################################################
 # +------------------------------------------------------+ #
-# |                      Life parts                      | #
+# |                    Miscellaneous                     | #
 # +------------------------------------------------------+ #
 ############################################################
 
-#Should players be able to receive parts of a life when killing another player?
-GetPartOfLifeOnKill: true
+#Setting this configuration to true will disable the following health regeneration:
+#- When a player regains health from eating consumables
+#- When a player is healed by a potion or spell
+#- When a player is healed over time by a potion or spell
+DisableArtificialRegeneration: false
 
-#How many parts should a player receive when killing a player?
-#Minimum is 1.
-PartsPerKill: 1
+#Should a lightning strike at the players position on death?
+LightningOnDeath: false
 
-#Should parts be lost upon death?
-PartsLostUponDeath: false
-
-#Should players be able to receive parts by playtime?
-GetPartOfLifeOnPlaytime: false
-
-#Should players receive parts from the playtime before this plugin was installed or start from now on?
-#True will also count playtime from before this plugin was installed, false does not.
-CountPlaytimeFromStart: false
-
-#How much playtime should a player have to receive 1 part?
-#In minutes, minimum is 1.
-PlaytimePerPart: 60
-
-#How many minutes should be between each playtime check? The lower this value the more accurate people will get their reward at cost of performance.
-#I would recommend not setting this lower than 30 to avoid lag, especially with many active players.
-#In minutes, minimum is 1.
-PlaytimeCheck: 60
-
-#How many parts does it take to get a full life?
-#Minimum is 1.
-AmountOfPartsPerLife: 5
-
-#Should getting parts of a life be disabled in any worlds?
-DisableGettingLifePartsInWorlds:
-    #- world
-    #- world_nether
-    #- world_the_end
-
-#Should losing parts of a life be disabled in any worlds?
-DisableLosingLifePartsInWorlds:
-    #- world
-    #- world_nether
-    #- world_the_end
+#Should any commands be executed on death?
+#Placeholders: %player%
+CommandsOnDeath: [ ]
+#- "minecraft:advancement revoke %player% everything"
 
 
 ############################################################
 # +------------------------------------------------------+ #
-# |                       Logging                        | #
+# |                         GUIs                         | #
 # +------------------------------------------------------+ #
 ############################################################
 
-#Should deathbans be logged into a file?
-LogDeathBans: false
+#======================--- GENERAL ---======================
 
-#Should all deaths, regardless if ban or not, be logged?
-LogDeaths: false
+#What should the filler item for GUI's look like?
+FillerDisplay:
+  Material: "gray_stained_glass_pane"
+  Name: " "
+  Lore: [ ]
+  Amount: 1
 
-#Should logging death bans be disabled in any worlds?
-DisableLoggingDeathBansInWorlds:
-    #- world
-    #- world_nether
-    #- world_the_end
+#What should the accent item for GUI's look like?
+AccentDisplay:
+  Material: "light_blue_stained_glass_pane"
+  Name: " "
+  Lore: [ ]
+  Amount: 1
 
-#Should logging deaths be disabled in any worlds?
-DisableLoggingDeathsInWorlds:
-    #- world
-    #- world_nether
-    #- world_the_end
+#What should the loading item for GUI's look like?
+LoadingDisplay:
+  Material: "orange_stained_glass_pane"
+  Name: "&eLoading, please wait.."
+  Lore:
+    - "&bThis item is currently being loaded."
+  Amount: 1
+
+#What should the not available item for GUI's look like?
+NotAvailableDisplay:
+  Material: "red_stained_glass_pane"
+  Name: "&cThis item is currently not available."
+  Lore: [ ]
+  Amount: 1
+
+#What should the next button for paged GUI's look like?
+NextPageDisplay:
+  Material: "arrow"
+  #Placeholders: %current_page% - %total_pages% - %next_page%
+  Name: "&eNext Page &6&l>>"
+  Lore: [ ]
+  Amount: 1
+
+#What should the next button for paged GUI's look like?
+PreviousPageDisplay:
+  Material: "arrow"
+  #Placeholders: %current_page% - %total_pages% - %previous_page%
+  Name: "&6&l<< &ePrevious Page"
+  Lore: [ ]
+  Amount: 1
+
+#What should the page information item for paged GUI's look like?
+PageInformationDisplay:
+  Material: "paper"
+  #Placeholders: %current_page% - %total_pages%
+  Name: "&ePage &6%current_page% &eof &6%total_pages%"
+  Lore: [ ]
+  Amount: 1
+
+#What should the go back to previous GUI button look like?
+PreviousGuiDisplay:
+  Material: "barrier"
+  Name: "&eGo back to the previous GUI"
+  Lore: [ ]
+  Amount: 1
 
 
-############################################################
-# +------------------------------------------------------+ #
-# |                       Format                         | #
-# +------------------------------------------------------+ #
-############################################################
+#=======================--- INFO ---========================
 
-#How should dates be shown in the plugin (Only shows on ban screen if implemented and death/ban log)?
-#'short': (6/15/15, 9:03 CEST)
-#'medium': (Jun 15, 2015, 9:03 CEST)
-#'long': (Saturday Jun 15, 2015 at 9:03:01 CEST)
-SaveDateFormat: medium
+#What should the lives and life parts item look like?
+#Placeholders: %lives_number% - %lives% - %life_parts_number% - %life_parts%
+LivesAndLifePartsDisplay:
+  Material: "turtle_egg"
+  Name: "&6&lLives &eand &6&lLife Parts &einfo"
+  Lore:
+    - "  &6♦ &aCurrent lives: &b%lives_number%"
+    - "  &6♦ &aCurrent life parts: &b%life_parts_number%"
+  Amount: 1
+
+#What should the max health item look like?
+#Placeholders: %max_health% - %min_health% - %current_max_health% - %time_till_next_max_health_long% - %time_till_next_max_health_short% - %time_till_next_max_health_digital%
+MaxHealthDisplay:
+  Material: "gold_nugget"
+  Name: "&6&lMax Health &einfo"
+  Lore:
+    - "  &6♦ &aNext half heart in: &b%time_till_next_max_health_short%"
+    - "  &6♦ &aCurrent max health: &b%current_max_health%"
+    - "  &6♦ &aMaximum max health: &b%max_health%"
+    - "  &6♦ &aMinimum max health: &b%min_health%"
+  Amount: 1
+
+#What should the revive button look like?
+ReviveDisplay:
+  Material: "totem_of_undying"
+  Name: "&eIs there someone you'd like to &6&lrevive&e?"
+  Lore:
+    - "&bClick to revive someone"
+  Amount: 1
+
+#What should the revive on cooldown button look like?
+#Placeholders: %time_till_next_revive_long% - %time_till_next_revive_short% - %time_till_next_revive_digital%
+ReviveOnCooldownDisplay:
+  Material: "orange_stained_glass_pane"
+  Name: "&eYour revive is still on cooldown"
+  Lore:
+    - "&bYou can revive in %time_till_next_revive_short%"
+  Amount: 1
+
+#What should the life part item look like?
+#Placeholders: %max_life_parts% - %life_parts_number% - %life_parts% - %time_till_next_life_part_long% - %time_till_next_life_part_short% - %time_till_next_life_part_digital%
+LifePartDisplay:
+  Material: "iron_nugget"
+  Name: "&6&lLife Parts &einfo"
+  Lore:
+    - "  &6♦ &aNext life part in: &b%time_till_next_life_part_short%"
+    - "  &6♦ &aCurrent life parts: &b%life_parts_number%"
+    - "  &6♦ &aMaximum life parts: &b%max_life_parts%"
+  Amount: 1
+
+#What should the previous bans button look like?
+#Placeholders: %total_death_bans%
+PreviousBansDisplay:
+  Material: "skeleton_skull"
+  Name: "&6&lPrevious bans &e(&b%total_death_bans%&e)"
+  Lore:
+    - "&bBrowse your previous bans"
+  Amount: 1
+
+
+#=======================--- BANS ---========================
+
+#What should the player skull item look like?
+#Placeholders:
+# %player% - %total_deaths% - %total_death_bans% - %last_ban_time_long% - %last_ban_time_short% - %last_ban_time_digital% -
+# %last_death_time_long% - %last_death_time_short% - %last_death_time_digital%
+PlayerDisplay:
+  #Will be overridden
+  Material: "player_head"
+  Name: "&6&l%player_name%"
+  Lore:
+    - "  &6♦ &aYou've died &b%total_deaths% &atimes on this server"
+    - "  &6♦ &aYour last death was &b%last_death_time_long% &aago"
+    - "  &6♦ &aYour last death ban was &b%last_ban_time_long% &aago"
+  #Will be overridden
+  Amount: 1
+
+#What should the ban items look like?
+#Placeholders:
+# %ban_number% - Number of the ban.
+# %ban_killer% - Killer that caused the ban.
+# %ban_in_combat_with% - In combat with while the ban happened.
+# %ban_damage_cause% - The raw damage cause that caused the ban E.g: block explosion.
+# %ban_damage_cause_random_message% - A random display message configured in config.yml of the damage cause that caused this ban.
+# %ban_damage_cause_type% - The damage cause type that caused the ban (block, entity, environment).
+# %ban_location% - The location of the player while being banned E.g: x:150, y:50, z:150 (world_name).
+# %ban_death_message% - The vanilla ban message shown to players E.g: player was shot by <player/mob>.
+# %ban_death_message_stripped% - The vanilla ban message shown to players without the player name E.g: was shot by <player/mob>.
+# %ban_time_long% - Ban time in long format E.g: 1 day, 20 hours, 30 minutes, 40 seconds.
+# %ban_time_short% - Ban time in short format E.g: 1 d, 20 h, 30 m, 40 s.
+# %ban_time_digital% - Ban time in digital format E.g: 1:20:30:40.
+# %ban_time_left_long% - Ban time left in long format E.g: 1 day, 20 hours, 30 minutes, 40 seconds.
+# %ban_time_left_short% - Ban time left in short format E.g: 1d, 20h, 30m, 40s.
+# %ban_time_left_digital% - Ban time left in digital format E.g: 1:20:30:40.
+# %ban_start_date_long% - Start date of ban of servers timezone in long format E.g: Saturday Jun 15, 2015 at 9:03:01 CEST.
+# %ban_start_date_medium% - Start date of ban of servers timezone in medium format E.g: Jun 15, 2015, 9:03 CEST.
+# %ban_start_date_short% - Start date of ban of servers timezone in short format E.g: 6/15/15, 9:03 CEST.
+# %ban_expiration_date_long% - Expiration date of ban of servers timezone in long format E.g: Saturday Jun 15, 2015 at 9:03:01 CEST.
+# %ban_expiration_date_medium% - Expiration date of ban of servers timezone in medium format E.g: Jun 15, 2015, 9:03 CEST.
+# %ban_expiration_date_short% - Expiration date of ban of servers timezone in short format E.g: 6/15/15, 9:03 CEST.
+# %ban_time_since_previous_death_ban_long% - Time since previous ban in long format E.g: 1 day, 20 hours, 30 minutes, 40 seconds.
+# %ban_time_since_previous_death_ban_short% - Time since previous ban in short format E.g: 1 d, 20 h, 30 m, 40 s.
+# %ban_time_since_previous_death_ban_digital% - Time since previous ban in digital format E.g: 1:20:30:40.
+# %ban_time_since_previous_death_long% - Time since previous death in long format E.g: 1 day, 20 hours, 30 minutes, 40 seconds.
+# %ban_time_since_previous_death_short% - Time since previous death in short format E.g: 1 d, 20 h, 30 m, 40 s.
+# %ban_time_since_previous_death_digital% - Time since previous death in digital format E.g: 1:20:30:40.
+BanDisplay:
+  Material: "conduit"
+  Name: "&eBan &6#&l%ban_number% &e(&6%ban_start_date_short%&e)"
+  Lore:
+    - "  &6♦ &aBan Time: &b%ban_time_short%"
+    - "  &6♦ &aExpiration Date: &b%ban_expiration_date_short%"
+    - "  &6♦ &aDamage Cause: &b%ban_damage_cause%"
+    - "  &6♦ &aDamage Cause Type: &b%ban_damage_cause_type%"
+    - "  &6♦ &aKiller: &b%ban_killer%"
+    - "  &6♦ &aIn Combat With: &b%ban_in_combat_with%"
+    - "  &6♦ &aLocation: &b%ban_location%"
+    - "  &6♦ &aDeath Message: &b%ban_death_message%"
+    - "  &6♦ &aPrevious death ban: &b%ban_time_since_previous_death_ban_short%"
+    - "  &6♦ &aPrevious death: &b%ban_time_since_previous_death_short%"
+  Amount: 1
+
+
+#======================--- REVIVE ---=======================
+
+#What should the confirmation revive button look like?
+#Placeholders: %player%
+ConfirmationDisplay:
+  Material: "emerald_block"
+  Name: "&aConfirm revive"
+  Lore:
+    - "&bClick to revive &3%player%"
+  Amount: 1
+
+#What should the cancellation revive button look like?
+#Placeholders: %player%
+CancellationDisplay:
+  Material: "barrier"
+  Name: "&cCancel revive"
+  Lore:
+    - "&bClick to cancel the revive"
+  Amount: 1

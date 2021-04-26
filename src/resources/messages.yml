@@ -13,46 +13,58 @@
 # +------------------------------------------------------+ #
 ############################################################
 
-#Ban reason when death banned.
-#%bantime_in_minutes%/%bantime_in_hours%/%bantime_in_days%/%ban_expire_date%/%playername%/%date_of_last_ban%/%total_bans%
-OnPlayerDeathBan: "&c&lYou have died\n\n&rYou have been banned until &b%ban_expire_date%&r (%bantime_in_hours% hours).\nYou have been banned &6%total_bans%&r time(s) in total!\nYour last ban was &b%date_of_last_ban%&r."
+#All ban messages may use the following placeholders:
+# %ban_damage_cause% - The raw damage cause that caused the ban E.g: block explosion.
+# %ban_damage_cause_random_message% - A random display message configured in config.yml of the damage cause that caused this ban.
+# %ban_damage_cause_type% - The damage cause type that caused the ban (block, entity, environment).
+# %ban_location% - The location of the player while being banned E.g: x:150, y:50, z:150 (world_name).
+# %ban_death_message% - The vanilla ban message shown to players E.g: player was shot by <player/mob>.
+# %ban_death_message_stripped% - The vanilla ban message shown to players without the player name E.g: was shot by <player/mob>.
+# %ban_time_long% - Ban time in long format E.g: 1 day, 20 hours, 30 minutes, 40 seconds.
+# %ban_time_short% - Ban time in short format E.g: 1 d, 20 h, 30 m, 40 s.
+# %ban_time_digital% - Ban time in digital format E.g: 1:20:30:40.
+# %ban_time_left_long% - Ban time left in long format E.g: 1 day, 20 hours, 30 minutes, 40 seconds.
+# %ban_time_left_short% - Ban time left in short format E.g: 1d, 20h, 30m, 40s.
+# %ban_time_left_digital% - Ban time left in digital format E.g: 1:20:30:40.
+# %ban_start_date_long% - Start date of ban of servers timezone in long format E.g: Saturday Jun 15, 2015 at 9:03:01 CEST.
+# %ban_start_date_medium% - Start date of ban of servers timezone in medium format E.g: Jun 15, 2015, 9:03 CEST.
+# %ban_start_date_short% - Start date of ban of servers timezone in short format E.g: 6/15/15, 9:03 CEST.
+# %ban_expiration_date_long% - Expiration date of ban of servers timezone in long format E.g: Saturday Jun 15, 2015 at 9:03:01 CEST.
+# %ban_expiration_date_medium% - Expiration date of ban of servers timezone in medium format E.g: Jun 15, 2015, 9:03 CEST.
+# %ban_expiration_date_short% - Expiration date of ban of servers timezone in short format E.g: 6/15/15, 9:03 CEST.
+# %ban_time_since_previous_death_ban_long% - Time since previous ban in long format E.g: 1 day, 20 hours, 30 minutes, 40 seconds.
+# %ban_time_since_previous_death_ban_short% - Time since previous ban in short format E.g: 1 d, 20 h, 30 m, 40 s.
+# %ban_time_since_previous_death_ban_digital% - Time since previous ban in digital format E.g: 1:20:30:40.
+# %ban_time_since_previous_death_long% - Time since previous death in long format E.g: 1 day, 20 hours, 30 minutes, 40 seconds.
+# %ban_time_since_previous_death_short% - Time since previous death in short format E.g: 1 d, 20 h, 30 m, 40 s.
+# %ban_time_since_previous_death_digital% - Time since previous death in digital format E.g: 1:20:30:40.
 
+#Ban message when banned due to a death containing no killer and not in combat with something.
+EnvironmentBanMessage: "&c&lYou've Died\n\n&r&fYou %ban_damage_cause_random_message% causing you to be banned.\nYou will be unbanned in &e%ban_time_left_long%&r."
 
-############################################################
-# +------------------------------------------------------+ #
-# |                        Lives                         | #
-# +------------------------------------------------------+ #
-############################################################
+#Ban message when banned due to a death containing no killer but in combat with a player/monster.
+#Placeholders: %ban_in_combat_with%
+EnvironmentWhileInCombatBanMessage: "&c&lYou've Died\n\n&r&fYou %ban_damage_cause_random_message% whilst trying to escape &b%ban_in_combat_with%&r causing you to be banned.\nYou will be unbanned in &e%ban_time_left_long%&r."
 
-#Send to player when player respawns.
-#Leave empty to disable.
-#%playername%/%total_lives%/%max_lives%
-OnPlayerRespawn: "You have &6&l%total_lives% out of %max_lives%&r lives left, use them wisely!"
+#Ban message when banned due to a death containing a killer and not in combat with something.
+#Placeholders: %ban_killer%
+EntityBanMessage: "&c&lYou've Died\n\n&rYou %ban_damage_cause_random_message% by &b%ban_killer%&r causing you to be banned.\nYou will be unbanned in &e%ban_time_left_long%&r."
 
-#Shown in tab menu footer per player.
-#Leave empty to disable.
-#%playername%/%total_lives%/%max_lives%/%total_parts%/%parts_needed_for_life%
-TabMenuFooter: "Lives : &6%total_lives%/%max_lives% &r| &6%total_parts%/%parts_needed_for_life% &r: Parts"
+#Ban message when banned due to a death containing a killer and in combat with another player/monster.
+#Placeholders: %ban_killer% - %ban_in_combat_with%
+EntityWhileInCombatBanMessage: "&c&lYou've Died\n\n&r&fYou %ban_damage_cause_random_message% by &b%ban_killer%&r whilst trying to escape &b%ban_in_combat_with%&r causing you to be banned.\nYou will be unbanned in &e%ban_time_left_long%&r."
 
-#Send to player when he/she receives an extra life.
-#Leave empty to disable.
-#%playername%/%lives_received%/%total_lives%/%max_lives%/%parts_received%/%parts_needed_for_life%
-OnExtraLife: "You have received %lives_received% lives and %parts_received% parts."
+#Ban message when banned due to reviving someone.
+#Placeholders: %ban_killer%
+ReviveBanMessage: "&c&lYou've Died\n\n&r&fYou have successfully revived &b%ban_killer%&r, but at what cost?\nYou will be unbanned in &e%ban_time_left_long%&r."
 
-#Send to all players when a player receives an extra life.
-#Leave empty to disable.
-#%playername%/%lives_received%/%total_lives%/%max_lives%/%parts_received%/%parts_needed_for_life%
-OnExtraLifeBroadcast: ""
+#Ban message when banned due to reviving someone while in combat with a player/monster.
+#Placeholders: %ban_killer% - %ban_in_combat_with%
+ReviveWhileInCombatBanMessage: "&c&lYou've Died\n\n&r&fYou have successfully revived &b%ban_killer%&r whilst trying to escape &b%ban_in_combat_with%&r, but at what cost?\nYou will be unbanned in &e%ban_time_left_long%&r."
 
-#Send to player when he/she reaches the maximum amount of lives.
-#Leave empty to disable.
-#%playername%/%lives_received%/%total_lives%/%max_lives%/%parts_received%/%parts_needed_for_life%
-OnMaxLives: "You have achieved the maximum amount of lives possible!"
-
-#Send to all players when a player reaches the maximum amount of lives.
-#Leave empty to disable.
-#%playername%/%lives_received%/%total_lives%/%max_lives%/%parts_received%/%parts_needed_for_life%
-OnMaxLivesBroadcast: ""
+#Ban message when banned due to combat logging.
+#Placeholders: %ban_combat_tagger%
+CombatLogBanMessage: "&c&lYou've Died\n\n&r&fYou have logged out while in combat with &b%ban_combat_tagger%&r causing you to die and be banned.\nYou will be unbanned in &e%ban_time_left_long%&r."
 
 
 ############################################################
@@ -61,36 +73,39 @@ OnMaxLivesBroadcast: ""
 # +------------------------------------------------------+ #
 ############################################################
 
-#Send to player when CombatTagWarningStyle: chat on being combat tagged.
-#%tagged_by%/%playername%/%tag_time%
-OnCombatTaggedChat: "You have been combat tagged by &c&l%tagged_by%&r."
+#How should the player be notified when combat tagged?
+#Multiple notification types can be used at once.
+#Placeholders: %combat_tagger% - %tag_time_left% - %total_tag_time%
+CombatTagNotifications:
+  #Text above health/food bar
+  Actionbar:
+    Enable: false
+    Configuration:
+      TextStart: "You have been combat tagged by &c&l%combat_tagger%&r."
+      TextEnd: "Your combat tag with &c&l%combat_tagger%&r ran out."
 
-#Send to player when CombatTagWarningStyle: chat on combat tag end.
-#%tagged_by%/%playername%/%tag_time%
-OnCombatTaggedChatEnd: "Your combat tag with &c&l%tagged_by%&r ran out..."
+  #Bossbar in upper middle of screen
+  Bossbar:
+    Enable: true
+    Configuration:
+      Text: "You have been combat tagged by &c&l%combat_tagger%&r, do &c&lnot&r log out!"
+      # -> blue/green/pink/purple/red/white/yellow
+      Color: "red"
+      # -> solid/segmented_6/segmented_10/segmented_12/segmented_20
+      Style: "solid"
 
-#Boss bar title send to player when CombatTagWarningStyle: bossbar on combat tagged.
-#%tagged_by%/%playername%/%tag_time%
-OnCombatTaggedBossBar: "You have been combat tagged by &c&l%tagged_by%&r, do &c&lnot&r log out!"
+  #Text in chat
+  Chat:
+    Enable: false
+    Configuration:
+      TextStart: "You have been combat tagged by &c&l%combat_tagger%&r."
+      TextEnd: "Your combat tag with &c&l%combat_tagger%&r ran out."
 
-
-############################################################
-# +------------------------------------------------------+ #
-# |                      Life Parts                      | #
-# +------------------------------------------------------+ #
-############################################################
-
-#Send to player when he/she receives an extra life part.
-#Leave empty to disable.
-#%playername%/%total_parts%/%parts_received%/%parts_needed_for_life%
-OnExtraPart: "You have achieved %total_parts%/%parts_needed_for_life% parts of a life."
-
-#Send to all players when a player receives an extra life part.
-#Leave empty to disable.
-#%playername%/%total_parts%/%parts_received%/%parts_needed_for_life%
-OnExtraPartBroadcast: ""
-
-#Send to player if PartsLostUponDeath: true and player dies.
-#Leave empty to disable.
-#%playername%/%parts_needed_for_life%
-OnPartsLostCauseDeath: "You have lost all of your life parts."
+  #Text in the middle of the screen
+  Title:
+    Enable: false
+    Configuration:
+      TitleStart: "Combat Tagged"
+      SubtitleStart: "You have been combat tagged by &c&l%combat_tagger%&r."
+      TitleEnd: "Combat Tagged"
+      SubtitleEnd: "Your combat tag with &c&l%combat_tagger%&r ran out."
