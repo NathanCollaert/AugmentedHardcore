@@ -4,10 +4,10 @@ import com.backtobedrock.augmentedhardcore.domain.Ban;
 import com.backtobedrock.augmentedhardcore.domain.data.ServerData;
 import com.backtobedrock.augmentedhardcore.mappers.AbstractMapper;
 import com.backtobedrock.augmentedhardcore.mappers.ban.MySQLBanMapper;
-import javafx.util.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
+import org.javatuples.Pair;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

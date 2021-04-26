@@ -159,8 +159,8 @@ public class CommandAugmentedHardcore extends AbstractCommand {
         if (this.sender == null || (player != null && this.sender.getUniqueId() != player.getUniqueId())) {
             this.cs.sendMessage(senderSuccessMessage);
         }
-        if (player != null) {
-            ((Player) player).sendMessage(receiverSuccessMessage);
+        if (player != null && player.getPlayer() != null) {
+            player.getPlayer().sendMessage(receiverSuccessMessage);
         }
     }
 }

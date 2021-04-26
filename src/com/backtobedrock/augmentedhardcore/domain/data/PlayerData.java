@@ -19,7 +19,6 @@ import com.backtobedrock.augmentedhardcore.utils.BanUtils;
 import com.backtobedrock.augmentedhardcore.utils.EventUtils;
 import com.backtobedrock.augmentedhardcore.utils.MessageUtils;
 import com.backtobedrock.augmentedhardcore.utils.PlayerUtils;
-import javafx.util.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.attribute.Attribute;
@@ -30,8 +29,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.javatuples.Pair;
 
-import java.net.InetSocketAddress;
 import java.util.*;
 
 public class PlayerData {
@@ -83,8 +82,7 @@ public class PlayerData {
         this.setLifeParts(lifeParts);
         if (player.getPlayer() != null) {
             if (player.getPlayer().getAddress() != null) {
-                InetSocketAddress address = player.getPlayer().getAddress();
-                lastKnownIp = address.getHostName() == null ? address.getHostString() : address.getHostName();
+                lastKnownIp = player.getPlayer().getAddress().getAddress().toString().replaceFirst("/", "");
             }
         }
         this.lastKnownIp = lastKnownIp;
@@ -543,7 +541,7 @@ public class PlayerData {
             Pair<Integer, Ban> banPair = serverData.getBan(this.player);
 
             if (banPair != null) {
-                new BanExpiration(this, banPair.getValue()).start();
+                new BanExpiration(this, banPair.getValue1()).start();
                 return;
             }
 

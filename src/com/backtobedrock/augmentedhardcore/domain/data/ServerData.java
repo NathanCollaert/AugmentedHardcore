@@ -2,12 +2,12 @@ package com.backtobedrock.augmentedhardcore.domain.data;
 
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.Ban;
-import javafx.util.Pair;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.javatuples.Pair;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +18,7 @@ public class ServerData {
 
     //serializable
     private final Server server;
-    private final Map<UUID, Pair<Integer, Ban>> ongoingBans;
+    private Map<UUID, Pair<Integer, Ban>> ongoingBans;
     private int totalBans;
 
     public ServerData() {
@@ -72,6 +72,10 @@ public class ServerData {
     }
 
     public void addBan(Player player, Pair<Integer, Ban> ban) {
+        if (this.ongoingBans == null) {
+            this.ongoingBans = new HashMap<>();
+        }
+
         this.ongoingBans.put(player.getUniqueId(), ban);
         this.totalBans++;
         this.plugin.getServerRepository().updateServerData(this);
@@ -98,7 +102,7 @@ public class ServerData {
         Map<String, Object> cOngoingBans = new HashMap<>();
         this.ongoingBans.forEach((key, value) -> {
             Map<Integer, Object> cOngoingBansPlayer = new HashMap<>();
-            cOngoingBansPlayer.put(value.getKey(), value.getValue().serialize());
+            cOngoingBansPlayer.put(value.getValue0(), value.getValue1().serialize());
             cOngoingBans.put(key.toString(), cOngoingBansPlayer);
         });
         map.put("OngoingBans", cOngoingBans);

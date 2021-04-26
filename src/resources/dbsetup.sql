@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS ah_player
 (
     player_uuid CHAR(36) NOT NULL,
     last_known_name VARCHAR(16) NOT NULL,
-    last_known_ip VARCHAR(32),
+    last_known_ip VARCHAR(39),
     lives INT UNSIGNED NOT NULL,
     life_parts INT UNSIGNED NOT NULL,
     spectator_banned TINYINT NOT NULL,
