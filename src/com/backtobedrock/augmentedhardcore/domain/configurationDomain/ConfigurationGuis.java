@@ -19,6 +19,8 @@ public class ConfigurationGuis {
     private final Display previousPageDisplay;
     private final Display pageInformationDisplay;
     private final Display previousGuiDisplay;
+    private final Display confirmationDisplay;
+    private final Display cancellationDisplay;
     private final Display livesAndLifePartsDisplay;
     private final Display maxHealthDisplay;
     private final Display reviveDisplay;
@@ -26,11 +28,11 @@ public class ConfigurationGuis {
     private final Display lifePartDisplay;
     private final Display previousBansDisplay;
     private final Display PlayerDisplay;
+    private final Display serverDisplay;
     private final Display banDisplay;
-    private final Display confirmationDisplay;
-    private final Display cancellationDisplay;
+    private final Display revivingDisplay;
 
-    public ConfigurationGuis(Display fillerDisplay, Display accentDisplay, Display loadingDisplay, Display notAvailableDisplay, Display nextPageDisplay, Display previousPageDisplay, Display pageInformationDisplay, Display previousGuiDisplay, Display livesAndLifePartsDisplay, Display maxHealthDisplay, Display reviveDisplay, Display reviveOnCooldownDisplay, Display lifePartDisplay, Display previousBansDisplay, Display playerDisplay, Display banDisplay, Display confirmationDisplay, Display cancellationDisplay) {
+    public ConfigurationGuis(Display fillerDisplay, Display accentDisplay, Display loadingDisplay, Display notAvailableDisplay, Display nextPageDisplay, Display previousPageDisplay, Display pageInformationDisplay, Display previousGuiDisplay, Display confirmationDisplay, Display cancellationDisplay, Display livesAndLifePartsDisplay, Display maxHealthDisplay, Display reviveDisplay, Display reviveOnCooldownDisplay, Display lifePartDisplay, Display previousBansDisplay, Display playerDisplay, Display serverDisplay, Display banDisplay, Display revivingDisplay) {
         this.fillerDisplay = fillerDisplay;
         this.accentDisplay = accentDisplay;
         this.loadingDisplay = loadingDisplay;
@@ -39,6 +41,8 @@ public class ConfigurationGuis {
         this.previousPageDisplay = previousPageDisplay;
         this.pageInformationDisplay = pageInformationDisplay;
         this.previousGuiDisplay = previousGuiDisplay;
+        this.confirmationDisplay = confirmationDisplay;
+        this.cancellationDisplay = cancellationDisplay;
         this.livesAndLifePartsDisplay = livesAndLifePartsDisplay;
         this.maxHealthDisplay = maxHealthDisplay;
         this.reviveDisplay = reviveDisplay;
@@ -46,9 +50,9 @@ public class ConfigurationGuis {
         this.lifePartDisplay = lifePartDisplay;
         this.previousBansDisplay = previousBansDisplay;
         this.PlayerDisplay = playerDisplay;
+        this.serverDisplay = serverDisplay;
         this.banDisplay = banDisplay;
-        this.confirmationDisplay = confirmationDisplay;
-        this.cancellationDisplay = cancellationDisplay;
+        this.revivingDisplay = revivingDisplay;
     }
 
     public static ConfigurationGuis deserialize(ConfigurationSection section) {
@@ -65,6 +69,8 @@ public class ConfigurationGuis {
                 "PreviousPageDisplay",
                 "PageInformationDisplay",
                 "PreviousGuiDisplay",
+                "ConfirmationDisplay",
+                "CancellationDisplay",
                 "LivesAndLifePartsDisplay",
                 "MaxHealthDisplay",
                 "ReviveDisplay",
@@ -72,9 +78,9 @@ public class ConfigurationGuis {
                 "LifePartDisplay",
                 "PreviousBansDisplay",
                 "PlayerDisplay",
+                "ServerDisplay",
                 "BanDisplay",
-                "ConfirmationDisplay",
-                "CancellationDisplay"
+                "RevivingDisplay"
         )) {
             ConfigurationSection displaySection = section.getConfigurationSection(e);
             if (displaySection != null) {
@@ -98,6 +104,8 @@ public class ConfigurationGuis {
                 cDisplays.get("PreviousPageDisplay"),
                 cDisplays.get("PageInformationDisplay"),
                 cDisplays.get("PreviousGuiDisplay"),
+                cDisplays.get("ConfirmationDisplay"),
+                cDisplays.get("CancellationDisplay"),
                 cDisplays.get("LivesAndLifePartsDisplay"),
                 cDisplays.get("MaxHealthDisplay"),
                 cDisplays.get("ReviveDisplay"),
@@ -105,9 +113,9 @@ public class ConfigurationGuis {
                 cDisplays.get("LifePartDisplay"),
                 cDisplays.get("PreviousBansDisplay"),
                 cDisplays.get("PlayerDisplay"),
+                cDisplays.get("ServerDisplay"),
                 cDisplays.get("BanDisplay"),
-                cDisplays.get("ConfirmationDisplay"),
-                cDisplays.get("CancellationDisplay")
+                cDisplays.get("RevivingDisplay")
         );
     }
 
@@ -181,5 +189,13 @@ public class ConfigurationGuis {
 
     public Display getReviveOnCooldownDisplay() {
         return reviveOnCooldownDisplay;
+    }
+
+    public Display getServerDisplay() {
+        return serverDisplay;
+    }
+
+    public Display getRevivingDisplay() {
+        return revivingDisplay;
     }
 }

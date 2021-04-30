@@ -143,7 +143,7 @@ public class MySQLBanMapper extends AbstractMapper implements IBanMapper {
     @Override
     public void deleteBan(UUID uuid, Integer id) {
         CompletableFuture.runAsync(() -> {
-            String sql = "DELETE FROM ah_ban" +
+            String sql = "DELETE FROM ah_ban " +
                     "WHERE ban_id = ? AND player_uuid = ?;";
 
             try (Connection connection = this.database.getDataSource().getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {

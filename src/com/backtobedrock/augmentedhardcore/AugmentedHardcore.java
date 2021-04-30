@@ -10,6 +10,7 @@ import com.backtobedrock.augmentedhardcore.guis.AbstractGui;
 import com.backtobedrock.augmentedhardcore.guis.GuiMyStats;
 import com.backtobedrock.augmentedhardcore.repositories.PlayerRepository;
 import com.backtobedrock.augmentedhardcore.repositories.ServerRepository;
+import com.backtobedrock.augmentedhardcore.runnables.UpdateChecker;
 import com.backtobedrock.augmentedhardcore.utils.Metrics;
 import com.backtobedrock.augmentedhardcore.utils.PlaceholderUtils;
 import com.backtobedrock.augmentedhardcore.utils.UpdateUtils;
@@ -40,17 +41,26 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
     private final Map<Class<?>, AbstractEventListener> activeEventListeners = new HashMap<>();
     private final Map<UUID, AbstractGui> openGuis = new HashMap<>();
     private boolean stopping = false;
+
     //configurations
     private Commands commands;
     private Configurations configurations;
     private Messages messages;
+
     //repositories
     private PlayerRepository playerRepository;
     private ServerRepository serverRepository;
 
+    //runnables
+    private UpdateChecker updateChecker;
+
     @Override
     public void onEnable() {
         this.initialize();
+
+        //update checker
+        this.updateChecker = new UpdateChecker();
+        this.updateChecker.start();
 
         //bstats metrics
         Metrics metrics = new Metrics(this, 10843);
@@ -225,5 +235,9 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
         if (gui instanceof GuiMyStats) {
             ((GuiMyStats) gui).getPlayerData().unregisterObserver(player);
         }
+    }
+
+    public UpdateChecker getUpdateChecker() {
+        return updateChecker;
     }
 }

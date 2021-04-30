@@ -1,6 +1,7 @@
 package com.backtobedrock.augmentedhardcore.guis;
 
 import com.backtobedrock.augmentedhardcore.domain.data.PlayerData;
+import com.backtobedrock.augmentedhardcore.domain.enums.Permission;
 import com.backtobedrock.augmentedhardcore.domain.enums.TimePattern;
 import com.backtobedrock.augmentedhardcore.guis.clickActions.ClickActionOpenBansGui;
 import com.backtobedrock.augmentedhardcore.guis.clickActions.ClickActionOpenPlayerSelectionAnvilGui;
@@ -88,7 +89,7 @@ public class GuiMyStats extends AbstractGui {
 
         if (!this.plugin.getConfigurations().getReviveConfiguration().isUseRevive() || this.isOther) {
             icon = new Icon(this.plugin.getConfigurations().getGuisConfiguration().getNotAvailableDisplay().getItem(), Collections.emptyList());
-        } else if (this.playerData.getTimeTillNextRevive() > 0) {
+        } else if (this.playerData.getTimeTillNextRevive() > 0 && !this.sender.hasPermission(Permission.BYPASS_REVIVECOOLDOWN.getPermissionString())) {
             Map<String, String> placeholders = new HashMap<String, String>() {{
                 put("time_till_next_revive_long", MessageUtils.getTimeFromTicks(playerData.getTimeTillNextRevive(), TimePattern.LONG));
                 put("time_till_next_revive_short", MessageUtils.getTimeFromTicks(playerData.getTimeTillNextRevive(), TimePattern.SHORT));

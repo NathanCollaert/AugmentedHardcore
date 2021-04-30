@@ -37,6 +37,7 @@ public class PlayerData {
     //misc
     private final AugmentedHardcore plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
     private final OfflinePlayer player;
+
     //helpers
     private final List<AbstractPlaytime> playtime = new ArrayList<>();
     private final Map<UUID, Map<Class<?>, IObserver>> observers;
@@ -62,7 +63,7 @@ public class PlayerData {
                 JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getLivesAtStart(),
                 JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getLifePartsAtStart(),
                 false,
-                JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getReviveConfiguration().getTimeBetweenRevives(),
+                JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getReviveConfiguration().isReviveOnFirstJoin() ? 0L : JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getReviveConfiguration().getTimeBetweenRevives(),
                 JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getPlaytimePerLifePart(),
                 JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getMaxHealthConfiguration().getPlaytimePerHalfHeart(),
                 new TreeMap<>()
@@ -70,7 +71,6 @@ public class PlayerData {
     }
 
     public PlayerData(OfflinePlayer player, String lastKnownIp, int lives, int lifeParts, boolean spectatorBanned, long timeTillNextRevive, long timeTillNextLifePart, long timeTillNextMaxHealth, NavigableMap<Integer, Ban> bans) {
-        //serializable
         this.player = player;
         this.bans = bans;
         this.observers = new HashMap<>();
@@ -209,7 +209,29 @@ public class PlayerData {
 
         this.unCombatTag();
 
+        this.respawn();
+
         this.plugin.getPlayerRepository().updatePlayerData(this);
+    }
+
+    private void respawn() {
+        if (this.player.getPlayer() == null) {
+            return;
+        }
+
+        if (!this.player.getPlayer().isDead()) {
+            return;
+        }
+
+        if (!this.plugin.getConfigurations().getMiscellaneousConfiguration().isDeathScreen()) {
+            Bukkit.getScheduler().runTaskLater(this.plugin, () -> {
+                if (this.player.getPlayer() == null) {
+                    return;
+                }
+
+                this.player.getPlayer().spigot().respawn();
+            }, 1L);
+        }
     }
 
     public Killer getCombatTagger() {
@@ -349,7 +371,6 @@ public class PlayerData {
 
         //ban player
         if (ban.getBanTime() > 0) {
-            BanUtils.deathBan(this, ban);
             this.plugin.getServerRepository().getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> {
                 //add ban to player and server data
                 serverData.addBan(this.player.getPlayer(), this.addBan(ban));
@@ -365,6 +386,8 @@ public class PlayerData {
             if (!this.plugin.getConfigurations().getDeathBanConfiguration().getCommandsOnDeathBan().isEmpty() && this.player.getName() != null) {
                 this.plugin.getConfigurations().getDeathBanConfiguration().getCommandsOnDeathBan().forEach(e -> Bukkit.getScheduler().runTask(this.plugin, () -> Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), e.replaceAll("%player%", this.player.getName()))));
             }
+
+            BanUtils.deathBan(this, ban);
         }
     }
 
@@ -537,6 +560,8 @@ public class PlayerData {
             return;
         }
 
+        this.respawn();
+
         this.plugin.getServerRepository().getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> {
             Pair<Integer, Ban> banPair = serverData.getBan(this.player);
 
@@ -568,7 +593,7 @@ public class PlayerData {
                 this.playtime.add(new PlaytimeMaxHealth(this));
             }
 
-            if (this.plugin.getConfigurations().getReviveConfiguration().isUseRevive() && this.plugin.getConfigurations().getReviveConfiguration().getTimeBetweenRevives() > 0 && !this.isSpectatorBanned()) {
+            if (this.plugin.getConfigurations().getReviveConfiguration().isUseRevive() && this.plugin.getConfigurations().getReviveConfiguration().getTimeBetweenRevives() > 0 && !this.isSpectatorBanned() && !this.player.getPlayer().hasPermission(Permission.BYPASS_REVIVECOOLDOWN.getPermissionString())) {
                 this.playtime.add(new PlaytimeRevive(this));
             }
 
@@ -815,7 +840,7 @@ public class PlayerData {
         }
 
         //check if revive on cooldown
-        if (this.timeTillNextRevive > 0) {
+        if (this.timeTillNextRevive > 0 && !this.player.getPlayer().hasPermission(Permission.BYPASS_REVIVECOOLDOWN.getPermissionString())) {
             this.player.getPlayer().sendMessage(String.format("§cYou cannot revive %s for another %s.", reviving.getName(), MessageUtils.getTimeFromTicks(this.getTimeTillNextRevive(), TimePattern.LONG)));
             return false;
         }
@@ -934,5 +959,17 @@ public class PlayerData {
 
     public void setSpectatorBanned(boolean spectatorBanned) {
         this.spectatorBanned = spectatorBanned;
+    }
+
+    public void reset() {
+        this.setLives(JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getLivesAtStart());
+        this.setLifeParts(JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getLifePartsAtStart());
+        this.setTimeTillNextRevive(JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getReviveConfiguration().isReviveOnFirstJoin() ? 0L : JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getReviveConfiguration().getTimeBetweenRevives());
+        this.setTimeTillNextLifePart(JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getPlaytimePerLifePart());
+        this.setTimeTillNextMaxHealth(JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getMaxHealthConfiguration().getPlaytimePerHalfHeart());
+        this.bans.clear();
+        BanUtils.unDeathBan(this);
+        this.plugin.getPlayerRepository().deletePlayerData(this.player);
+        this.plugin.getPlayerRepository().updatePlayerData(this);
     }
 }

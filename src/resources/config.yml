@@ -543,13 +543,16 @@ DisableReviveInWorlds: [ ]
 #- When a player is healed over time by a potion or spell
 DisableArtificialRegeneration: false
 
-#Should a lightning strike at the players position on death?
+#Should a lightning strike be spawned at the players position on death?
 LightningOnDeath: false
 
 #Should any commands be executed on death?
 #Placeholders: %player%
 CommandsOnDeath: [ ]
 #- "minecraft:advancement revoke %player% everything"
+
+#Should the death screen be shown on death?
+DeathScreen: true
 
 
 ############################################################
@@ -621,6 +624,25 @@ PreviousGuiDisplay:
   Amount: 1
 
 
+#===================--- CONFIRMATION ---====================
+
+#What should the confirmation button look like?
+ConfirmationDisplay:
+  Material: "emerald_block"
+  Name: "&aConfirm"
+  Lore:
+    - "&bClick to confirm"
+  Amount: 1
+
+#What should the cancellation button look like?
+CancellationDisplay:
+  Material: "barrier"
+  Name: "&cCancel"
+  Lore:
+    - "&bClick to cancel"
+  Amount: 1
+
+
 #=======================--- INFO ---========================
 
 #What should the lives and life parts item look like?
@@ -685,19 +707,29 @@ PreviousBansDisplay:
 
 #=======================--- BANS ---========================
 
-#What should the player skull item look like?
+#What should the player data icon look like?
 #Placeholders:
 # %player% - %total_deaths% - %total_death_bans% - %last_ban_time_long% - %last_ban_time_short% - %last_ban_time_digital% -
 # %last_death_time_long% - %last_death_time_short% - %last_death_time_digital%
 PlayerDisplay:
-  #Will be overridden
+  #Will be overridden to player skull
   Material: "player_head"
-  Name: "&6&l%player_name%"
+  Name: "&6&l%player%"
   Lore:
     - "  &6♦ &aYou've died &b%total_deaths% &atimes on this server"
     - "  &6♦ &aYour last death was &b%last_death_time_long% &aago"
     - "  &6♦ &aYour last death ban was &b%last_ban_time_long% &aago"
   #Will be overridden
+  Amount: 1
+
+#What should the server data icon look like?
+#Placeholders: %total_death_bans% - %total_ongoing_death_bans%
+ServerDisplay:
+  Material: "nether_star"
+  Name: "&6&lOngoing death bans"
+  Lore:
+    - "  &6♦ &aThe server currently has &b%total_ongoing_death_bans% &adeath bans ongoing."
+    - "  &6♦ &aThe server has &b%total_death_bans% &adeath bans in total."
   Amount: 1
 
 #What should the ban items look like?
@@ -748,20 +780,12 @@ BanDisplay:
 
 #======================--- REVIVE ---=======================
 
-#What should the confirmation revive button look like?
-#Placeholders: %player%
-ConfirmationDisplay:
-  Material: "emerald_block"
-  Name: "&aConfirm revive"
+#What should the player info icon look like in the revive GUI?
+#Placeholders: %player% - %lives_number%
+RevivingDisplay:
+  #Will be overridden to the player head
+  Material: "player_head"
+  Name: "&6&l%player%"
   Lore:
-    - "&bClick to revive &3%player%"
-  Amount: 1
-
-#What should the cancellation revive button look like?
-#Placeholders: %player%
-CancellationDisplay:
-  Material: "barrier"
-  Name: "&cCancel revive"
-  Lore:
-    - "&bClick to cancel the revive"
+    - "  &6♦ &aLives left: &b%lives_number%"
   Amount: 1

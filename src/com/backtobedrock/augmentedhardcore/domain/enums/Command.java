@@ -24,7 +24,9 @@ public enum Command {
     LIFEPARTS(Permission.LIFEPARTS, null, Collections.emptyList(), Collections.singletonList("player"), "Check how many life parts you currently own"),
     LIVES(Permission.LIVES, null, Collections.emptyList(), Collections.singletonList("player"), "Check how many lives you currently own"),
     DEATHBANS(Permission.DEATHBANS, null, Collections.emptyList(), Collections.singletonList("player"), "Check your previous death bans"),
-    DEATHBANRESET(Permission.BYPASS_BAN_SPECTATOR, null, Collections.emptyList(), Collections.emptyList(), "Reset your game mode when death banned to spectator");
+    DEATHBANRESET(Permission.BYPASS_BAN_SPECTATOR, null, Collections.emptyList(), Collections.emptyList(), "Reset your game mode when death banned to spectator"),
+    SERVERDEATHBANS(Permission.SERVERDEATHBANS, null, Collections.emptyList(), Collections.emptyList(), "Check the current ongoing death bans on the server"),
+    RESET(Permission.RESET, AUGMENTEDHARDCORE, Collections.singletonList("player"), Collections.emptyList(), "Reset the statistics of a player to their initial state");
 
     private final Permission permission;
     private final Command parent;

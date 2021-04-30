@@ -105,7 +105,7 @@ public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
     @Override
     public void deleteServerData() {
         CompletableFuture.runAsync(() -> {
-            String sql = "DELETE FROM ah_server" +
+            String sql = "DELETE FROM ah_server " +
                     "WHERE server_ip = ? AND server_port = ?;";
 
             try (Connection connection = this.database.getDataSource().getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {

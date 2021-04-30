@@ -14,6 +14,7 @@ commands:
   undeathban:
     aliases:
       - udb
+    permission:
   deathbanreset:
     aliases:
       - dbr
@@ -40,6 +41,9 @@ commands:
       - db
   lives:
     usage: /<command>
+  serverdeathbans:
+    aliases:
+      - sdb
 permissions:
   #BYPASSES
   augmentedhardcore.bypass.ban:
@@ -62,6 +66,8 @@ permissions:
     default: false
   augmentedhardcore.bypass.artificialregeneration:
     default: false
+  augmentedhardcore.bypass.revivecooldown:
+    default: false
   #GAINS
   augmentedhardcore.gain.revive.death:
     default: true
@@ -69,6 +75,8 @@ permissions:
     default: true
   #COMMANDS
   augmentedhardcore.help:
+    default: op
+  augmentedhardcore.reset:
     default: op
   augmentedhardcore.revive:
     default: op
@@ -101,6 +109,8 @@ permissions:
   augmentedhardcore.deathbans:
     default: op
   augmentedhardcore.deathbans.other:
+    default: op
+  augmentedhardcore.serverdeathbans:
     default: op
   augmentedhardcore.reload:
     default: op

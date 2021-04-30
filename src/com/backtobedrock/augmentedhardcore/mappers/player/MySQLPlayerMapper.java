@@ -128,8 +128,8 @@ public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
     @Override
     public void deletePlayerData(OfflinePlayer player) {
         CompletableFuture.runAsync(() -> {
-            String sql = "DELETE FROM ah_player" +
-                    "WHERE player_uuid = ?;";
+            String sql = "DELETE FROM ah_player " +
+                    "WHERE `player_uuid` = ?;";
 
             try (Connection connection = this.database.getDataSource().getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 preparedStatement.setString(1, player.getUniqueId().toString());
