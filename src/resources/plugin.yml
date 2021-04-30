@@ -12,36 +12,45 @@ commands:
     aliases:
       - ah
   undeathban:
+    permission: augmentedhardcore.undeathban
     aliases:
       - udb
-    permission:
   deathbanreset:
+    permission: augmentedhardcore.bypass.ban.spectator
     aliases:
       - dbr
   revive:
+    permission: augmentedhardcore.revive
     aliases:
       - rev
   mystats:
+    permission: augmentedhardcore.mystats
     aliases:
       - ms
   nextlifepart:
+    permission: augmentedhardcore.nextlifepart
     aliases:
       - nlp
   nextmaxhealth:
+    permission: augmentedhardcore.nextmaxhealth
     aliases:
       - nmh
   nextrevive:
+    permission: augmentedhardcore.nextrevive
     aliases:
       - nr
   lifeparts:
+    permission: augmentedhardcore.lifeparts
     aliases:
       - lp
   deathbans:
+    permission: augmentedhardcore.deathbans
     aliases:
       - db
   lives:
-    usage: /<command>
+    permission: augmentedhardcore.lives
   serverdeathbans:
+    permission: augmentedhardcore.serverdeathbans
     aliases:
       - sdb
 permissions:
