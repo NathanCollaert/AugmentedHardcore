@@ -31,14 +31,14 @@ public class CommandDeathBans extends AbstractCommand {
         }
 
         if (this.args.length == 0) {
-            this.openGui(this.sender);
+            this.runCommand(this.sender);
         } else {
             this.hasPlayedBefore(this.args[0]).thenAcceptAsync(bool -> {
                 if (!bool) {
                     return;
                 }
 
-                this.openGui(this.target);
+                this.runCommand(this.target);
             }).exceptionally(ex -> {
                 ex.printStackTrace();
                 return null;
@@ -46,7 +46,7 @@ public class CommandDeathBans extends AbstractCommand {
         }
     }
 
-    private void openGui(OfflinePlayer player) {
+    private void runCommand(OfflinePlayer player) {
         this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(playerData -> PlayerUtils.openInventory(this.sender, new GuiPlayerDeathBans(playerData))).exceptionally(ex -> {
             ex.printStackTrace();
             return null;

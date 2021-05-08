@@ -20,6 +20,7 @@ import com.backtobedrock.augmentedhardcore.utils.EventUtils;
 import com.backtobedrock.augmentedhardcore.utils.MessageUtils;
 import com.backtobedrock.augmentedhardcore.utils.PlayerUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -41,14 +42,16 @@ public class PlayerData {
     //helpers
     private final List<AbstractPlaytime> playtime = new ArrayList<>();
     private final Map<UUID, Map<Class<?>, IObserver>> observers;
-    //serializable
-    private final String lastKnownIp;
-    private final NavigableMap<Integer, Ban> bans;
     private BanExpiration banExpiration;
     private List<AbstractCombatTag> combatTag = new ArrayList<>();
     private boolean kicked = false;
     private boolean combatLogged = false;
-    private Killer reviving = null;
+    private Killer combatTagger;
+    private Killer reviving;
+
+    //serializable
+    private final String lastKnownIp;
+    private final NavigableMap<Integer, Ban> bans;
     private int lives;
     private int lifeParts;
     private long timeTillNextRevive;
@@ -234,13 +237,6 @@ public class PlayerData {
         }
     }
 
-    public Killer getCombatTagger() {
-        if (!this.combatTag.isEmpty()) {
-            return this.combatTag.get(0).getTagger();
-        }
-        return null;
-    }
-
     private void loseMaxHealth(double amount) {
         if (this.player.getPlayer() == null) {
             return;
@@ -371,10 +367,7 @@ public class PlayerData {
 
         //ban player
         if (ban.getBanTime() > 0) {
-            this.plugin.getServerRepository().getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> {
-                //add ban to player and server data
-                serverData.addBan(this.player.getPlayer(), this.addBan(ban));
-            }).exceptionally(ex -> {
+            this.plugin.getServerRepository().getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> serverData.addBan(this.player.getUniqueId(), this.addBan(ban))).exceptionally(ex -> {
                 ex.printStackTrace();
                 return null;
             });
@@ -528,7 +521,7 @@ public class PlayerData {
         }
 
         //check if combat tag self enabled and if self harming
-        if (!this.plugin.getConfigurations().getCombatTagConfiguration().isCombatTagSelf() && tagger.getName().equals(player.getName())) {
+        if (!this.plugin.getConfigurations().getCombatTagConfiguration().isCombatTagSelf() && tagger.getName().equals(this.player.getName())) {
             return;
         }
 
@@ -538,10 +531,10 @@ public class PlayerData {
         }
 
         if (!this.combatTag.isEmpty()) {
-            new ArrayList<>(this.combatTag).forEach(e -> e.restart(tagger));
+            this.combatTag.forEach(e -> e.restart(tagger));
         } else {
             this.combatTag = this.plugin.getMessages().getCombatTagNotificationsConfiguration(this.player.getPlayer(), this, tagger);
-            new ArrayList<>(this.combatTag).forEach(AbstractCombatTag::start);
+            this.combatTag.forEach(AbstractCombatTag::start);
         }
     }
 
@@ -560,10 +553,15 @@ public class PlayerData {
             return;
         }
 
+        //Get rid of death screen after death ban if disabled
         this.respawn();
 
         this.plugin.getServerRepository().getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> {
             Pair<Integer, Ban> banPair = serverData.getBan(this.player);
+
+            if (this.isSpectatorBanned() && this.player.getPlayer().getGameMode() != GameMode.SPECTATOR) {
+                Bukkit.getScheduler().runTask(this.plugin, () -> this.player.getPlayer().setGameMode(GameMode.SPECTATOR));
+            }
 
             if (banPair != null) {
                 new BanExpiration(this, banPair.getValue1()).start();
@@ -894,16 +892,8 @@ public class PlayerData {
         return map;
     }
 
-    public boolean isCombatTagged() {
-        return !this.combatTag.isEmpty();
-    }
-
     public void onKick() {
         this.kicked = true;
-    }
-
-    public boolean isCombatLogged() {
-        return combatLogged;
     }
 
     public boolean isReviving() {
@@ -971,5 +961,25 @@ public class PlayerData {
         BanUtils.unDeathBan(this);
         this.plugin.getPlayerRepository().deletePlayerData(this.player);
         this.plugin.getPlayerRepository().updatePlayerData(this);
+    }
+
+    public boolean isCombatLogged() {
+        return combatLogged;
+    }
+
+    public void setCombatLogged(boolean combatLogged) {
+        this.combatLogged = combatLogged;
+    }
+
+    public boolean isCombatTagged() {
+        return this.combatTagger != null;
+    }
+
+    public Killer getCombatTagger() {
+        return combatTagger;
+    }
+
+    public void setCombatTagger(Killer combatTagger) {
+        this.combatTagger = combatTagger;
     }
 }

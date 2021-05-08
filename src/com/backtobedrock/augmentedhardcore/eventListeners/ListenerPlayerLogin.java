@@ -3,7 +3,6 @@ package com.backtobedrock.augmentedhardcore.eventListeners;
 import com.backtobedrock.augmentedhardcore.domain.Ban;
 import com.backtobedrock.augmentedhardcore.domain.data.ServerData;
 import com.backtobedrock.augmentedhardcore.domain.enums.Permission;
-import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -31,9 +30,6 @@ public class ListenerPlayerLogin extends AbstractEventListener {
         }
 
         if (hasPermission) {
-            if (player.getGameMode() != GameMode.SPECTATOR) {
-                player.setGameMode(GameMode.SPECTATOR);
-            }
             event.allow();
             return;
         }

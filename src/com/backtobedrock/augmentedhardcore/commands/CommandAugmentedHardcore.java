@@ -86,7 +86,13 @@ public class CommandAugmentedHardcore extends AbstractCommand {
                         );
 
                         this.plugin.getPlayerRepository().updatePlayerData(playerData);
+                    }).exceptionally(ex -> {
+                        ex.printStackTrace();
+                        return null;
                     });
+                }).exceptionally(ex -> {
+                    ex.printStackTrace();
+                    return null;
                 });
                 break;
             case SETLIVES:
@@ -109,7 +115,13 @@ public class CommandAugmentedHardcore extends AbstractCommand {
                         );
 
                         this.plugin.getPlayerRepository().updatePlayerData(playerData);
+                    }).exceptionally(ex -> {
+                        ex.printStackTrace();
+                        return null;
                     });
+                }).exceptionally(ex -> {
+                    ex.printStackTrace();
+                    return null;
                 });
                 break;
             case SETLIFEPARTS:
@@ -132,7 +144,13 @@ public class CommandAugmentedHardcore extends AbstractCommand {
                         );
 
                         this.plugin.getPlayerRepository().updatePlayerData(playerData);
+                    }).exceptionally(ex -> {
+                        ex.printStackTrace();
+                        return null;
                     });
+                }).exceptionally(ex -> {
+                    ex.printStackTrace();
+                    return null;
                 });
                 break;
             case RESET:
@@ -172,13 +190,12 @@ public class CommandAugmentedHardcore extends AbstractCommand {
     }
 
     private void sendSuccessMessages(String receiverSuccessMessage, String senderSuccessMessage) {
-        if ((!this.target.getUniqueId().toString().equals(((Player) this.cs).getUniqueId().toString()) || receiverSuccessMessage.isEmpty()) && !senderSuccessMessage.isEmpty()) {
+        if ((!(this.cs instanceof Player) || receiverSuccessMessage.isEmpty() || !((Player) this.cs).getUniqueId().toString().equals(this.target.getUniqueId().toString())) && !senderSuccessMessage.isEmpty()) {
             this.cs.sendMessage(senderSuccessMessage);
         }
 
         if (this.target.getPlayer() != null && !receiverSuccessMessage.isEmpty()) {
             this.target.getPlayer().sendMessage(receiverSuccessMessage);
         }
-
     }
 }

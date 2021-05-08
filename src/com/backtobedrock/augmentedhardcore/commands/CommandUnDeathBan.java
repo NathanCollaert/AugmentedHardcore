@@ -24,6 +24,7 @@ public class CommandUnDeathBan extends AbstractCommand {
             return;
         }
 
+        //Needed for unbanning through GUI.
         if (this.target != null) {
             this.unDeathBan();
             return;

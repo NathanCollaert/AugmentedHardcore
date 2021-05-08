@@ -6,6 +6,7 @@ import com.backtobedrock.augmentedhardcore.configs.Messages;
 import com.backtobedrock.augmentedhardcore.domain.data.ServerData;
 import com.backtobedrock.augmentedhardcore.domain.enums.StorageType;
 import com.backtobedrock.augmentedhardcore.eventListeners.*;
+import com.backtobedrock.augmentedhardcore.eventListeners.dependencies.ListenerCombatLogX;
 import com.backtobedrock.augmentedhardcore.guis.AbstractGui;
 import com.backtobedrock.augmentedhardcore.guis.GuiMyStats;
 import com.backtobedrock.augmentedhardcore.repositories.PlayerRepository;
@@ -175,6 +176,9 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
 
     private void registerListeners() {
         Arrays.asList(
+                //dependencies
+                new ListenerCombatLogX(),
+                //internal
                 new ListenerCustomInventory(),
                 new ListenerEntityDeath(),
                 new ListenerPlayerDamageByEntity(),

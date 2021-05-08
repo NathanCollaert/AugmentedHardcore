@@ -6,12 +6,12 @@ import org.bukkit.configuration.ConfigurationSection;
 import java.util.List;
 
 public class ConfigurationCombatTag {
-    private final boolean playerCombatTag;
-    private final boolean monsterCombatTag;
     private final boolean combatTagSelf;
     private final int combatTagTime;
     private final boolean combatTagPlayerKickDeath;
     private final List<String> disableCombatTagInWorlds;
+    private boolean playerCombatTag;
+    private boolean monsterCombatTag;
 
     public ConfigurationCombatTag(
             boolean playerCombatTag,
@@ -55,8 +55,16 @@ public class ConfigurationCombatTag {
         return playerCombatTag;
     }
 
+    public void setPlayerCombatTag(boolean playerCombatTag) {
+        this.playerCombatTag = playerCombatTag;
+    }
+
     public boolean isMonsterCombatTag() {
         return monsterCombatTag;
+    }
+
+    public void setMonsterCombatTag(boolean monsterCombatTag) {
+        this.monsterCombatTag = monsterCombatTag;
     }
 
     public boolean isCombatTagSelf() {

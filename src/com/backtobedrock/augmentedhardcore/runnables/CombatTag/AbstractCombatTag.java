@@ -26,22 +26,21 @@ public class AbstractCombatTag extends BukkitRunnable {
         this.player = player;
     }
 
-    public Killer getTagger() {
-        return tagger;
-    }
-
     public void start() {
+        this.playerData.setCombatTagger(this.tagger);
         this.runTaskTimerAsynchronously(this.plugin, 0, 1);
     }
 
     public void stop() {
         this.cancel();
         this.playerData.removeFromCombatTag(this);
+        this.playerData.setCombatTagger(null);
     }
 
     public void restart(Killer tagger) {
         this.timer = this.time;
         this.tagger = tagger;
+        this.playerData.setCombatTagger(this.tagger);
     }
 
     protected void timerTask() {

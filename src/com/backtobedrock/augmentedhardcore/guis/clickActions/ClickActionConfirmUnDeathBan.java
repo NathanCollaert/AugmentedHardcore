@@ -14,5 +14,6 @@ public class ClickActionConfirmUnDeathBan extends AbstractClickAction {
     @Override
     public void execute(Player player) {
         new CommandUnDeathBan(player, this.target).run();
+        player.closeInventory();
     }
 }

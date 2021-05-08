@@ -6,7 +6,7 @@ website: www.backtobedrock.com
 prefix: AugmentedHardcore
 description: A very customizable and lightweight plugin that enhances the hardcore aspect of Minecraft.
 api-version: 1.13
-softdepend: [ PlaceholderAPI ]
+softdepend: [ PlaceholderAPI, CombatLogX ]
 commands:
   augmentedhardcore:
     aliases:

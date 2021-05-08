@@ -17,11 +17,11 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class GuiPlayerDeathBans extends AbstractDeathBansGui {
-    private PlayerData playerData;
+    private final PlayerData playerData;
 
     public GuiPlayerDeathBans(PlayerData playerData) {
         super(String.format("%s Death Bans", playerData.getPlayer().getName()), playerData.getBanCount());
-        playerData.getBans().forEach((key, value) -> this.bans.put(playerData.getPlayer(), new Pair<>(key, value)));
+        playerData.getBans().forEach((key, value) -> this.bans.put(new Pair<>(playerData.getPlayer(), key), value));
         this.playerData = playerData;
         this.initialize();
     }

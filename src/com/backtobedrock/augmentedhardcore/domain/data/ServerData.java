@@ -5,7 +5,6 @@ import com.backtobedrock.augmentedhardcore.domain.Ban;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.javatuples.Pair;
 
@@ -18,7 +17,7 @@ public class ServerData {
 
     //serializable
     private final Server server;
-    private Map<UUID, Pair<Integer, Ban>> ongoingBans;
+    private final Map<UUID, Pair<Integer, Ban>> ongoingBans;
     private int totalBans;
 
     public ServerData() {
@@ -71,12 +70,8 @@ public class ServerData {
         return ongoingBans.size();
     }
 
-    public void addBan(Player player, Pair<Integer, Ban> ban) {
-        if (this.ongoingBans == null) {
-            this.ongoingBans = new HashMap<>();
-        }
-
-        this.ongoingBans.put(player.getUniqueId(), ban);
+    public void addBan(UUID uuid, Pair<Integer, Ban> ban) {
+        this.ongoingBans.put(uuid, ban);
         this.totalBans++;
         this.plugin.getServerRepository().updateServerData(this);
     }

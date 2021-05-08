@@ -10,16 +10,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.javatuples.Pair;
 
 import java.util.*;
 
 public class GuiServerDeathBans extends AbstractDeathBansGui {
-    private ServerData serverData;
-    private Player player;
+    private final ServerData serverData;
+    private final Player player;
 
     public GuiServerDeathBans(Player player, ServerData serverData) {
         super("Currently Ongoing Death Bans", serverData.getTotalOngoingBans());
-        serverData.getOngoingBans().forEach((key, value) -> this.bans.put(Bukkit.getOfflinePlayer(key), value));
+        serverData.getOngoingBans().forEach((key, value) -> this.bans.put(new Pair<>(Bukkit.getOfflinePlayer(key), value.getValue0()), value.getValue1()));
         this.serverData = serverData;
         this.player = player;
         this.initialize();
