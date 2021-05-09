@@ -3,6 +3,7 @@ package com.backtobedrock.augmentedhardcore.commands;
 import com.backtobedrock.augmentedhardcore.domain.data.PlayerData;
 import com.backtobedrock.augmentedhardcore.domain.enums.Command;
 import com.backtobedrock.augmentedhardcore.domain.enums.Permission;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -30,25 +31,26 @@ public class CommandLives extends AbstractCommand {
                 return;
             }
 
-            this.plugin.getPlayerRepository().getByPlayer(this.sender).thenAcceptAsync(this::sendSuccessMessage).exceptionally(ex -> {
-                ex.printStackTrace();
-                return null;
-            });
+            this.runCommand(this.sender);
         } else {
             this.hasPlayedBefore(this.args[0]).thenAcceptAsync(bool -> {
                 if (!bool) {
                     return;
                 }
 
-                this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(this::sendSuccessMessage).exceptionally(ex -> {
-                    ex.printStackTrace();
-                    return null;
-                });
+                this.runCommand(this.target);
             }).exceptionally(ex -> {
                 ex.printStackTrace();
                 return null;
             });
         }
+    }
+
+    private void runCommand(OfflinePlayer player) {
+        this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(this::sendSuccessMessage).exceptionally(ex -> {
+            ex.printStackTrace();
+            return null;
+        });
     }
 
     private void sendSuccessMessage(PlayerData playerData) {

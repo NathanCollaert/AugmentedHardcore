@@ -1,8 +1,8 @@
 package com.backtobedrock.augmentedhardcore.mappers.ban;
 
 import com.backtobedrock.augmentedhardcore.domain.Ban;
-import javafx.util.Pair;
 import org.bukkit.Server;
+import org.javatuples.Pair;
 
 import java.util.UUID;
 

@@ -7,10 +7,10 @@ import com.backtobedrock.augmentedhardcore.domain.enums.StorageType;
 import com.backtobedrock.augmentedhardcore.mappers.server.IServerMapper;
 import com.backtobedrock.augmentedhardcore.mappers.server.MySQLServerMapper;
 import com.backtobedrock.augmentedhardcore.mappers.server.YAMLServerMapper;
-import javafx.util.Pair;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.javatuples.Pair;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;

@@ -34,6 +34,7 @@ public class Ban {
     private final long timeSincePreviousDeath;
 
     public Ban(LocalDateTime startDate, LocalDateTime expirationDate, int banTime, DamageCause damageCause, DamageCauseType damageCauseType, Location location, Killer killer, Killer inCombatWith, String deathMessage, long timeSincePreviousDeathBan, long timeSincePreviousDeath) {
+        this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
         this.startDate = startDate;
         this.expirationDate = expirationDate;
         this.banTime = banTime;
@@ -45,12 +46,11 @@ public class Ban {
         this.deathMessage = deathMessage;
         this.timeSincePreviousDeathBan = timeSincePreviousDeathBan;
         this.timeSincePreviousDeath = timeSincePreviousDeath;
-        this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
     }
 
     public static Ban Deserialize(ConfigurationSection section) {
         LocalDateTime cStartDate = LocalDateTime.parse(section.getString("StartDate", LocalDateTime.MIN.toString()));
-        LocalDateTime cExpirationDate = LocalDateTime.parse(section.getString("ExpirationDate"));
+        LocalDateTime cExpirationDate = LocalDateTime.parse(section.getString("ExpirationDate", LocalDateTime.MIN.toString()));
         DamageCause cDamageCause = ConfigUtils.getDamageCause(section.getString("DamageCause", DamageCause.VOID.name()), DamageCause.VOID);
         Killer cKiller = null;
         Killer cInCombatWith = null;
@@ -74,7 +74,7 @@ public class Ban {
         }
         ConfigurationSection inCombatWithSection = section.getConfigurationSection("InCombatWith");
         if (inCombatWithSection != null) {
-            cInCombatWith = Killer.Deserialize(killerSection);
+            cInCombatWith = Killer.Deserialize(inCombatWithSection);
         }
 
         return new Ban(cStartDate, cExpirationDate, cBanTime, cDamageCause, cDamageCauseType, cLocation, cKiller, cInCombatWith, cDeathMessage, cTimeSincePreviousDeathBan, cTimeSincePreviousDeath);
@@ -101,7 +101,7 @@ public class Ban {
             banMessage = MessageUtils.replacePlaceholders(this.plugin.getMessages().getEntityBanMessage(), this.getPlaceholdersReplacements());
         } else if (this.killer == null) {
             //Environment while in combat
-            banMessage = MessageUtils.replacePlaceholders(this.plugin.getMessages().getEntityWhileInCombatBanMessage(), this.getPlaceholdersReplacements());
+            banMessage = MessageUtils.replacePlaceholders(this.plugin.getMessages().getEnvironmentWhileInCombatBanMessage(), this.getPlaceholdersReplacements());
         } else {
             //Entity while in combat
             banMessage = MessageUtils.replacePlaceholders(this.plugin.getMessages().getEntityWhileInCombatBanMessage(), this.getPlaceholdersReplacements());
@@ -167,7 +167,7 @@ public class Ban {
 
         placeholders.put("ban_location", this.location != null ? this.location.toString() : "-");
 
-        placeholders.put("ban_death_message", this.deathMessage != null ? this.deathMessage : "-");
+        placeholders.put("ban_death_message", this.deathMessage != null && !this.deathMessage.isEmpty() ? this.deathMessage : "-");
 
         placeholders.put("ban_death_message_stripped", this.deathMessage != null && !this.deathMessage.equalsIgnoreCase("") ? this.deathMessage.substring(this.deathMessage.indexOf(" ")) : "-");
 

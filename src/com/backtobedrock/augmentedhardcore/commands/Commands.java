@@ -64,6 +64,9 @@ public class Commands implements TabCompleter {
             case "deathbans":
                 new CommandDeathBans(cs, args).run();
                 break;
+            case "serverdeathbans":
+                new CommandServerDeathBans(cs, args).run();
+                break;
             case "deathbanreset":
                 new CommandDeathBanReset(cs, args).run();
                 break;
@@ -79,7 +82,7 @@ public class Commands implements TabCompleter {
             case "augmentedhardcore":
                 switch (args.length) {
                     case 1:
-                        StringUtil.copyPartialMatches(args[0].toLowerCase(), Arrays.asList("help", "addlives", "addlifeparts", "setlives", "setlifeparts", "reload"), completions);
+                        StringUtil.copyPartialMatches(args[0].toLowerCase(), Arrays.asList("help", "addlives", "addlifeparts", "setlives", "setlifeparts", "reload", "reset"), completions);
                         Collections.sort(completions);
                         break;
                     case 2:

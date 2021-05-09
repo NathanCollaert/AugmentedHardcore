@@ -4,10 +4,10 @@ import com.backtobedrock.augmentedhardcore.domain.Ban;
 import com.backtobedrock.augmentedhardcore.domain.data.ServerData;
 import com.backtobedrock.augmentedhardcore.mappers.AbstractMapper;
 import com.backtobedrock.augmentedhardcore.mappers.ban.MySQLBanMapper;
-import javafx.util.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
+import org.javatuples.Pair;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -105,7 +105,7 @@ public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
     @Override
     public void deleteServerData() {
         CompletableFuture.runAsync(() -> {
-            String sql = "DELETE FROM ah_server" +
+            String sql = "DELETE FROM ah_server " +
                     "WHERE server_ip = ? AND server_port = ?;";
 
             try (Connection connection = this.database.getDataSource().getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {

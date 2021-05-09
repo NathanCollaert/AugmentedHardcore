@@ -23,57 +23,57 @@ public class MessageUtils {
     public static String getTimeFromTicks(long amount, TimePattern pattern) {
         StringBuilder sb = new StringBuilder();
 
-        long sec = (amount / 20), seconds = sec % 60, minutes = sec % 3600 / 60, hours = sec % 86400 / 3600, days = sec / 86400;
+        long d = amount / 1728000, h = amount % 1728000 / 72000, m = amount % 72000 / 1200, s = amount % 1200 / 20;
 
         switch (pattern) {
             case LONG:
-                if (days > 0) {
-                    sb.append(days).append(days == 1 ? " day" : " days");
+                if (d > 0) {
+                    sb.append(d).append(d == 1 ? " day" : " days");
                 }
-                if (hours > 0) {
+                if (h > 0) {
                     if (!sb.toString().isEmpty()) {
                         sb.append(", ");
                     }
-                    sb.append(hours).append(hours == 1 ? " hour" : " hours");
+                    sb.append(h).append(h == 1 ? " hour" : " hours");
                 }
-                if (minutes > 0) {
+                if (m > 0) {
                     if (!sb.toString().isEmpty()) {
                         sb.append(", ");
                     }
-                    sb.append(minutes).append(minutes == 1 ? " minute" : " minutes");
+                    sb.append(m).append(m == 1 ? " minute" : " minutes");
                 }
-                if (seconds > 0) {
+                if (s > 0) {
                     if (!sb.toString().isEmpty()) {
                         sb.append(", ");
                     }
-                    sb.append(seconds).append(seconds == 1 ? " second" : " seconds");
+                    sb.append(s).append(s == 1 ? " second" : " seconds");
                 }
                 break;
             case SHORT:
-                if (days > 0) {
-                    sb.append(days).append("d");
+                if (d > 0) {
+                    sb.append(d).append("d");
                 }
-                if (hours > 0) {
+                if (h > 0) {
                     if (!sb.toString().isEmpty()) {
                         sb.append(", ");
                     }
-                    sb.append(hours).append("h");
+                    sb.append(h).append("h");
                 }
-                if (minutes > 0) {
+                if (m > 0) {
                     if (!sb.toString().isEmpty()) {
                         sb.append(", ");
                     }
-                    sb.append(minutes).append("m");
+                    sb.append(m).append("m");
                 }
-                if (seconds > 0) {
+                if (s > 0) {
                     if (!sb.toString().isEmpty()) {
                         sb.append(", ");
                     }
-                    sb.append(seconds).append("s");
+                    sb.append(s).append("s");
                 }
                 break;
             case DIGITAL:
-                sb.append(days > 9 ? days : "0" + days).append(":").append(hours > 9 ? hours : "0" + hours).append(":").append(minutes > 9 ? minutes : "0" + minutes).append(":").append(seconds > 9 ? seconds : "0" + seconds);
+                sb.append(d > 9 ? d : "0" + d).append(":").append(h > 9 ? h : "0" + h).append(":").append(m > 9 ? m : "0" + m).append(":").append(s > 9 ? s : "0" + s);
                 break;
         }
 

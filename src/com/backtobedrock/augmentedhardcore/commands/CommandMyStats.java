@@ -4,6 +4,7 @@ import com.backtobedrock.augmentedhardcore.domain.enums.Command;
 import com.backtobedrock.augmentedhardcore.domain.enums.Permission;
 import com.backtobedrock.augmentedhardcore.guis.GuiMyStats;
 import com.backtobedrock.augmentedhardcore.utils.PlayerUtils;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
 public class CommandMyStats extends AbstractCommand {
@@ -30,24 +31,25 @@ public class CommandMyStats extends AbstractCommand {
         }
 
         if (this.args.length == 0) {
-            this.plugin.getPlayerRepository().getByPlayer(this.sender).thenAcceptAsync(playerData -> PlayerUtils.openInventory(this.sender, new GuiMyStats(this.sender, playerData))).exceptionally(ex -> {
-                ex.printStackTrace();
-                return null;
-            });
+            this.runCommand(this.sender);
         } else {
             this.hasPlayedBefore(this.args[0]).thenAcceptAsync(bool -> {
                 if (!bool) {
                     return;
                 }
 
-                this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(playerData -> PlayerUtils.openInventory(this.sender, new GuiMyStats(this.sender, playerData))).exceptionally(ex -> {
-                    ex.printStackTrace();
-                    return null;
-                });
+                this.runCommand(this.target);
             }).exceptionally(ex -> {
                 ex.printStackTrace();
                 return null;
             });
         }
+    }
+
+    private void runCommand(OfflinePlayer player) {
+        this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(playerData -> PlayerUtils.openInventory(this.sender, new GuiMyStats(this.sender, playerData))).exceptionally(ex -> {
+            ex.printStackTrace();
+            return null;
+        });
     }
 }

@@ -69,9 +69,8 @@ public class YAMLPlayerMapper implements IPlayerMapper {
         CompletableFuture.runAsync(() -> {
             File file = this.getFile(player);
             if (file.exists()) {
-                if (file.delete()) {
-                    this.plugin.getLogger().log(Level.INFO, "File for player {0} has been deleted at {1}.", new Object[]{player.getName(), file.getPath()});
-                }
+                //noinspection ResultOfMethodCallIgnored
+                file.delete();
             }
         }).exceptionally(ex -> {
             ex.printStackTrace();
@@ -95,9 +94,8 @@ public class YAMLPlayerMapper implements IPlayerMapper {
         File file = new File(this.plugin.getDataFolder() + "/userdata/" + player.getUniqueId().toString() + ".yml");
         if (!file.exists()) {
             try {
-                if (file.createNewFile()) {
-                    this.plugin.getLogger().log(Level.INFO, "File for player {0} has been created at {1}.", new Object[]{player.getName(), file.getPath()});
-                }
+                //noinspection ResultOfMethodCallIgnored
+                file.createNewFile();
             } catch (IOException e) {
                 this.plugin.getLogger().log(Level.SEVERE, "Cannot create data for {0}.", player.getName());
             }

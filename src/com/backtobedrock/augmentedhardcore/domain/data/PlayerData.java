@@ -19,8 +19,8 @@ import com.backtobedrock.augmentedhardcore.utils.BanUtils;
 import com.backtobedrock.augmentedhardcore.utils.EventUtils;
 import com.backtobedrock.augmentedhardcore.utils.MessageUtils;
 import com.backtobedrock.augmentedhardcore.utils.PlayerUtils;
-import javafx.util.Pair;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -30,25 +30,28 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.javatuples.Pair;
 
-import java.net.InetSocketAddress;
 import java.util.*;
 
 public class PlayerData {
     //misc
     private final AugmentedHardcore plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
     private final OfflinePlayer player;
+
     //helpers
     private final List<AbstractPlaytime> playtime = new ArrayList<>();
     private final Map<UUID, Map<Class<?>, IObserver>> observers;
-    //serializable
-    private final String lastKnownIp;
-    private final NavigableMap<Integer, Ban> bans;
     private BanExpiration banExpiration;
     private List<AbstractCombatTag> combatTag = new ArrayList<>();
     private boolean kicked = false;
     private boolean combatLogged = false;
-    private Killer reviving = null;
+    private Killer combatTagger;
+    private Killer reviving;
+
+    //serializable
+    private final String lastKnownIp;
+    private final NavigableMap<Integer, Ban> bans;
     private int lives;
     private int lifeParts;
     private long timeTillNextRevive;
@@ -63,7 +66,7 @@ public class PlayerData {
                 JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getLivesAtStart(),
                 JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getLifePartsAtStart(),
                 false,
-                JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getReviveConfiguration().getTimeBetweenRevives(),
+                JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getReviveConfiguration().isReviveOnFirstJoin() ? 0L : JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getReviveConfiguration().getTimeBetweenRevives(),
                 JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getPlaytimePerLifePart(),
                 JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getMaxHealthConfiguration().getPlaytimePerHalfHeart(),
                 new TreeMap<>()
@@ -71,7 +74,6 @@ public class PlayerData {
     }
 
     public PlayerData(OfflinePlayer player, String lastKnownIp, int lives, int lifeParts, boolean spectatorBanned, long timeTillNextRevive, long timeTillNextLifePart, long timeTillNextMaxHealth, NavigableMap<Integer, Ban> bans) {
-        //serializable
         this.player = player;
         this.bans = bans;
         this.observers = new HashMap<>();
@@ -83,8 +85,7 @@ public class PlayerData {
         this.setLifeParts(lifeParts);
         if (player.getPlayer() != null) {
             if (player.getPlayer().getAddress() != null) {
-                InetSocketAddress address = player.getPlayer().getAddress();
-                lastKnownIp = address.getHostName() == null ? address.getHostString() : address.getHostName();
+                lastKnownIp = player.getPlayer().getAddress().getAddress().toString().replaceFirst("/", "");
             }
         }
         this.lastKnownIp = lastKnownIp;
@@ -211,14 +212,29 @@ public class PlayerData {
 
         this.unCombatTag();
 
+        this.respawn();
+
         this.plugin.getPlayerRepository().updatePlayerData(this);
     }
 
-    public Killer getCombatTagger() {
-        if (!this.combatTag.isEmpty()) {
-            return this.combatTag.get(0).getTagger();
+    private void respawn() {
+        if (this.player.getPlayer() == null) {
+            return;
         }
-        return null;
+
+        if (!this.player.getPlayer().isDead()) {
+            return;
+        }
+
+        if (!this.plugin.getConfigurations().getMiscellaneousConfiguration().isDeathScreen()) {
+            Bukkit.getScheduler().runTaskLater(this.plugin, () -> {
+                if (this.player.getPlayer() == null) {
+                    return;
+                }
+
+                this.player.getPlayer().spigot().respawn();
+            }, 1L);
+        }
     }
 
     private void loseMaxHealth(double amount) {
@@ -351,11 +367,7 @@ public class PlayerData {
 
         //ban player
         if (ban.getBanTime() > 0) {
-            BanUtils.deathBan(this, ban);
-            this.plugin.getServerRepository().getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> {
-                //add ban to player and server data
-                serverData.addBan(this.player.getPlayer(), this.addBan(ban));
-            }).exceptionally(ex -> {
+            this.plugin.getServerRepository().getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> serverData.addBan(this.player.getUniqueId(), this.addBan(ban))).exceptionally(ex -> {
                 ex.printStackTrace();
                 return null;
             });
@@ -367,6 +379,8 @@ public class PlayerData {
             if (!this.plugin.getConfigurations().getDeathBanConfiguration().getCommandsOnDeathBan().isEmpty() && this.player.getName() != null) {
                 this.plugin.getConfigurations().getDeathBanConfiguration().getCommandsOnDeathBan().forEach(e -> Bukkit.getScheduler().runTask(this.plugin, () -> Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), e.replaceAll("%player%", this.player.getName()))));
             }
+
+            BanUtils.deathBan(this, ban);
         }
     }
 
@@ -507,7 +521,7 @@ public class PlayerData {
         }
 
         //check if combat tag self enabled and if self harming
-        if (!this.plugin.getConfigurations().getCombatTagConfiguration().isCombatTagSelf() && tagger.getName().equals(player.getName())) {
+        if (!this.plugin.getConfigurations().getCombatTagConfiguration().isCombatTagSelf() && tagger.getName().equals(this.player.getName())) {
             return;
         }
 
@@ -517,10 +531,10 @@ public class PlayerData {
         }
 
         if (!this.combatTag.isEmpty()) {
-            new ArrayList<>(this.combatTag).forEach(e -> e.restart(tagger));
+            this.combatTag.forEach(e -> e.restart(tagger));
         } else {
             this.combatTag = this.plugin.getMessages().getCombatTagNotificationsConfiguration(this.player.getPlayer(), this, tagger);
-            new ArrayList<>(this.combatTag).forEach(AbstractCombatTag::start);
+            this.combatTag.forEach(AbstractCombatTag::start);
         }
     }
 
@@ -539,11 +553,18 @@ public class PlayerData {
             return;
         }
 
+        //Get rid of death screen after death ban if disabled
+        this.respawn();
+
         this.plugin.getServerRepository().getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> {
             Pair<Integer, Ban> banPair = serverData.getBan(this.player);
 
+            if (this.isSpectatorBanned() && this.player.getPlayer().getGameMode() != GameMode.SPECTATOR) {
+                Bukkit.getScheduler().runTask(this.plugin, () -> this.player.getPlayer().setGameMode(GameMode.SPECTATOR));
+            }
+
             if (banPair != null) {
-                new BanExpiration(this, banPair.getValue()).start();
+                new BanExpiration(this, banPair.getValue1()).start();
                 return;
             }
 
@@ -570,7 +591,7 @@ public class PlayerData {
                 this.playtime.add(new PlaytimeMaxHealth(this));
             }
 
-            if (this.plugin.getConfigurations().getReviveConfiguration().isUseRevive() && this.plugin.getConfigurations().getReviveConfiguration().getTimeBetweenRevives() > 0 && !this.isSpectatorBanned()) {
+            if (this.plugin.getConfigurations().getReviveConfiguration().isUseRevive() && this.plugin.getConfigurations().getReviveConfiguration().getTimeBetweenRevives() > 0 && !this.isSpectatorBanned() && !this.player.getPlayer().hasPermission(Permission.BYPASS_REVIVECOOLDOWN.getPermissionString())) {
                 this.playtime.add(new PlaytimeRevive(this));
             }
 
@@ -817,7 +838,7 @@ public class PlayerData {
         }
 
         //check if revive on cooldown
-        if (this.timeTillNextRevive > 0) {
+        if (this.timeTillNextRevive > 0 && !this.player.getPlayer().hasPermission(Permission.BYPASS_REVIVECOOLDOWN.getPermissionString())) {
             this.player.getPlayer().sendMessage(String.format("§cYou cannot revive %s for another %s.", reviving.getName(), MessageUtils.getTimeFromTicks(this.getTimeTillNextRevive(), TimePattern.LONG)));
             return false;
         }
@@ -871,16 +892,8 @@ public class PlayerData {
         return map;
     }
 
-    public boolean isCombatTagged() {
-        return !this.combatTag.isEmpty();
-    }
-
     public void onKick() {
         this.kicked = true;
-    }
-
-    public boolean isCombatLogged() {
-        return combatLogged;
     }
 
     public boolean isReviving() {
@@ -936,5 +949,37 @@ public class PlayerData {
 
     public void setSpectatorBanned(boolean spectatorBanned) {
         this.spectatorBanned = spectatorBanned;
+    }
+
+    public void reset() {
+        this.setLives(JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getLivesAtStart());
+        this.setLifeParts(JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getLifePartsAtStart());
+        this.setTimeTillNextRevive(JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getReviveConfiguration().isReviveOnFirstJoin() ? 0L : JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getReviveConfiguration().getTimeBetweenRevives());
+        this.setTimeTillNextLifePart(JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getPlaytimePerLifePart());
+        this.setTimeTillNextMaxHealth(JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getMaxHealthConfiguration().getPlaytimePerHalfHeart());
+        this.bans.clear();
+        BanUtils.unDeathBan(this);
+        this.plugin.getPlayerRepository().deletePlayerData(this.player);
+        this.plugin.getPlayerRepository().updatePlayerData(this);
+    }
+
+    public boolean isCombatLogged() {
+        return combatLogged;
+    }
+
+    public void setCombatLogged(boolean combatLogged) {
+        this.combatLogged = combatLogged;
+    }
+
+    public boolean isCombatTagged() {
+        return this.combatTagger != null;
+    }
+
+    public Killer getCombatTagger() {
+        return combatTagger;
+    }
+
+    public void setCombatTagger(Killer combatTagger) {
+        this.combatTagger = combatTagger;
     }
 }

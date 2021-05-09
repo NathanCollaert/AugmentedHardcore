@@ -3,13 +3,13 @@ package com.backtobedrock.augmentedhardcore.mappers.server;
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.Ban;
 import com.backtobedrock.augmentedhardcore.domain.data.ServerData;
-import javafx.util.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.javatuples.Pair;
 
 import java.io.File;
 import java.io.IOException;
@@ -61,9 +61,8 @@ public class YAMLServerMapper implements IServerMapper {
         CompletableFuture.runAsync(() -> {
             File file = this.getFile();
             if (file.exists()) {
-                if (file.delete()) {
-                    this.plugin.getLogger().log(Level.INFO, "File for server data has been deleted at {1}.", new Object[]{file.getPath()});
-                }
+                //noinspection ResultOfMethodCallIgnored
+                file.delete();
             }
         }).exceptionally(ex -> {
             ex.printStackTrace();
@@ -99,9 +98,8 @@ public class YAMLServerMapper implements IServerMapper {
         File file = new File(this.plugin.getDataFolder() + "/server.yml");
         if (!file.exists()) {
             try {
-                if (file.createNewFile()) {
-                    this.plugin.getLogger().log(Level.INFO, "File for server data has been created at {0}.", new Object[]{file.getPath()});
-                }
+                //noinspection ResultOfMethodCallIgnored
+                file.createNewFile();
             } catch (IOException e) {
                 this.plugin.getLogger().log(Level.SEVERE, "Cannot create server data file.");
             }

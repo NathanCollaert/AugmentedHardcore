@@ -22,6 +22,11 @@
       <option name="url" value="https://jitpack.io" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="sirblobman-public" />
+      <option name="name" value="sirblobman-public" />
+      <option name="url" value="https://nexus.sirblobman.xyz/repository/public/" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="spigotmc-repo" />
       <option name="name" value="spigotmc-repo" />
       <option name="url" value="https://hub.spigotmc.org/nexus/content/repositories/snapshots/" />

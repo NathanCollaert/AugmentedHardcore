@@ -6,6 +6,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public enum Permission {
     //COMMANDS
     HELP,
+    RESET,
     ADDLIVES,
     ADDLIFEPARTS,
     SETLIVES,
@@ -30,6 +31,7 @@ public enum Permission {
     SETMAXHEALTH,
     NEXTMAXHEALTH,
     NEXTMAXHEALTH_OTHER,
+    SERVERDEATHBANS,
     //BYPASSES
     BYPASS_LOSELIVES,
     BYPASS_LOSELIFEPARTS,
@@ -41,6 +43,7 @@ public enum Permission {
     BYPASS_GAINMAXHEALTH_KILL,
     BYPASS_GAINMAXHEALTH_PLAYTIME,
     BYPASS_ARTIFICIALREGENERATION,
+    BYPASS_REVIVECOOLDOWN,
     //GAINS
     GAIN_REVIVE_DEATH,
     GAIN_REVIVE_ALIVE;

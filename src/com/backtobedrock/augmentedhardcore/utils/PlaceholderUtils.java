@@ -74,7 +74,7 @@ public class PlaceholderUtils extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getIdentifier() {
-        return "augmentedhardcore";
+        return this.plugin.getDescription().getName().toLowerCase();
     }
 
     @Override

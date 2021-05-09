@@ -4,9 +4,9 @@ import com.backtobedrock.augmentedhardcore.domain.Ban;
 import com.backtobedrock.augmentedhardcore.domain.data.PlayerData;
 import com.backtobedrock.augmentedhardcore.mappers.AbstractMapper;
 import com.backtobedrock.augmentedhardcore.mappers.ban.MySQLBanMapper;
-import javafx.util.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.javatuples.Pair;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -61,7 +61,7 @@ public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
                 }
                 Pair<Integer, Ban> banPair = MySQLBanMapper.getInstance().getBanFromResultSetSync(resultSet);
                 if (banPair != null) {
-                    deathBans.put(banPair.getKey(), banPair.getValue());
+                    deathBans.put(banPair.getValue0(), banPair.getValue1());
                 }
             }
             return playerData;
@@ -128,8 +128,8 @@ public class MySQLPlayerMapper extends AbstractMapper implements IPlayerMapper {
     @Override
     public void deletePlayerData(OfflinePlayer player) {
         CompletableFuture.runAsync(() -> {
-            String sql = "DELETE FROM ah_player" +
-                    "WHERE player_uuid = ?;";
+            String sql = "DELETE FROM ah_player " +
+                    "WHERE `player_uuid` = ?;";
 
             try (Connection connection = this.database.getDataSource().getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 preparedStatement.setString(1, player.getUniqueId().toString());

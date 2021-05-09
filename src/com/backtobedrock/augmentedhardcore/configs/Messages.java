@@ -65,8 +65,9 @@ public class Messages {
     private NotificationConfiguration getCombatTagNotifications() {
         if (this.combatTagNotifications == null) {
             ConfigurationSection notificationSection = messages.getConfigurationSection("CombatTagNotifications");
-            if (notificationSection != null)
+            if (notificationSection != null) {
                 this.combatTagNotifications = NotificationConfiguration.deserialize(notificationSection);
+            }
         }
         return this.combatTagNotifications;
     }

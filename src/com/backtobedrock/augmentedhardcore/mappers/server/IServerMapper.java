@@ -2,9 +2,9 @@ package com.backtobedrock.augmentedhardcore.mappers.server;
 
 import com.backtobedrock.augmentedhardcore.domain.Ban;
 import com.backtobedrock.augmentedhardcore.domain.data.ServerData;
-import javafx.util.Pair;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
+import org.javatuples.Pair;
 
 import java.util.concurrent.CompletableFuture;
 

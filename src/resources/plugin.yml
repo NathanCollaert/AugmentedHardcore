@@ -6,40 +6,53 @@ website: www.backtobedrock.com
 prefix: AugmentedHardcore
 description: A very customizable and lightweight plugin that enhances the hardcore aspect of Minecraft.
 api-version: 1.13
-softdepend: [ PlaceholderAPI ]
+softdepend: [ PlaceholderAPI, CombatLogX ]
 commands:
   augmentedhardcore:
     aliases:
       - ah
   undeathban:
+    permission: augmentedhardcore.undeathban
     aliases:
       - udb
   deathbanreset:
+    permission: augmentedhardcore.bypass.ban.spectator
     aliases:
       - dbr
   revive:
+    permission: augmentedhardcore.revive
     aliases:
       - rev
   mystats:
+    permission: augmentedhardcore.mystats
     aliases:
       - ms
   nextlifepart:
+    permission: augmentedhardcore.nextlifepart
     aliases:
       - nlp
   nextmaxhealth:
+    permission: augmentedhardcore.nextmaxhealth
     aliases:
       - nmh
   nextrevive:
+    permission: augmentedhardcore.nextrevive
     aliases:
       - nr
   lifeparts:
+    permission: augmentedhardcore.lifeparts
     aliases:
       - lp
   deathbans:
+    permission: augmentedhardcore.deathbans
     aliases:
       - db
   lives:
-    usage: /<command>
+    permission: augmentedhardcore.lives
+  serverdeathbans:
+    permission: augmentedhardcore.serverdeathbans
+    aliases:
+      - sdb
 permissions:
   #BYPASSES
   augmentedhardcore.bypass.ban:
@@ -62,6 +75,8 @@ permissions:
     default: false
   augmentedhardcore.bypass.artificialregeneration:
     default: false
+  augmentedhardcore.bypass.revivecooldown:
+    default: false
   #GAINS
   augmentedhardcore.gain.revive.death:
     default: true
@@ -69,6 +84,8 @@ permissions:
     default: true
   #COMMANDS
   augmentedhardcore.help:
+    default: op
+  augmentedhardcore.reset:
     default: op
   augmentedhardcore.revive:
     default: op
@@ -101,6 +118,8 @@ permissions:
   augmentedhardcore.deathbans:
     default: op
   augmentedhardcore.deathbans.other:
+    default: op
+  augmentedhardcore.serverdeathbans:
     default: op
   augmentedhardcore.reload:
     default: op
