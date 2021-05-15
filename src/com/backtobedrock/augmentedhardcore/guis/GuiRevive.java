@@ -2,8 +2,8 @@ package com.backtobedrock.augmentedhardcore.guis;
 
 import com.backtobedrock.augmentedhardcore.domain.data.PlayerData;
 import com.backtobedrock.augmentedhardcore.guis.clickActions.ClickActionConfirmRevive;
-import com.backtobedrock.augmentedhardcore.utils.InventoryUtils;
-import com.backtobedrock.augmentedhardcore.utils.MessageUtils;
+import com.backtobedrock.augmentedhardcore.utilities.InventoryUtils;
+import com.backtobedrock.augmentedhardcore.utilities.MessageUtils;
 import org.bukkit.OfflinePlayer;
 
 import java.util.Collections;

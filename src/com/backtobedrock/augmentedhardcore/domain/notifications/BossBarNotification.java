@@ -1,6 +1,6 @@
 package com.backtobedrock.augmentedhardcore.domain.notifications;
 
-import com.backtobedrock.augmentedhardcore.utils.ConfigUtils;
+import com.backtobedrock.augmentedhardcore.utilities.ConfigUtils;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.configuration.ConfigurationSection;

@@ -2,10 +2,10 @@ package com.backtobedrock.augmentedhardcore.mappers.server;
 
 import com.backtobedrock.augmentedhardcore.domain.Ban;
 import com.backtobedrock.augmentedhardcore.domain.data.ServerData;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.javatuples.Pair;
 
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public interface IServerMapper {
@@ -23,5 +23,5 @@ public interface IServerMapper {
     //Delete
     void deleteServerData();
 
-    void deleteBanFromServerData(OfflinePlayer player, Pair<Integer, Ban> ban);
+    void deleteBanFromServerData(UUID uuid, Pair<Integer, Ban> ban);
 }

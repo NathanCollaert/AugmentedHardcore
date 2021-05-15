@@ -2,7 +2,7 @@ package com.backtobedrock.augmentedhardcore.domain.configurationDomain.configura
 
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.enums.DamageCause;
-import com.backtobedrock.augmentedhardcore.utils.ConfigUtils;
+import com.backtobedrock.augmentedhardcore.utilities.ConfigUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -23,10 +23,6 @@ public class BanConfiguration {
 
         int cBanTime = ConfigUtils.checkMinMaxNoNotification(section.getInt("BanTime", cause.getDefaultBantime()), -1, Integer.MAX_VALUE);
         List<String> cDisplayMessages = section.contains("DisplayMessages") ? section.getStringList("DisplayMessages") : null;
-
-        if (cBanTime == -1) {
-            cBanTime = Integer.MAX_VALUE;
-        }
 
         if (cDisplayMessages == null) {
             cDisplayMessages = cause.getDefaultDisplayMessages();

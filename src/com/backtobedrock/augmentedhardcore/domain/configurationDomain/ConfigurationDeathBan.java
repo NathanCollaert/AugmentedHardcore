@@ -5,8 +5,10 @@ import com.backtobedrock.augmentedhardcore.domain.configurationDomain.configurat
 import com.backtobedrock.augmentedhardcore.domain.enums.BanTimeType;
 import com.backtobedrock.augmentedhardcore.domain.enums.DamageCause;
 import com.backtobedrock.augmentedhardcore.domain.enums.GrowthType;
-import com.backtobedrock.augmentedhardcore.utils.ConfigUtils;
+import com.backtobedrock.augmentedhardcore.utilities.ConfigUtils;
 import org.bukkit.BanList;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -24,10 +26,11 @@ public class ConfigurationDeathBan {
     private final GrowthType banTimeByPlaytimeGrowthType;
     private final boolean selfHarmBan;
     private final boolean lightningOnDeathBan;
+    private final World spectatorBanRespawnWorld;
     private final List<String> commandsOnDeathBan;
     private final List<String> disableBanInWorlds;
 
-    public ConfigurationDeathBan(boolean useDeathBan, EnumMap<DamageCause, BanConfiguration> banTimes, BanList.Type banType, BanTimeType banTimeType, GrowthType banTimeByPlaytimeGrowthType, boolean selfHarmBan, boolean lightningOnDeathBan, List<String> commandsOnDeathBan, List<String> disableBanInWorlds) {
+    public ConfigurationDeathBan(boolean useDeathBan, EnumMap<DamageCause, BanConfiguration> banTimes, BanList.Type banType, BanTimeType banTimeType, GrowthType banTimeByPlaytimeGrowthType, boolean selfHarmBan, boolean lightningOnDeathBan, World spectatorBanRespawnWorld, List<String> commandsOnDeathBan, List<String> disableBanInWorlds) {
         this.useDeathBan = useDeathBan;
         this.banTimes = banTimes;
         this.banType = banType;
@@ -35,6 +38,7 @@ public class ConfigurationDeathBan {
         this.banTimeByPlaytimeGrowthType = banTimeByPlaytimeGrowthType;
         this.selfHarmBan = selfHarmBan;
         this.lightningOnDeathBan = lightningOnDeathBan;
+        this.spectatorBanRespawnWorld = spectatorBanRespawnWorld;
         this.commandsOnDeathBan = commandsOnDeathBan;
         this.disableBanInWorlds = disableBanInWorlds;
     }
@@ -50,6 +54,7 @@ public class ConfigurationDeathBan {
         GrowthType cBanTimeByPlaytimeGrowthType = ConfigUtils.getGrowthType("BanTimeByPlaytimeGrowthType", section.getString("BanTimeByPlaytimeGrowthType", GrowthType.EXPONENTIAL.name()), GrowthType.EXPONENTIAL);
         boolean cSelfHarmBan = section.getBoolean("SelfHarmBan", false);
         boolean cLightningOnDeathBan = section.getBoolean("LightningOnDeathBan", false);
+        World cSpectatorBanRespawnWorld = ConfigUtils.getWorld(section.getString("SpectatorBanRespawnWorld"), Bukkit.getWorlds().get(0));
         List<String> cCommandsOnDeathBan = section.getStringList("CommandsOnDeathBan");
         List<String> cDisableBanInWorlds = ConfigUtils.getWorlds("DisableBanInWorlds", section.getStringList("DisableBanInWorlds"));
 
@@ -76,6 +81,7 @@ public class ConfigurationDeathBan {
                 cBanTimeByPlaytimeGrowthType,
                 cSelfHarmBan,
                 cLightningOnDeathBan,
+                cSpectatorBanRespawnWorld,
                 cCommandsOnDeathBan,
                 cDisableBanInWorlds
         );
@@ -115,5 +121,9 @@ public class ConfigurationDeathBan {
 
     public List<String> getCommandsOnDeathBan() {
         return commandsOnDeathBan;
+    }
+
+    public World getSpectatorBanRespawnWorld() {
+        return spectatorBanRespawnWorld;
     }
 }

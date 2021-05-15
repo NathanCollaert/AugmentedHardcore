@@ -1,7 +1,7 @@
 package com.backtobedrock.augmentedhardcore.eventListeners;
 
 import com.backtobedrock.augmentedhardcore.domain.Killer;
-import com.backtobedrock.augmentedhardcore.utils.EventUtils;
+import com.backtobedrock.augmentedhardcore.utilities.EventUtils;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

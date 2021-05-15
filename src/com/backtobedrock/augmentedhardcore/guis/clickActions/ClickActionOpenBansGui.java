@@ -2,7 +2,7 @@ package com.backtobedrock.augmentedhardcore.guis.clickActions;
 
 import com.backtobedrock.augmentedhardcore.domain.data.PlayerData;
 import com.backtobedrock.augmentedhardcore.guis.GuiPlayerDeathBans;
-import com.backtobedrock.augmentedhardcore.utils.PlayerUtils;
+import com.backtobedrock.augmentedhardcore.utilities.PlayerUtils;
 import org.bukkit.entity.Player;
 
 public class ClickActionOpenBansGui extends AbstractClickAction {

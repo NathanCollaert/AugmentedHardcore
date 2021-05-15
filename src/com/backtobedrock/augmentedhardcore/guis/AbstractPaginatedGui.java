@@ -2,7 +2,7 @@ package com.backtobedrock.augmentedhardcore.guis;
 
 import com.backtobedrock.augmentedhardcore.guis.clickActions.ClickActionNextPage;
 import com.backtobedrock.augmentedhardcore.guis.clickActions.ClickActionPreviousPage;
-import com.backtobedrock.augmentedhardcore.utils.MessageUtils;
+import com.backtobedrock.augmentedhardcore.utilities.MessageUtils;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Collections;

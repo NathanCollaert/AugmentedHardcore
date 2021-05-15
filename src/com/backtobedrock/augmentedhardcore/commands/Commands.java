@@ -67,9 +67,6 @@ public class Commands implements TabCompleter {
             case "serverdeathbans":
                 new CommandServerDeathBans(cs, args).run();
                 break;
-            case "deathbanreset":
-                new CommandDeathBanReset(cs, args).run();
-                break;
         }
         return true;
     }
@@ -82,11 +79,11 @@ public class Commands implements TabCompleter {
             case "augmentedhardcore":
                 switch (args.length) {
                     case 1:
-                        StringUtil.copyPartialMatches(args[0].toLowerCase(), Arrays.asList("help", "addlives", "addlifeparts", "setlives", "setlifeparts", "reload", "reset"), completions);
+                        StringUtil.copyPartialMatches(args[0].toLowerCase(), Arrays.asList("help", "addlives", "addlifeparts", "setlives", "addmaxhealth", "setmaxhealth", "setlifeparts", "reload", "reset"), completions);
                         Collections.sort(completions);
                         break;
                     case 2:
-                        if (Arrays.asList("addlives", "addlifeparts", "setlives", "setlifeparts").contains(args[0])) {
+                        if (Arrays.asList("addlives", "addlifeparts", "setlives", "setlifeparts", "addmaxhealth", "setmaxhealth").contains(args[0])) {
                             StringUtil.copyPartialMatches(args[1].toLowerCase(), Bukkit.getServer().getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()), completions);
                             Collections.sort(completions);
                         }

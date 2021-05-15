@@ -56,6 +56,10 @@ public class Messages {
     public String getCombatLogBanMessage() {
         return this.messages.getString("CombatLogBanMessage", "&c&lYou've Died\n\n&rYou have logged out while in combat with &b%combat_tagger%&r causing you to die and be banned.\nYou will be unbanned in &e%long_ban_time_left%&r.");
     }
+
+    public String getIPBanMessage() {
+        return this.messages.getString("IPBanMessage", "&fSomeone on your IP address died due to %ban_damage_cause% causing you to banned as well.\nYou will be unbanned in &e%ban_time_left_long%&r.");
+    }
     //</editor-fold>
 
     //<editor-fold desc="0" defaultstate="collapsed">

@@ -4,7 +4,7 @@ import com.backtobedrock.augmentedhardcore.domain.data.PlayerData;
 import com.backtobedrock.augmentedhardcore.domain.enums.Command;
 import com.backtobedrock.augmentedhardcore.domain.enums.Permission;
 import com.backtobedrock.augmentedhardcore.domain.enums.TimePattern;
-import com.backtobedrock.augmentedhardcore.utils.MessageUtils;
+import com.backtobedrock.augmentedhardcore.utilities.MessageUtils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

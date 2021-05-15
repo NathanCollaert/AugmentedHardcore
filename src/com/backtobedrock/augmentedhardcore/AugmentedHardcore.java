@@ -12,9 +12,10 @@ import com.backtobedrock.augmentedhardcore.guis.GuiMyStats;
 import com.backtobedrock.augmentedhardcore.repositories.PlayerRepository;
 import com.backtobedrock.augmentedhardcore.repositories.ServerRepository;
 import com.backtobedrock.augmentedhardcore.runnables.UpdateChecker;
-import com.backtobedrock.augmentedhardcore.utils.Metrics;
-import com.backtobedrock.augmentedhardcore.utils.PlaceholderUtils;
-import com.backtobedrock.augmentedhardcore.utils.UpdateUtils;
+import com.backtobedrock.augmentedhardcore.utilities.Metrics;
+import com.backtobedrock.augmentedhardcore.utilities.UpdateUtils;
+import com.backtobedrock.augmentedhardcore.utilities.placeholderAPI.PlaceholdersAugmentedHardcore;
+import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -59,16 +60,23 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
     public void onEnable() {
         this.initialize();
 
+        //unban patch
+        BanList banListName = Bukkit.getBanList(BanList.Type.NAME), banListIP = Bukkit.getBanList(BanList.Type.IP);
+        banListName.getBanEntries().stream().filter(e -> e.getSource().equals(this.getDescription().getName())).forEach(e -> banListName.pardon(e.getTarget()));
+        banListIP.getBanEntries().stream().filter(e -> e.getSource().equals(this.getDescription().getName())).forEach(e -> banListIP.pardon(e.getTarget()));
+
         //update checker
         this.updateChecker = new UpdateChecker();
         this.updateChecker.start();
 
         //bstats metrics
         Metrics metrics = new Metrics(this, 10843);
+        metrics.addCustomChart(new Metrics.SingleLineChart("currently_ongoing_death_bans", () -> this.serverRepository.getServerDataSync().getTotalOngoingBans()));
+        metrics.addCustomChart(new Metrics.SingleLineChart("total_death_bans", () -> this.serverRepository.getServerDataSync().getTotalDeathBans()));
 
         //PAPI
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            new PlaceholderUtils().register();
+            new PlaceholdersAugmentedHardcore().register();
         }
 
         super.onEnable();
@@ -133,13 +141,13 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
         this.initDB();
 
         //initialize repositories
-        if (this.serverRepository == null) {
-            this.serverRepository = new ServerRepository();
-        }
         if (this.playerRepository == null) {
             this.playerRepository = new PlayerRepository();
         } else {
             this.playerRepository.onReload();
+        }
+        if (this.serverRepository == null) {
+            this.serverRepository = new ServerRepository();
         }
 
         //register event listeners

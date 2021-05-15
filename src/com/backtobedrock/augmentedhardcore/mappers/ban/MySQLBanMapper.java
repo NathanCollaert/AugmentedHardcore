@@ -4,7 +4,7 @@ import com.backtobedrock.augmentedhardcore.domain.Ban;
 import com.backtobedrock.augmentedhardcore.domain.Killer;
 import com.backtobedrock.augmentedhardcore.domain.Location;
 import com.backtobedrock.augmentedhardcore.mappers.AbstractMapper;
-import com.backtobedrock.augmentedhardcore.utils.ConfigUtils;
+import com.backtobedrock.augmentedhardcore.utilities.ConfigUtils;
 import org.bukkit.Server;
 import org.javatuples.Pair;
 

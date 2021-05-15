@@ -8,7 +8,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public abstract class AbstractDeathBansGui extends AbstractPaginatedGui {
-    protected final Map<Pair<OfflinePlayer, Integer>, Ban> bans = new HashMap<>();
+    protected final Map<Pair<OfflinePlayer, Integer>, Ban> bans = new LinkedHashMap<>();
 
     public AbstractDeathBansGui(String title, int dataSize) {
         super(new CustomHolder(dataSize, title), dataSize);

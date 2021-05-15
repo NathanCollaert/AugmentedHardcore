@@ -1,4 +1,4 @@
-package com.backtobedrock.augmentedhardcore.utils;
+package com.backtobedrock.augmentedhardcore.utilities;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;

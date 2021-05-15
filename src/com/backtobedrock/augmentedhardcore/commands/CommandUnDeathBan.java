@@ -1,7 +1,6 @@
 package com.backtobedrock.augmentedhardcore.commands;
 
 import com.backtobedrock.augmentedhardcore.domain.enums.Command;
-import com.backtobedrock.augmentedhardcore.utils.BanUtils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -47,14 +46,14 @@ public class CommandUnDeathBan extends AbstractCommand {
     }
 
     private void unDeathBan() {
-        this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(playerData -> {
-            if (BanUtils.unDeathBan(playerData)) {
+        this.plugin.getServerRepository().getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> {
+            if (serverData.unDeathBan(this.target.getUniqueId())) {
                 this.cs.sendMessage(String.format("§a%s has successfully been unbanned from a death ban.", this.target.getName()));
             } else {
                 this.cs.sendMessage(String.format("§c%s is not death banned by %s.", this.target.getName(), this.plugin.getDescription().getName()));
             }
-        }).exceptionally(ex -> {
-            ex.printStackTrace();
+        }).exceptionally(e -> {
+            e.printStackTrace();
             return null;
         });
     }

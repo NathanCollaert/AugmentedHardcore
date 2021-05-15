@@ -2,7 +2,7 @@ package com.backtobedrock.augmentedhardcore.domain.configurationDomain;
 
 import com.backtobedrock.augmentedhardcore.domain.Database;
 import com.backtobedrock.augmentedhardcore.domain.enums.StorageType;
-import com.backtobedrock.augmentedhardcore.utils.ConfigUtils;
+import com.backtobedrock.augmentedhardcore.utilities.ConfigUtils;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class ConfigurationData {

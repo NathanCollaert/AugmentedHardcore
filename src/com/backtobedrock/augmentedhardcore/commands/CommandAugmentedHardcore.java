@@ -2,7 +2,8 @@ package com.backtobedrock.augmentedhardcore.commands;
 
 import com.backtobedrock.augmentedhardcore.domain.enums.Command;
 import com.backtobedrock.augmentedhardcore.domain.enums.Permission;
-import com.backtobedrock.augmentedhardcore.utils.CommandUtils;
+import com.backtobedrock.augmentedhardcore.utilities.CommandUtils;
+import com.backtobedrock.augmentedhardcore.utilities.PlayerUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -148,6 +149,60 @@ public class CommandAugmentedHardcore extends AbstractCommand {
                         ex.printStackTrace();
                         return null;
                     });
+                }).exceptionally(ex -> {
+                    ex.printStackTrace();
+                    return null;
+                });
+                break;
+            case ADDMAXHEALTH:
+                amount = CommandUtils.getPositiveNumberFromString(this.cs, this.args[2]);
+                if (amount == -1) {
+                    return;
+                }
+
+                this.hasPlayedBefore(this.args[1]).thenAcceptAsync(bool -> {
+                    if (!bool) {
+                        return;
+                    }
+
+                    Player target = this.isTargetOnline();
+                    if (target == null) {
+                        return;
+                    }
+
+                    PlayerUtils.setMaxHealth(target, PlayerUtils.getMaxHealth(target) + amount);
+
+                    this.sendSuccessMessages(
+                            String.format("§aYou've been given §e%s§a, you now have §e%s§a.", amount + " max health", (int) PlayerUtils.getMaxHealth(target) + " max health"),
+                            String.format("§aYou successfully gave §e%s§a, §e%s§a now has §e%s§a.", amount + " max health", this.args[1], (int) PlayerUtils.getMaxHealth(target) + " max health")
+                    );
+                }).exceptionally(ex -> {
+                    ex.printStackTrace();
+                    return null;
+                });
+                break;
+            case SETMAXHEALTH:
+                amount = CommandUtils.getPositiveNumberFromString(this.cs, this.args[2]);
+                if (amount == -1) {
+                    return;
+                }
+
+                this.hasPlayedBefore(this.args[1]).thenAcceptAsync(bool -> {
+                    if (!bool) {
+                        return;
+                    }
+
+                    Player target = this.isTargetOnline();
+                    if (target == null) {
+                        return;
+                    }
+
+                    PlayerUtils.setMaxHealth(target, amount);
+
+                    this.sendSuccessMessages(
+                            String.format("§aYour §emax health§a has been set to §e%d§a.", (int) PlayerUtils.getMaxHealth(target)),
+                            String.format("§aYou successfully set the §emax health§a of §e%s§a to §e%d§a.", this.args[1], (int) PlayerUtils.getMaxHealth(target))
+                    );
                 }).exceptionally(ex -> {
                     ex.printStackTrace();
                     return null;

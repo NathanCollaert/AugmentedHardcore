@@ -5,7 +5,6 @@ import com.backtobedrock.augmentedhardcore.domain.data.ServerData;
 import com.backtobedrock.augmentedhardcore.mappers.AbstractMapper;
 import com.backtobedrock.augmentedhardcore.mappers.ban.MySQLBanMapper;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.javatuples.Pair;
 
@@ -88,14 +87,14 @@ public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
             try (Connection connection = this.database.getDataSource().getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 preparedStatement.setString(1, InetAddress.getLocalHost().getHostAddress());
                 preparedStatement.setInt(2, this.plugin.getServer().getPort());
-                preparedStatement.setInt(3, data.getTotalBans());
-                preparedStatement.setInt(4, data.getTotalBans());
+                preparedStatement.setInt(3, data.getTotalDeathBans());
+                preparedStatement.setInt(4, data.getTotalDeathBans());
                 preparedStatement.execute();
             } catch (SQLException | UnknownHostException e) {
                 e.printStackTrace();
                 return;
             }
-            data.getOngoingBans().forEach((key, value) -> MySQLBanMapper.getInstance().updateBan(this.plugin.getServer(), key, value));
+            data.getOngoingBans().forEach((key, value) -> MySQLBanMapper.getInstance().updateBan(this.plugin.getServer(), key, value.getBan()));
         }).exceptionally(ex -> {
             ex.printStackTrace();
             return null;
@@ -122,7 +121,7 @@ public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
     }
 
     @Override
-    public void deleteBanFromServerData(OfflinePlayer player, Pair<Integer, Ban> ban) {
-        MySQLBanMapper.getInstance().updateBan(null, player.getUniqueId(), ban);
+    public void deleteBanFromServerData(UUID uuid, Pair<Integer, Ban> ban) {
+        MySQLBanMapper.getInstance().updateBan(null, uuid, ban);
     }
 }

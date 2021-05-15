@@ -1,6 +1,6 @@
 package com.backtobedrock.augmentedhardcore.domain.configurationDomain;
 
-import com.backtobedrock.augmentedhardcore.utils.ConfigUtils;
+import com.backtobedrock.augmentedhardcore.utilities.ConfigUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 

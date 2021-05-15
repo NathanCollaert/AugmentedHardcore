@@ -5,7 +5,7 @@ import com.backtobedrock.augmentedhardcore.domain.notifications.ActionBarNotific
 import com.backtobedrock.augmentedhardcore.domain.notifications.BossBarNotification;
 import com.backtobedrock.augmentedhardcore.domain.notifications.ChatNotification;
 import com.backtobedrock.augmentedhardcore.domain.notifications.TitleNotification;
-import com.backtobedrock.augmentedhardcore.utils.ConfigUtils;
+import com.backtobedrock.augmentedhardcore.utilities.ConfigUtils;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class NotificationConfiguration {

@@ -1,6 +1,6 @@
 package com.backtobedrock.augmentedhardcore.domain;
 
-import com.backtobedrock.augmentedhardcore.utils.ConfigUtils;
+import com.backtobedrock.augmentedhardcore.utilities.ConfigUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 
@@ -53,7 +53,7 @@ public class Killer {
 
         map.put("Name", this.name);
         map.put("DisplayName", this.displayName);
-        map.put("Type", this.type.name());
+        map.put("Type", this.type == null ? null : this.type.name());
 
         return map;
     }

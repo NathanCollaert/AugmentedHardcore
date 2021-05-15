@@ -11,10 +11,13 @@ public enum Command {
     AUGMENTEDHARDCORE(null, null, null, null, null),
     HELP(Permission.HELP, AUGMENTEDHARDCORE, Collections.emptyList(), Collections.emptyList(), "List of " + JavaPlugin.getPlugin(AugmentedHardcore.class).getDescription().getName() + " commands"),
     ADDLIVES(Permission.ADDLIVES, AUGMENTEDHARDCORE, Arrays.asList("player", "amount"), Collections.emptyList(), "Add lives to a player"),
-    ADDLIFEPARTS(Permission.ADDLIFEPARTS, AUGMENTEDHARDCORE, Arrays.asList("player", "amount"), Collections.emptyList(), "Add life parts to a player"),
     SETLIVES(Permission.SETLIVES, AUGMENTEDHARDCORE, Arrays.asList("player", "amount"), Collections.emptyList(), "Set the lives of a player"),
+    ADDLIFEPARTS(Permission.ADDLIFEPARTS, AUGMENTEDHARDCORE, Arrays.asList("player", "amount"), Collections.emptyList(), "Add life parts to a player"),
     SETLIFEPARTS(Permission.SETLIFEPARTS, AUGMENTEDHARDCORE, Arrays.asList("player", "amount"), Collections.emptyList(), "Set the life parts of a player"),
+    ADDMAXHEALTH(Permission.ADDMAXHEALTH, AUGMENTEDHARDCORE, Arrays.asList("player", "amount"), Collections.emptyList(), "Add max health to a player"),
+    SETMAXHEALTH(Permission.SETMAXHEALTH, AUGMENTEDHARDCORE, Arrays.asList("player", "amount"), Collections.emptyList(), "Set the max health of a player"),
     RELOAD(Permission.RELOAD, AUGMENTEDHARDCORE, Collections.emptyList(), Collections.emptyList(), "Reload " + JavaPlugin.getPlugin(AugmentedHardcore.class).getDescription().getName()),
+    RESET(Permission.RESET, AUGMENTEDHARDCORE, Collections.singletonList("player"), Collections.emptyList(), "Reset the statistics of a player to their initial state"),
     UNDEATHBAN(Permission.UNDEATHBAN, null, Collections.singletonList("player"), Collections.emptyList(), "Unban a player that was death banned"),
     REVIVE(Permission.REVIVE, null, Collections.singletonList("player"), Collections.emptyList(), "Give a life of your own to someone else"),
     MYSTATS(Permission.MYSTATS, null, Collections.emptyList(), Collections.singletonList("player"), "Check your " + JavaPlugin.getPlugin(AugmentedHardcore.class).getDescription().getName() + " statistics"),
@@ -24,9 +27,7 @@ public enum Command {
     LIFEPARTS(Permission.LIFEPARTS, null, Collections.emptyList(), Collections.singletonList("player"), "Check how many life parts you currently own"),
     LIVES(Permission.LIVES, null, Collections.emptyList(), Collections.singletonList("player"), "Check how many lives you currently own"),
     DEATHBANS(Permission.DEATHBANS, null, Collections.emptyList(), Collections.singletonList("player"), "Check your previous death bans"),
-    DEATHBANRESET(Permission.BYPASS_BAN_SPECTATOR, null, Collections.emptyList(), Collections.singletonList("player"), "Reset your game mode when death banned to spectator"),
-    SERVERDEATHBANS(Permission.SERVERDEATHBANS, null, Collections.emptyList(), Collections.emptyList(), "Check the current ongoing death bans on the server"),
-    RESET(Permission.RESET, AUGMENTEDHARDCORE, Collections.singletonList("player"), Collections.emptyList(), "Reset the statistics of a player to their initial state");
+    SERVERDEATHBANS(Permission.SERVERDEATHBANS, null, Collections.emptyList(), Collections.emptyList(), "Check the current ongoing death bans on the server");
 
     private final Permission permission;
     private final Command parent;

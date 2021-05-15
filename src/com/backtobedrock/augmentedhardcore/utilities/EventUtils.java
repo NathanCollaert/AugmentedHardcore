@@ -1,10 +1,15 @@
-package com.backtobedrock.augmentedhardcore.utils;
+package com.backtobedrock.augmentedhardcore.utilities;
 
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
+import com.backtobedrock.augmentedhardcore.domain.Ban;
 import com.backtobedrock.augmentedhardcore.domain.Killer;
+import com.backtobedrock.augmentedhardcore.domain.Location;
+import com.backtobedrock.augmentedhardcore.domain.configurationDomain.ConfigurationDeathBan;
+import com.backtobedrock.augmentedhardcore.domain.configurationDomain.configurationHelperClasses.BanConfiguration;
 import com.backtobedrock.augmentedhardcore.domain.data.PlayerData;
 import com.backtobedrock.augmentedhardcore.domain.enums.DamageCause;
 import com.backtobedrock.augmentedhardcore.domain.enums.DamageCauseType;
+import org.bukkit.Statistic;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
@@ -12,6 +17,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 public class EventUtils {
@@ -133,5 +141,29 @@ public class EventUtils {
             plugin.getLogger().log(Level.SEVERE, String.format("%s was not a known damage type, please report this to the plugin author for more information.", finalDamageCause));
             return null;
         }
+    }
+
+    public static Ban getDeathBan(Player player, PlayerData playerData, DamageCause damageCause, Killer killer, Killer inCombatWith, String deathMessage, DamageCauseType type) {
+        ConfigurationDeathBan config = JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getDeathBanConfiguration();
+        BanConfiguration banConfiguration = config.getBanTimes().get(damageCause);
+        int rawBanTime = banConfiguration == null ? 0 : banConfiguration.getBanTime(),
+                banTime = config.getBanTimeType().getBantime(player, playerData, rawBanTime);
+        long timeSinceLastBan = playerData.getLastDeathBan() == null ? player.getStatistic(Statistic.PLAY_ONE_MINUTE) : MessageUtils.timeUnitToTicks(ChronoUnit.SECONDS.between(playerData.getLastDeathBan().getStartDate(), LocalDateTime.now()), TimeUnit.SECONDS),
+                timeSinceLastDeath = player.getStatistic(Statistic.TIME_SINCE_DEATH);
+        LocalDateTime now = LocalDateTime.now();
+
+        return new Ban(
+                now,
+                now.plusMinutes(banTime),
+                banTime,
+                damageCause,
+                type,
+                new Location(player.getWorld().getName(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ()),
+                killer,
+                inCombatWith,
+                deathMessage,
+                timeSinceLastBan,
+                timeSinceLastDeath
+        );
     }
 }

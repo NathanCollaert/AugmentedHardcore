@@ -56,6 +56,18 @@ public abstract class AbstractCommand {
         return true;
     }
 
+    protected Player isTargetOnline() {
+        if (this.target == null) {
+            return null;
+        }
+
+        if (this.target.getPlayer() == null) {
+            this.cs.sendMessage(String.format("%s is currently not online.", this.target.getName()));
+        }
+
+        return this.target.getPlayer();
+    }
+
     protected CompletableFuture<Boolean> hasPlayedBefore(String playerName) {
         return CompletableFuture.supplyAsync(() -> {
             @SuppressWarnings("deprecation") OfflinePlayer player = Bukkit.getOfflinePlayer(playerName);

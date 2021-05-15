@@ -399,6 +399,9 @@ SelfHarmBan: false
 #Should a lightning strike at the players position on death ban?
 LightningOnDeathBan: false
 
+#To what world spawn should a spectator banned player be teleported to after the ban ends and no bed spawn location was found?
+SpectatorBanRespawnWorld: "world"
+
 #Should any commands be executed on death ban?
 #Placeholders: %player%
 CommandsOnDeathBan: [ ]

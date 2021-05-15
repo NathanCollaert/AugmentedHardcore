@@ -16,25 +16,21 @@ public class ListenerCombatLogX extends AbstractEventListener {
 
     @EventHandler
     public void onPlayerCombatTag(PlayerTagEvent event) {
-        System.out.println("test 1");
         this.plugin.getPlayerRepository().getByPlayer(event.getPlayer()).thenAcceptAsync(playerData -> playerData.setCombatTagger(new Killer(event.getEnemy().getName(), event.getEnemy().getCustomName(), event.getEnemy().getType())));
     }
 
     @EventHandler
     public void onPlayerUnCombatTag(PlayerUntagEvent event) {
-        System.out.println("test 2");
         this.plugin.getPlayerRepository().getByPlayer(event.getPlayer()).thenAcceptAsync(playerData -> playerData.setCombatTagger(null));
     }
 
     @EventHandler
     public void onPlayerReCombatTag(PlayerReTagEvent event) {
-        System.out.println("test 3");
         this.plugin.getPlayerRepository().getByPlayer(event.getPlayer()).thenAcceptAsync(playerData -> playerData.setCombatTagger(new Killer(event.getEnemy().getName(), event.getEnemy().getCustomName(), event.getEnemy().getType())));
     }
 
     @EventHandler
     public void onPlayerLeaveCombatTagged(PlayerPunishEvent event) {
-        System.out.println("test 4");
         if (event.isCancelled()) {
             return;
         }

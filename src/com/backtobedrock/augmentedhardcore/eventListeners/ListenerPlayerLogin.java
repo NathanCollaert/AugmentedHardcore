@@ -3,38 +3,37 @@ package com.backtobedrock.augmentedhardcore.eventListeners;
 import com.backtobedrock.augmentedhardcore.domain.Ban;
 import com.backtobedrock.augmentedhardcore.domain.data.ServerData;
 import com.backtobedrock.augmentedhardcore.domain.enums.Permission;
+import com.backtobedrock.augmentedhardcore.runnables.Unban;
+import com.backtobedrock.augmentedhardcore.utilities.MessageUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerLoginEvent;
-import org.javatuples.Pair;
 
 public class ListenerPlayerLogin extends AbstractEventListener {
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void OnPlayerLogin(PlayerLoginEvent event) {
         ServerData serverData = this.plugin.getServerRepository().getServerDataSync();
         Player player = event.getPlayer();
-        Pair<Integer, Ban> ban = serverData.getBan(player);
+        Unban unban = serverData.getBan(player.getUniqueId());
+        Ban ban;
 
-        if (ban == null) {
-            return;
-        }
-
-        boolean hasPermission = player.hasPermission(Permission.BYPASS_BAN_SPECTATOR.getPermissionString());
-
-        if (event.getResult() != PlayerLoginEvent.Result.KICK_BANNED) {
-            if (!hasPermission) {
-                serverData.removeBan(player);
+        if (unban == null) {
+            ban = serverData.getOngoingIPBans().get(event.getAddress().getHostAddress());
+            if (ban == null) {
+                return;
             }
+        } else {
+            ban = unban.getBan().getValue1();
+        }
+
+        if (player.hasPermission(Permission.BYPASS_BAN_SPECTATOR.getPermissionString())) {
             return;
         }
 
-        if (hasPermission) {
-            event.allow();
-            return;
-        }
-
-        event.setKickMessage(ban.getValue1().getBanMessage());
+        String message = unban == null ? MessageUtils.replacePlaceholders(this.plugin.getMessages().getIPBanMessage(), ban.getPlaceholdersReplacements()) : ban.getBanMessage();
+        event.disallow(PlayerLoginEvent.Result.KICK_BANNED, message);
     }
 
     @Override

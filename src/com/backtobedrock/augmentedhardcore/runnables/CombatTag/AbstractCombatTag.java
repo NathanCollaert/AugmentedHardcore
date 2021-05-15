@@ -44,6 +44,7 @@ public class AbstractCombatTag extends BukkitRunnable {
     }
 
     protected void timerTask() {
+        //ignored
     }
 
     @Override

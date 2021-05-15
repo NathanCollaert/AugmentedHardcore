@@ -1,4 +1,4 @@
-package com.backtobedrock.augmentedhardcore.utils;
+package com.backtobedrock.augmentedhardcore.utilities;
 
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;

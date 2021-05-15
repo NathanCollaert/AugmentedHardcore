@@ -4,8 +4,8 @@ import com.backtobedrock.augmentedhardcore.domain.data.ServerData;
 import com.backtobedrock.augmentedhardcore.domain.enums.Permission;
 import com.backtobedrock.augmentedhardcore.guis.clickActions.AbstractClickAction;
 import com.backtobedrock.augmentedhardcore.guis.clickActions.ClickActionOpenUnDeathBanGui;
-import com.backtobedrock.augmentedhardcore.utils.InventoryUtils;
-import com.backtobedrock.augmentedhardcore.utils.MessageUtils;
+import com.backtobedrock.augmentedhardcore.utilities.InventoryUtils;
+import com.backtobedrock.augmentedhardcore.utilities.MessageUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -20,7 +20,7 @@ public class GuiServerDeathBans extends AbstractDeathBansGui {
 
     public GuiServerDeathBans(Player player, ServerData serverData) {
         super("Currently Ongoing Death Bans", serverData.getTotalOngoingBans());
-        serverData.getOngoingBans().forEach((key, value) -> this.bans.put(new Pair<>(Bukkit.getOfflinePlayer(key), value.getValue0()), value.getValue1()));
+        serverData.getOngoingBans().forEach((key, value) -> this.bans.put(new Pair<>(Bukkit.getOfflinePlayer(key), value.getBan().getValue0()), value.getBan().getValue1()));
         this.serverData = serverData;
         this.player = player;
         this.initialize();
@@ -34,7 +34,7 @@ public class GuiServerDeathBans extends AbstractDeathBansGui {
 
     private Map<String, String> getPlaceholders() {
         Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("total_death_bans", Integer.toString(this.serverData.getTotalBans()));
+        placeholders.put("total_death_bans", Integer.toString(this.serverData.getTotalDeathBans()));
         placeholders.put("total_ongoing_death_bans", Integer.toString(this.serverData.getTotalOngoingBans()));
         return placeholders;
     }

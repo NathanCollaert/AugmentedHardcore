@@ -4,7 +4,7 @@ import com.backtobedrock.augmentedhardcore.domain.data.PlayerData;
 import com.backtobedrock.augmentedhardcore.domain.enums.Command;
 import com.backtobedrock.augmentedhardcore.domain.enums.Permission;
 import com.backtobedrock.augmentedhardcore.domain.enums.TimePattern;
-import com.backtobedrock.augmentedhardcore.utils.MessageUtils;
+import com.backtobedrock.augmentedhardcore.utilities.MessageUtils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -56,7 +56,7 @@ public class CommandNextLifePart extends AbstractCommand {
     }
 
     private void sendSuccessMessage(PlayerData playerData) {
-        long nextLifePart = playerData.getTimeTillNextMaxHealth();
+        long nextLifePart = playerData.getTimeTillNextLifePart();
         this.cs.sendMessage(String.format("§a%s will receive a new §elife part %s§a.", this.cs instanceof Player && ((Player) this.cs).getUniqueId().toString().equals(playerData.getPlayer().getUniqueId().toString())
                         ? "You"
                         : playerData.getPlayer().getName()

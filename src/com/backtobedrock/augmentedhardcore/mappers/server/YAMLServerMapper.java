@@ -4,7 +4,6 @@ import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.Ban;
 import com.backtobedrock.augmentedhardcore.domain.data.ServerData;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -13,6 +12,7 @@ import org.javatuples.Pair;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
@@ -71,10 +71,10 @@ public class YAMLServerMapper implements IServerMapper {
     }
 
     @Override
-    public void deleteBanFromServerData(OfflinePlayer player, Pair<Integer, Ban> ban) {
+    public void deleteBanFromServerData(UUID uuid, Pair<Integer, Ban> ban) {
         CompletableFuture.runAsync(() -> {
             FileConfiguration config = this.getConfig();
-            config.set("OngoingBans." + player.getUniqueId(), null);
+            config.set("OngoingBans." + uuid, null);
             this.saveConfig(config);
         }).exceptionally(ex -> {
             ex.printStackTrace();

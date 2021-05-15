@@ -1,7 +1,7 @@
 package com.backtobedrock.augmentedhardcore.guis.clickActions;
 
 import com.backtobedrock.augmentedhardcore.guis.GuiUnDeathBan;
-import com.backtobedrock.augmentedhardcore.utils.PlayerUtils;
+import com.backtobedrock.augmentedhardcore.utilities.PlayerUtils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

@@ -3,7 +3,7 @@ package com.backtobedrock.augmentedhardcore.commands;
 import com.backtobedrock.augmentedhardcore.domain.enums.Command;
 import com.backtobedrock.augmentedhardcore.domain.enums.Permission;
 import com.backtobedrock.augmentedhardcore.guis.GuiPlayerDeathBans;
-import com.backtobedrock.augmentedhardcore.utils.PlayerUtils;
+import com.backtobedrock.augmentedhardcore.utilities.PlayerUtils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 

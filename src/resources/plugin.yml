@@ -11,48 +11,55 @@ commands:
   augmentedhardcore:
     aliases:
       - ah
+    description: "List of AugmentedHardcore commands"
   undeathban:
     permission: augmentedhardcore.undeathban
     aliases:
       - udb
-  deathbanreset:
-    permission: augmentedhardcore.bypass.ban.spectator
-    aliases:
-      - dbr
+    description: "Unban a player that was death banned"
   revive:
     permission: augmentedhardcore.revive
     aliases:
       - rev
+    description: "Give a life of your own to someone else"
   mystats:
     permission: augmentedhardcore.mystats
     aliases:
       - ms
+    description: "Check your AugmentedHardcore statistics"
   nextlifepart:
     permission: augmentedhardcore.nextlifepart
     aliases:
       - nlp
+    description: "Check when you will receive your next life part"
   nextmaxhealth:
     permission: augmentedhardcore.nextmaxhealth
     aliases:
       - nmh
+    description: "Check when you will receive your next max health increase"
   nextrevive:
     permission: augmentedhardcore.nextrevive
     aliases:
       - nr
+    description: "Check how much cooldown is left on the revive command"
   lifeparts:
     permission: augmentedhardcore.lifeparts
     aliases:
       - lp
+    description: "Check how many life parts you currently own"
   deathbans:
     permission: augmentedhardcore.deathbans
     aliases:
       - db
+    description: "Check your previous death bans"
   lives:
     permission: augmentedhardcore.lives
+    description: "Check how many lives you currently own"
   serverdeathbans:
     permission: augmentedhardcore.serverdeathbans
     aliases:
       - sdb
+    description: "Check the current ongoing death bans on the server"
 permissions:
   #BYPASSES
   augmentedhardcore.bypass.ban:
@@ -130,4 +137,8 @@ permissions:
   augmentedhardcore.addlifeparts:
     default: op
   augmentedhardcore.setlifeparts:
+    default: op
+  augmentedhardcore.addmaxhealth:
+    default: op
+  augmentedhardcore.setmaxhealth:
     default: op

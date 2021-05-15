@@ -1,10 +1,11 @@
-package com.backtobedrock.augmentedhardcore.utils;
+package com.backtobedrock.augmentedhardcore.utilities;
 
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.enums.*;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.entity.EntityType;
@@ -69,6 +70,14 @@ public class ConfigUtils {
             }
         }
         return lowercaseWorlds;
+    }
+
+    public static World getWorld(String worldName, World defaultWorld) {
+        World world = Bukkit.getWorld(worldName);
+        if (world == null) {
+            world = defaultWorld;
+        }
+        return world;
     }
 
     public static StorageType getStorageType(String id, String storageType) {

@@ -1,4 +1,4 @@
-package com.backtobedrock.augmentedhardcore.utils;
+package com.backtobedrock.augmentedhardcore.utilities;
 
 import com.backtobedrock.augmentedhardcore.domain.enums.TimePattern;
 import org.bukkit.ChatColor;

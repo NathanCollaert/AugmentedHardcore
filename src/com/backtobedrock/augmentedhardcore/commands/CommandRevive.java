@@ -3,7 +3,7 @@ package com.backtobedrock.augmentedhardcore.commands;
 import com.backtobedrock.augmentedhardcore.domain.enums.Command;
 import com.backtobedrock.augmentedhardcore.guis.AbstractGui;
 import com.backtobedrock.augmentedhardcore.guis.GuiRevive;
-import com.backtobedrock.augmentedhardcore.utils.PlayerUtils;
+import com.backtobedrock.augmentedhardcore.utilities.PlayerUtils;
 import org.bukkit.command.CommandSender;
 
 public class CommandRevive extends AbstractCommand {

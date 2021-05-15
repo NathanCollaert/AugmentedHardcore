@@ -5,8 +5,8 @@ import com.backtobedrock.augmentedhardcore.domain.configurationDomain.configurat
 import com.backtobedrock.augmentedhardcore.domain.enums.DamageCause;
 import com.backtobedrock.augmentedhardcore.domain.enums.DamageCauseType;
 import com.backtobedrock.augmentedhardcore.domain.enums.TimePattern;
-import com.backtobedrock.augmentedhardcore.utils.ConfigUtils;
-import com.backtobedrock.augmentedhardcore.utils.MessageUtils;
+import com.backtobedrock.augmentedhardcore.utilities.ConfigUtils;
+import com.backtobedrock.augmentedhardcore.utilities.MessageUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -22,7 +22,6 @@ public class Ban {
 
     //serializable
     private final LocalDateTime startDate;
-    private final LocalDateTime expirationDate;
     private final int banTime;
     private final DamageCause damageCause;
     private final DamageCauseType damageCauseType;
@@ -32,6 +31,7 @@ public class Ban {
     private final String deathMessage;
     private final long timeSincePreviousDeathBan;
     private final long timeSincePreviousDeath;
+    private LocalDateTime expirationDate;
 
     public Ban(LocalDateTime startDate, LocalDateTime expirationDate, int banTime, DamageCause damageCause, DamageCauseType damageCauseType, Location location, Killer killer, Killer inCombatWith, String deathMessage, long timeSincePreviousDeathBan, long timeSincePreviousDeath) {
         this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
@@ -111,6 +111,10 @@ public class Ban {
 
     public LocalDateTime getExpirationDate() {
         return expirationDate;
+    }
+
+    public void setExpirationDate(LocalDateTime expirationDate) {
+        this.expirationDate = expirationDate;
     }
 
     public int getBanTime() {

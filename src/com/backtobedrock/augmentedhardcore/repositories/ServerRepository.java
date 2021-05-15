@@ -7,11 +7,11 @@ import com.backtobedrock.augmentedhardcore.domain.enums.StorageType;
 import com.backtobedrock.augmentedhardcore.mappers.server.IServerMapper;
 import com.backtobedrock.augmentedhardcore.mappers.server.MySQLServerMapper;
 import com.backtobedrock.augmentedhardcore.mappers.server.YAMLServerMapper;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.javatuples.Pair;
 
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
@@ -26,7 +26,10 @@ public class ServerRepository {
     public ServerRepository() {
         this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
         this.initializeMapper();
-        this.getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> this.plugin.getLogger().log(Level.INFO, String.format("Loaded %d ongoing death %s.", serverData.getTotalOngoingBans(), serverData.getTotalOngoingBans() != 1 ? "bans" : "ban")));
+        this.getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> this.plugin.getLogger().log(Level.INFO, String.format("Loaded %d ongoing death %s.", serverData.getTotalOngoingBans(), serverData.getTotalOngoingBans() != 1 ? "bans" : "ban"))).exceptionally(e -> {
+            e.printStackTrace();
+            return null;
+        });
     }
 
     private void initializeMapper() {
@@ -67,7 +70,7 @@ public class ServerRepository {
         this.mapper.updateServerData(data);
     }
 
-    public void removeBanFromServerData(OfflinePlayer player, Pair<Integer, Ban> banPair) {
-        this.mapper.deleteBanFromServerData(player, banPair);
+    public void removeBanFromServerData(UUID uuid, Pair<Integer, Ban> banPair) {
+        this.mapper.deleteBanFromServerData(uuid, banPair);
     }
 }

@@ -5,7 +5,7 @@ import com.backtobedrock.augmentedhardcore.domain.enums.Permission;
 import com.backtobedrock.augmentedhardcore.domain.enums.TimePattern;
 import com.backtobedrock.augmentedhardcore.guis.clickActions.ClickActionOpenBansGui;
 import com.backtobedrock.augmentedhardcore.guis.clickActions.ClickActionOpenPlayerSelectionAnvilGui;
-import com.backtobedrock.augmentedhardcore.utils.MessageUtils;
+import com.backtobedrock.augmentedhardcore.utilities.MessageUtils;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;

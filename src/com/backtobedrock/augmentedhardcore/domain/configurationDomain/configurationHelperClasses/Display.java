@@ -1,9 +1,9 @@
 package com.backtobedrock.augmentedhardcore.domain.configurationDomain.configurationHelperClasses;
 
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
-import com.backtobedrock.augmentedhardcore.utils.ConfigUtils;
-import com.backtobedrock.augmentedhardcore.utils.InventoryUtils;
-import com.backtobedrock.augmentedhardcore.utils.MessageUtils;
+import com.backtobedrock.augmentedhardcore.utilities.ConfigUtils;
+import com.backtobedrock.augmentedhardcore.utilities.InventoryUtils;
+import com.backtobedrock.augmentedhardcore.utilities.MessageUtils;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;

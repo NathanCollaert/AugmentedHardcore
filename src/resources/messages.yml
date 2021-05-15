@@ -66,6 +66,9 @@ ReviveWhileInCombatBanMessage: "&c&lYou've Died\n\n&r&fYou have successfully rev
 #Placeholders: %ban_combat_tagger%
 CombatLogBanMessage: "&c&lYou've Died\n\n&r&fYou have logged out while in combat with &b%ban_combat_tagger%&r causing you to die and be banned.\nYou will be unbanned in &e%ban_time_left_long%&r."
 
+#Ban message when banned due to someone else on the same IP address getting banned while ban by IP is enabled.
+IPBanMessage: "&fSomeone on your IP address died due to %ban_damage_cause% causing you to be banned as well.\nYou will be unbanned in &e%ban_time_left_long%&r."
+
 
 ############################################################
 # +------------------------------------------------------+ #
