@@ -28,7 +28,11 @@ public class Unban extends BukkitRunnable {
     }
 
     private void stop() {
-        this.cancel();
+        try {
+            this.cancel();
+        } catch (IllegalStateException e) {
+            //ignore not scheduled yet
+        }
     }
 
     public void finish() {

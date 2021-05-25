@@ -3,7 +3,6 @@ package com.backtobedrock.augmentedhardcore.commands;
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.enums.Command;
 import com.backtobedrock.augmentedhardcore.domain.enums.Permission;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -70,7 +69,7 @@ public abstract class AbstractCommand {
 
     protected CompletableFuture<Boolean> hasPlayedBefore(String playerName) {
         return CompletableFuture.supplyAsync(() -> {
-            @SuppressWarnings("deprecation") OfflinePlayer player = Bukkit.getOfflinePlayer(playerName);
+            @SuppressWarnings("deprecation") OfflinePlayer player = this.plugin.getServer().getOfflinePlayer(playerName);
             if (!player.hasPlayedBefore()) {
                 this.cs.sendMessage(String.format("§c%s has not played on the server before.", player.getName()));
                 return false;

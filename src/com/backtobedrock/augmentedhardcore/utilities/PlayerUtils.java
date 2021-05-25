@@ -29,7 +29,9 @@ public class PlayerUtils {
                 amountChanged = Math.min(0, amountChanged + attribute.getBaseValue() - health);
             }
             attribute.setBaseValue(rawAmount);
-            player.setHealth(health + amountChanged);
+            if (health + amountChanged > 0) {
+                player.setHealth(health + amountChanged);
+            }
         }
     }
 

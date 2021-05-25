@@ -349,20 +349,22 @@ public class PlayerData {
         }
 
         //ban player
-        if (ban.getBanTime() > 0) {
-            if (this.plugin.getConfigurations().getDeathBanConfiguration().isLightningOnDeathBan() && !this.plugin.getConfigurations().getMiscellaneousConfiguration().isLightningOnDeath()) {
-                Bukkit.getScheduler().runTask(this.plugin, () -> this.player.getPlayer().getWorld().strikeLightningEffect(this.player.getPlayer().getLocation()));
-            }
-
-            if (!this.plugin.getConfigurations().getDeathBanConfiguration().getCommandsOnDeathBan().isEmpty() && this.player.getName() != null) {
-                this.plugin.getConfigurations().getDeathBanConfiguration().getCommandsOnDeathBan().forEach(e -> Bukkit.getScheduler().runTask(this.plugin, () -> Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), e.replaceAll("%player%", this.player.getName()))));
-            }
-
-            this.plugin.getServerRepository().getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> serverData.addBan(this, this.addBan(ban))).exceptionally(e -> {
-                e.printStackTrace();
-                return null;
-            });
+        if (ban.getBanTime() == 0) {
+            return;
         }
+
+        if (this.plugin.getConfigurations().getDeathBanConfiguration().isLightningOnDeathBan() && !this.plugin.getConfigurations().getMiscellaneousConfiguration().isLightningOnDeath()) {
+            Bukkit.getScheduler().runTask(this.plugin, () -> this.player.getPlayer().getWorld().strikeLightningEffect(this.player.getPlayer().getLocation()));
+        }
+
+        if (!this.plugin.getConfigurations().getDeathBanConfiguration().getCommandsOnDeathBan().isEmpty() && this.player.getName() != null) {
+            this.plugin.getConfigurations().getDeathBanConfiguration().getCommandsOnDeathBan().forEach(e -> Bukkit.getScheduler().runTask(this.plugin, () -> Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), e.replaceAll("%player%", this.player.getName()))));
+        }
+
+        this.plugin.getServerRepository().getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> serverData.addBan(this, this.addBan(ban))).exceptionally(e -> {
+            e.printStackTrace();
+            return null;
+        });
     }
 
     private Pair<Integer, Ban> addBan(Ban ban) {
@@ -761,7 +763,7 @@ public class PlayerData {
 
             if (this.getLives() == 1) {
                 this.reviving = new Killer(revivingData.getPlayer().getName(), revivingData.getPlayer().getPlayer() == null ? null : revivingData.getPlayer().getPlayer().getDisplayName(), EntityType.PLAYER);
-                Bukkit.getScheduler().runTask(this.plugin, () -> this.player.getPlayer().setHealth(0.0D));
+                this.player.getPlayer().setHealth(0.0D);
             } else {
                 int amount = this.plugin.getConfigurations().getReviveConfiguration().getLivesLostOnReviving();
                 this.decreaseLives(amount);
