@@ -18,7 +18,9 @@ public class ListenerEntityDeath extends AbstractEventListener {
             return;
         }
 
-        this.plugin.getPlayerRepository().getByPlayer((Player) entityDamageByEntityEvent.getDamager()).thenAcceptAsync(playerData -> playerData.onEntityKill(event.getEntity().getType())).exceptionally(ex -> {
+        Player player = (Player) entityDamageByEntityEvent.getDamager();
+
+        this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(playerData -> playerData.onEntityKill(event.getEntity().getType(), player)).exceptionally(ex -> {
             ex.printStackTrace();
             return null;
         });

@@ -103,6 +103,9 @@ public enum DamageCause {
                     "experienced kinetic energy"
             )
     ), //works
+    FREEZING(4320,
+            Collections.singletonList("froze to death")
+    ),//works
     HOT_FLOOR(4320,
             Arrays.asList(
                     "discovered the floor was %killer% and hot",

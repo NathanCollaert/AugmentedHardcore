@@ -32,7 +32,7 @@ public class ListenerPlayerDamageByEntity extends AbstractEventListener {
 
         Killer tagger = EventUtils.getDamageEventKiller(event);
 
-        this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(playerData -> playerData.onCombatTag(tagger)).exceptionally(ex -> {
+        this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(playerData -> playerData.onCombatTag(tagger, player)).exceptionally(ex -> {
             ex.printStackTrace();
             return null;
         });

@@ -5,8 +5,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -18,6 +20,10 @@ public class MessageUtils {
 
     public static long timeUnitToTicks(long time, TimeUnit unit) {
         return unit.toSeconds(time) * 20;
+    }
+
+    public static long timeBetweenDatesToTicks(LocalDateTime date1, LocalDateTime date2) {
+        return Math.abs(ChronoUnit.SECONDS.between(date1, date2)) * 20;
     }
 
     public static String getTimeFromTicks(long amount, TimePattern pattern) {

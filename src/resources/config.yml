@@ -248,6 +248,12 @@ BanTimes:
     DisplayMessages:
       - "experienced kinetic energy"
 
+  #Damage caused from freezing.
+  FREEZE:
+    BantTime: 4320
+    DisplayMessages:
+      - "froze to death"
+
   #Death caused by stepping on MAGMA_BLOCK.
   HOT_FLOOR:
     BanTime: 4320

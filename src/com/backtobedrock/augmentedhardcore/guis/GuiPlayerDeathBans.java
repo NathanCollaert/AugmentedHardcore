@@ -41,9 +41,9 @@ public class GuiPlayerDeathBans extends AbstractDeathBansGui {
         placeholders.put("last_ban_time_long", lastBan == null ? "-" : MessageUtils.getTimeFromTicks(MessageUtils.timeUnitToTicks(ChronoUnit.SECONDS.between(this.playerData.getLastDeathBan().getStartDate(), LocalDateTime.now()), TimeUnit.SECONDS), TimePattern.LONG));
         placeholders.put("last_ban_time_short", lastBan == null ? "-" : MessageUtils.getTimeFromTicks(MessageUtils.timeUnitToTicks(ChronoUnit.SECONDS.between(this.playerData.getLastDeathBan().getStartDate(), LocalDateTime.now()), TimeUnit.SECONDS), TimePattern.SHORT));
         placeholders.put("last_ban_time_digital", lastBan == null ? "-" : MessageUtils.getTimeFromTicks(MessageUtils.timeUnitToTicks(ChronoUnit.SECONDS.between(this.playerData.getLastDeathBan().getStartDate(), LocalDateTime.now()), TimeUnit.SECONDS), TimePattern.DIGITAL));
-        placeholders.put("last_death_time_long", player.getPlayer() == null ? "-" : MessageUtils.getTimeFromTicks(player.getPlayer().getStatistic(Statistic.TIME_SINCE_DEATH), TimePattern.LONG));
-        placeholders.put("last_death_time_short", player.getPlayer() == null ? "-" : MessageUtils.getTimeFromTicks(player.getPlayer().getStatistic(Statistic.TIME_SINCE_DEATH), TimePattern.SHORT));
-        placeholders.put("last_death_time_digital", player.getPlayer() == null ? "-" : MessageUtils.getTimeFromTicks(player.getPlayer().getStatistic(Statistic.TIME_SINCE_DEATH), TimePattern.DIGITAL));
+        placeholders.put("last_death_time_long", MessageUtils.getTimeFromTicks(MessageUtils.timeBetweenDatesToTicks(LocalDateTime.now(), playerData.getLastDeath()), TimePattern.LONG));
+        placeholders.put("last_death_time_short", MessageUtils.getTimeFromTicks(MessageUtils.timeBetweenDatesToTicks(LocalDateTime.now(), playerData.getLastDeath()), TimePattern.SHORT));
+        placeholders.put("last_death_time_digital", MessageUtils.getTimeFromTicks(MessageUtils.timeBetweenDatesToTicks(LocalDateTime.now(), playerData.getLastDeath()), TimePattern.DIGITAL));
         return placeholders;
     }
 

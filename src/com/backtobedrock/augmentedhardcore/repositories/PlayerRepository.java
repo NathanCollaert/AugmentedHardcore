@@ -30,7 +30,7 @@ public class PlayerRepository {
 
     public void onReload() {
         this.initializeMapper();
-        this.playerCache.values().forEach(PlayerData::onReload);
+        this.playerCache.forEach((key, value) -> value.onReload(this.plugin.getServer().getPlayer(key)));
     }
 
     private void initializeMapper() {

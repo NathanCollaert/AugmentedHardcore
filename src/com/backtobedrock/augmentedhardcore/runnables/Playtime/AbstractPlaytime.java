@@ -2,6 +2,7 @@ package com.backtobedrock.augmentedhardcore.runnables.Playtime;
 
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.data.PlayerData;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -11,8 +12,9 @@ public abstract class AbstractPlaytime extends BukkitRunnable {
     protected final PlayerData playerData;
     protected final int period;
     protected int timer;
+    protected Player player;
 
-    public AbstractPlaytime(PlayerData playerData) {
+    public AbstractPlaytime(PlayerData playerData, Player player) {
         this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
         this.playerData = playerData;
         this.period = 20;

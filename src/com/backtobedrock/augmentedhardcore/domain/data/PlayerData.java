@@ -29,6 +29,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.javatuples.Pair;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class PlayerData {
@@ -49,11 +50,13 @@ public class PlayerData {
     private long timeTillNextLifePart;
     private long timeTillNextMaxHealth;
     private boolean spectatorBanned;
+    private LocalDateTime lastDeath;
 
     public PlayerData(OfflinePlayer player) {
         this(
                 player,
                 null,
+                LocalDateTime.now(),
                 JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getLivesAtStart(),
                 JavaPlugin.getPlugin(AugmentedHardcore.class).getConfigurations().getLivesAndLifePartsConfiguration().getLifePartsAtStart(),
                 false,
@@ -64,8 +67,9 @@ public class PlayerData {
         );
     }
 
-    public PlayerData(OfflinePlayer player, String lastKnownIp, int lives, int lifeParts, boolean spectatorBanned, long timeTillNextRevive, long timeTillNextLifePart, long timeTillNextMaxHealth, NavigableMap<Integer, Ban> bans) {
+    public PlayerData(OfflinePlayer player, String lastKnownIp, LocalDateTime lastDeath, int lives, int lifeParts, boolean spectatorBanned, long timeTillNextRevive, long timeTillNextLifePart, long timeTillNextMaxHealth, NavigableMap<Integer, Ban> bans) {
         this.player = player;
+        this.lastDeath = lastDeath;
         this.bans = bans;
         this.observers = new HashMap<>();
         this.spectatorBanned = spectatorBanned;
@@ -85,6 +89,7 @@ public class PlayerData {
 
         NavigableMap<Integer, Ban> cBans = new TreeMap<>();
         String cLastKnownIp = section.getString("LastKnownIp", null);
+        LocalDateTime cLastDeath = LocalDateTime.parse(section.getString("LastDeath", LocalDateTime.now().toString()));
         int cLives = section.getInt("Lives", plugin.getConfigurations().getLivesAndLifePartsConfiguration().getLivesAtStart());
         int cLifeParts = section.getInt("LifeParts", plugin.getConfigurations().getLivesAndLifePartsConfiguration().getLifePartsAtStart());
         boolean cSpectatorBanned = section.getBoolean("SpectatorBanned", false);
@@ -103,7 +108,7 @@ public class PlayerData {
             }
         }
 
-        return new PlayerData(player, cLastKnownIp, cLives, cLifeParts, cSpectatorBanned, cTimeTillNextRevive, cTimeTillNextLifePart, cTimeTillNextMaxHealth, cBans);
+        return new PlayerData(player, cLastKnownIp, cLastDeath, cLives, cLifeParts, cSpectatorBanned, cTimeTillNextRevive, cTimeTillNextLifePart, cTimeTillNextMaxHealth, cBans);
     }
 
     public long getTimeTillNextRevive() {
@@ -170,116 +175,92 @@ public class PlayerData {
         this.setLifeParts(this.getLifeParts() + amount);
     }
 
-    public void onDeath(PlayerDeathEvent event) {
+    public void onDeath(PlayerDeathEvent event, Player player) {
         if (this.isSpectatorBanned()) {
             return;
         }
 
-        if (this.player.getPlayer() != null && this.plugin.getConfigurations().getMiscellaneousConfiguration().isLightningOnDeath()) {
-            Bukkit.getScheduler().runTask(this.plugin, () -> this.player.getPlayer().getWorld().strikeLightningEffect(this.player.getPlayer().getLocation()));
+        if (this.plugin.getConfigurations().getMiscellaneousConfiguration().isLightningOnDeath()) {
+            Bukkit.getScheduler().runTask(this.plugin, () -> player.getWorld().strikeLightningEffect(player.getLocation()));
         }
 
         if (!this.plugin.getConfigurations().getMiscellaneousConfiguration().getCommandsOnDeath().isEmpty() && this.player.getName() != null) {
             this.plugin.getConfigurations().getMiscellaneousConfiguration().getCommandsOnDeath().forEach(e -> Bukkit.getScheduler().runTask(this.plugin, () -> Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), e.replaceAll("%player%", this.player.getName()))));
         }
 
-        this.loseLives(this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getLivesLostPerDeath());
+        this.loseLives(this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getLivesLostPerDeath(), player);
 
-        this.loseMaxHealth(this.plugin.getConfigurations().getMaxHealthConfiguration().getMaxHealthDecreasePerDeath());
+        this.loseMaxHealth(this.plugin.getConfigurations().getMaxHealthConfiguration().getMaxHealthDecreasePerDeath(), player);
 
         if (this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().isUseLives()) {
             if (this.lives == 0) {
-                this.loseLifeParts(this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getLifePartsLostPerDeathBan());
-                this.ban(event);
+                this.loseLifeParts(this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getLifePartsLostPerDeathBan(), player);
+                this.ban(event, player);
             } else {
-                this.loseLifeParts(this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getLifePartsLostPerDeath());
+                this.loseLifeParts(this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getLifePartsLostPerDeath(), player);
             }
         } else {
-            this.loseLifeParts(this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getLifePartsLostPerDeath());
-            this.ban(event);
+            this.loseLifeParts(this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getLifePartsLostPerDeath(), player);
+            this.ban(event, player);
         }
 
         this.unCombatTag();
 
-        this.respawn();
+        this.respawn(player);
+
+        this.lastDeath = LocalDateTime.now();
 
         this.plugin.getPlayerRepository().updatePlayerData(this);
     }
 
-    private void respawn() {
-        if (this.player.getPlayer() == null) {
-            return;
-        }
-
-        if (!this.player.getPlayer().isDead()) {
+    private void respawn(Player player) {
+        if (!player.isDead()) {
             return;
         }
 
         if (!this.plugin.getConfigurations().getMiscellaneousConfiguration().isDeathScreen()) {
-            Bukkit.getScheduler().runTaskLater(this.plugin, () -> {
-                if (this.player.getPlayer() == null) {
-                    return;
-                }
-
-                this.player.getPlayer().spigot().respawn();
-            }, 1L);
+            Bukkit.getScheduler().runTaskLater(this.plugin, () -> player.spigot().respawn(), 1L);
         }
     }
 
-    private void loseMaxHealth(double amount) {
-        if (this.player.getPlayer() == null) {
-            return;
-        }
-
+    private void loseMaxHealth(double amount, Player player) {
         if (!this.plugin.getConfigurations().getMaxHealthConfiguration().isUseMaxHealth()) {
             return;
         }
 
-        if (this.player.getPlayer().hasPermission(Permission.BYPASS_LOSEMAXHEALTH.getPermissionString())) {
+        if (player.hasPermission(Permission.BYPASS_LOSEMAXHEALTH.getPermissionString())) {
             return;
         }
 
-        if (this.plugin.getConfigurations().getMaxHealthConfiguration().getDisableLosingMaxHealthInWorlds().contains(this.player.getPlayer().getWorld().getName().toLowerCase())) {
+        if (this.plugin.getConfigurations().getMaxHealthConfiguration().getDisableLosingMaxHealthInWorlds().contains(player.getWorld().getName().toLowerCase())) {
             return;
         }
 
-        this.decreaseMaxHealth(amount);
+        this.decreaseMaxHealth(amount, player);
     }
 
-    private void decreaseMaxHealth(double amount) {
-        if (this.player.getPlayer() == null) {
-            return;
-        }
-
-        PlayerUtils.setMaxHealth(this.player.getPlayer(), PlayerUtils.getMaxHealth(this.player.getPlayer()) - amount);
+    private void decreaseMaxHealth(double amount, Player player) {
+        PlayerUtils.setMaxHealth(player, PlayerUtils.getMaxHealth(player) - amount);
         this.observers.forEach((key, value) -> value.get(MyStatsMaxHealthObserver.class).update());
     }
 
-    private void increaseMaxHealth(double amount) {
-        if (this.player.getPlayer() == null) {
-            return;
-        }
-
-        PlayerUtils.setMaxHealth(this.player.getPlayer(), PlayerUtils.getMaxHealth(this.player.getPlayer()) + amount);
+    private void increaseMaxHealth(double amount, Player player) {
+        PlayerUtils.setMaxHealth(player, PlayerUtils.getMaxHealth(player) + amount);
         this.observers.forEach((key, value) -> value.get(MyStatsMaxHealthObserver.class).update());
     }
 
-    private void loseLives(int amount) {
-        if (this.player.getPlayer() == null) {
-            return;
-        }
-
+    private void loseLives(int amount, Player player) {
         if (!this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().isUseLives()) {
             return;
         }
 
         //check if permission to bypass
-        if (this.player.getPlayer().hasPermission(Permission.BYPASS_LOSELIVES.getPermissionString())) {
+        if (player.hasPermission(Permission.BYPASS_LOSELIVES.getPermissionString())) {
             return;
         }
 
         //check if in disabled world
-        if (this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getDisableLosingLivesInWorlds().contains(this.player.getPlayer().getWorld().getName().toLowerCase())) {
+        if (this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getDisableLosingLivesInWorlds().contains(player.getWorld().getName().toLowerCase())) {
             return;
         }
 
@@ -287,22 +268,18 @@ public class PlayerData {
         this.decreaseLives(amount);
     }
 
-    private void loseLifeParts(int amount) {
-        if (this.player.getPlayer() == null) {
-            return;
-        }
-
+    private void loseLifeParts(int amount, Player player) {
         if (!this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().isUseLifeParts()) {
             return;
         }
 
         //check if permission to bypass
-        if (this.player.getPlayer().hasPermission(Permission.BYPASS_LOSELIFEPARTS.getPermissionString())) {
+        if (player.hasPermission(Permission.BYPASS_LOSELIFEPARTS.getPermissionString())) {
             return;
         }
 
         //check if in disabled world
-        if (this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getDisableLosingLifePartsInWorlds().contains(this.player.getPlayer().getWorld().getName().toLowerCase())) {
+        if (this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getDisableLosingLifePartsInWorlds().contains(player.getWorld().getName().toLowerCase())) {
             return;
         }
 
@@ -310,22 +287,18 @@ public class PlayerData {
         this.decreaseLifeParts(amount);
     }
 
-    private void ban(PlayerDeathEvent event) {
-        if (this.player.getPlayer() == null) {
-            return;
-        }
-
+    private void ban(PlayerDeathEvent event, Player player) {
         if (!this.plugin.getConfigurations().getDeathBanConfiguration().isUseDeathBan()) {
             return;
         }
 
         //Check if permission to bypass
-        if (this.player.getPlayer().hasPermission(Permission.BYPASS_BAN.getPermissionString())) {
+        if (player.hasPermission(Permission.BYPASS_BAN.getPermissionString())) {
             return;
         }
 
         //check if in disabled world
-        if (this.plugin.getConfigurations().getDeathBanConfiguration().getDisableBanInWorlds().contains(this.player.getPlayer().getWorld().getName().toLowerCase())) {
+        if (this.plugin.getConfigurations().getDeathBanConfiguration().getDisableBanInWorlds().contains(player.getWorld().getName().toLowerCase())) {
             return;
         }
 
@@ -341,10 +314,10 @@ public class PlayerData {
             tagger = null;
         }
 
-        Ban ban = EventUtils.getDeathBan(this.player.getPlayer(), this, cause, killer, tagger, event.getDeathMessage(), EventUtils.getDamageCauseTypeFromEntityDamageEvent(damageEvent));
+        Ban ban = EventUtils.getDeathBan(player, this, cause, killer, tagger, event.getDeathMessage(), EventUtils.getDamageCauseTypeFromEntityDamageEvent(damageEvent));
 
         //check if not killed due to self harm if disabled
-        if (!this.plugin.getConfigurations().getDeathBanConfiguration().isSelfHarmBan() && ban.getKiller() != null && ban.getKiller().getName().equals(this.player.getPlayer().getName())) {
+        if (!this.plugin.getConfigurations().getDeathBanConfiguration().isSelfHarmBan() && ban.getKiller() != null && ban.getKiller().getName().equals(player.getName())) {
             return;
         }
 
@@ -354,14 +327,14 @@ public class PlayerData {
         }
 
         if (this.plugin.getConfigurations().getDeathBanConfiguration().isLightningOnDeathBan() && !this.plugin.getConfigurations().getMiscellaneousConfiguration().isLightningOnDeath()) {
-            Bukkit.getScheduler().runTask(this.plugin, () -> this.player.getPlayer().getWorld().strikeLightningEffect(this.player.getPlayer().getLocation()));
+            Bukkit.getScheduler().runTask(this.plugin, () -> player.getWorld().strikeLightningEffect(player.getLocation()));
         }
 
         if (!this.plugin.getConfigurations().getDeathBanConfiguration().getCommandsOnDeathBan().isEmpty() && this.player.getName() != null) {
             this.plugin.getConfigurations().getDeathBanConfiguration().getCommandsOnDeathBan().forEach(e -> Bukkit.getScheduler().runTask(this.plugin, () -> Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), e.replaceAll("%player%", this.player.getName()))));
         }
 
-        this.plugin.getServerRepository().getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> serverData.addBan(this, this.addBan(ban))).exceptionally(e -> {
+        this.plugin.getServerRepository().getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> serverData.addBan(this, player, this.addBan(ban))).exceptionally(e -> {
             e.printStackTrace();
             return null;
         });
@@ -374,12 +347,8 @@ public class PlayerData {
         return new Pair<>(key, ban);
     }
 
-    public void onRespawn() {
+    public void onRespawn(Player player) {
         if (this.isSpectatorBanned()) {
-            return;
-        }
-
-        if (this.player.getPlayer() == null) {
             return;
         }
 
@@ -396,32 +365,28 @@ public class PlayerData {
         }
 
         if (this.plugin.getConfigurations().getMaxHealthConfiguration().isUseMaxHealth() && this.plugin.getConfigurations().getMaxHealthConfiguration().getMaxHealthAfterBan() != -1) {
-            PlayerUtils.setMaxHealth(this.player.getPlayer(), this.plugin.getConfigurations().getMaxHealthConfiguration().getMaxHealthAfterBan());
-            this.player.getPlayer().setHealth(PlayerUtils.getMaxHealth(this.player.getPlayer()));
+            PlayerUtils.setMaxHealth(player, this.plugin.getConfigurations().getMaxHealthConfiguration().getMaxHealthAfterBan());
+            player.setHealth(PlayerUtils.getMaxHealth(player));
         }
 
         this.plugin.getPlayerRepository().updatePlayerData(this);
     }
 
-    public void onEntityKill(EntityType type) {
+    public void onEntityKill(EntityType type, Player player) {
         if (this.isSpectatorBanned()) {
             return;
         }
 
         //gain life parts on kill
-        this.onLifePartsEntityKill(type);
+        this.onLifePartsEntityKill(type, player);
 
         //gain max health on kill
-        this.onMaxHealthEntityKill(type);
+        this.onMaxHealthEntityKill(type, player);
 
         this.plugin.getPlayerRepository().updatePlayerData(this);
     }
 
-    private void onLifePartsEntityKill(EntityType type) {
-        if (this.player.getPlayer() == null) {
-            return;
-        }
-
+    private void onLifePartsEntityKill(EntityType type, Player player) {
         if (!this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().isUseLifeParts()) {
             return;
         }
@@ -431,19 +396,15 @@ public class PlayerData {
         }
 
         //check if permission to gain life parts for kill
-        if (this.player.getPlayer().hasPermission(Permission.BYPASS_GAINLIFEPARTS_KILL.getPermissionString())) {
+        if (player.hasPermission(Permission.BYPASS_GAINLIFEPARTS_KILL.getPermissionString())) {
             return;
         }
 
         //gain life parts
-        this.gainLifeParts(this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getLifePartsPerKill().getOrDefault(type, 0));
+        this.gainLifeParts(this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getLifePartsPerKill().getOrDefault(type, 0), player);
     }
 
-    private void onMaxHealthEntityKill(EntityType type) {
-        if (this.player.getPlayer() == null) {
-            return;
-        }
-
+    private void onMaxHealthEntityKill(EntityType type, Player player) {
         if (!this.plugin.getConfigurations().getMaxHealthConfiguration().isUseMaxHealth()) {
             return;
         }
@@ -453,46 +414,34 @@ public class PlayerData {
         }
 
         //check if permission to gain max health for kill
-        if (this.player.getPlayer().hasPermission(Permission.BYPASS_GAINMAXHEALTH_KILL.getPermissionString())) {
+        if (player.hasPermission(Permission.BYPASS_GAINMAXHEALTH_KILL.getPermissionString())) {
             return;
         }
 
         //increase max health
-        this.gainMaxHealth(this.plugin.getConfigurations().getMaxHealthConfiguration().getMaxHealthIncreasePerKill().getOrDefault(type, 0D));
+        this.gainMaxHealth(this.plugin.getConfigurations().getMaxHealthConfiguration().getMaxHealthIncreasePerKill().getOrDefault(type, 0D), player);
     }
 
-    private void gainLifeParts(int amount) {
-        if (this.player.getPlayer() == null) {
-            return;
-        }
-
+    private void gainLifeParts(int amount, Player player) {
         //check if in disabled world
-        if (this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getDisableGainingLifePartsInWorlds().contains(this.player.getPlayer().getWorld().getName().toLowerCase())) {
+        if (this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getDisableGainingLifePartsInWorlds().contains(player.getWorld().getName().toLowerCase())) {
             return;
         }
 
         this.increaseLifeParts(amount);
     }
 
-    private void gainMaxHealth(double amount) {
-        if (this.player.getPlayer() == null) {
-            return;
-        }
-
+    private void gainMaxHealth(double amount, Player player) {
         //check if in disabled world
-        if (this.plugin.getConfigurations().getMaxHealthConfiguration().getDisableGainingMaxHealthInWorlds().contains(this.player.getPlayer().getWorld().getName().toLowerCase())) {
+        if (this.plugin.getConfigurations().getMaxHealthConfiguration().getDisableGainingMaxHealthInWorlds().contains(player.getWorld().getName().toLowerCase())) {
             return;
         }
 
-        this.increaseMaxHealth(amount);
+        this.increaseMaxHealth(amount, player);
     }
 
-    public void onCombatTag(Killer tagger) {
+    public void onCombatTag(Killer tagger, Player player) {
         if (this.isSpectatorBanned()) {
-            return;
-        }
-
-        if (this.player.getPlayer() == null) {
             return;
         }
 
@@ -506,14 +455,14 @@ public class PlayerData {
         }
 
         //check if in disabled worlds
-        if (this.plugin.getConfigurations().getCombatTagConfiguration().getDisableCombatTagInWorlds().contains(this.player.getPlayer().getWorld().getName().toLowerCase())) {
+        if (this.plugin.getConfigurations().getCombatTagConfiguration().getDisableCombatTagInWorlds().contains(player.getWorld().getName().toLowerCase())) {
             return;
         }
 
         if (!this.combatTag.isEmpty()) {
             this.combatTag.forEach(e -> e.restart(tagger));
         } else {
-            this.combatTag = this.plugin.getMessages().getCombatTagNotificationsConfiguration(this.player.getPlayer(), this, tagger);
+            this.combatTag = this.plugin.getMessages().getCombatTagNotificationsConfiguration(player, this, tagger);
             this.combatTag.forEach(AbstractCombatTag::start);
         }
     }
@@ -528,53 +477,47 @@ public class PlayerData {
         }
     }
 
-    public void onJoin() {
-        if (this.player.getPlayer() == null) {
-            return;
-        }
-
+    public void onJoin(Player player) {
         //get rid of death screen after death ban if disabled
-        this.respawn();
+        this.respawn(player);
 
         //if spectator banned, check if still banned or still in spectator
         if (this.isSpectatorBanned()) {
             if (!this.plugin.getServerRepository().getServerDataSync().isDeathBanned(this.player.getUniqueId())) {
-                this.resetSpectatorDeathBan();
-            } else if (this.player.getPlayer().getGameMode() != GameMode.SPECTATOR) {
-                Bukkit.getScheduler().runTask(this.plugin, () -> this.player.getPlayer().setGameMode(GameMode.SPECTATOR));
+                this.resetSpectatorDeathBan(player);
+            } else if (player.getGameMode() != GameMode.SPECTATOR) {
+                Bukkit.getScheduler().runTask(this.plugin, () -> player.setGameMode(GameMode.SPECTATOR));
             }
         }
 
-        if (this.player.getPlayer().getHealth() != 0D) {
+        if (player.getHealth() != 0D) {
             //fix visual bug from Minecraft when max health is higher than 20
-            this.player.getPlayer().setHealth(this.player.getPlayer().getHealth());
+            player.setHealth(player.getHealth());
         }
 
-        this.startPlaytimeRunnables();
+        this.startPlaytimeRunnables(player);
     }
 
-    public void startPlaytimeRunnables() {
+    public void startPlaytimeRunnables(Player player) {
         this.stopPlaytimeRunnables();
 
         if (this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().isUseLifeParts() && this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().isGetLifePartsByPlaytime() && !this.isSpectatorBanned()) {
-            this.playtime.add(new PlaytimeLifePart(this));
+            this.playtime.add(new PlaytimeLifePart(this, player));
         }
 
         if (this.plugin.getConfigurations().getMaxHealthConfiguration().isUseMaxHealth() && this.plugin.getConfigurations().getMaxHealthConfiguration().isGetMaxHealthByPlaytime() && !this.isSpectatorBanned()) {
-            this.playtime.add(new PlaytimeMaxHealth(this));
+            this.playtime.add(new PlaytimeMaxHealth(this, player));
         }
 
-        if (this.plugin.getConfigurations().getReviveConfiguration().isUseRevive() && this.plugin.getConfigurations().getReviveConfiguration().getTimeBetweenRevives() > 0 && !this.isSpectatorBanned() && !this.player.getPlayer().hasPermission(Permission.BYPASS_REVIVECOOLDOWN.getPermissionString())) {
-            this.playtime.add(new PlaytimeRevive(this));
+        if (this.plugin.getConfigurations().getReviveConfiguration().isUseRevive() && this.plugin.getConfigurations().getReviveConfiguration().getTimeBetweenRevives() > 0 && !this.isSpectatorBanned() && !player.hasPermission(Permission.BYPASS_REVIVECOOLDOWN.getPermissionString())) {
+            this.playtime.add(new PlaytimeRevive(this, player));
         }
 
         this.playtime.forEach(AbstractPlaytime::start);
     }
 
-    public void resetSpectatorDeathBan() {
-        Player player = this.player.getPlayer();
-
-        if (player == null) {
+    public void resetSpectatorDeathBan(Player player) {
+        if (!this.isSpectatorBanned()) {
             return;
         }
 
@@ -588,17 +531,13 @@ public class PlayerData {
         Bukkit.getScheduler().runTask(this.plugin, () -> player.teleport(location == null ? this.plugin.getConfigurations().getDeathBanConfiguration().getSpectatorBanRespawnWorld().getSpawnLocation() : location));
 
         //run onRespawn to set player data to as if they just respawned
-        this.onRespawn();
+        this.onRespawn(player);
 
-        this.startPlaytimeRunnables();
+        this.startPlaytimeRunnables(player);
     }
 
-    public void decreaseTimeTillNextLifePart(int amount) {
+    public void decreaseTimeTillNextLifePart(int amount, Player player) {
         if (this.isSpectatorBanned()) {
-            return;
-        }
-
-        if (this.player.getPlayer() == null) {
             return;
         }
 
@@ -610,11 +549,11 @@ public class PlayerData {
             return;
         }
 
-        if (this.player.getPlayer().hasPermission(Permission.BYPASS_GAINLIFEPARTS_PLAYTIME.getPermissionString())) {
+        if (player.hasPermission(Permission.BYPASS_GAINLIFEPARTS_PLAYTIME.getPermissionString())) {
             return;
         }
 
-        if (this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getDisableGainingLifePartsInWorlds().contains(this.player.getPlayer().getWorld().getName().toLowerCase())) {
+        if (this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getDisableGainingLifePartsInWorlds().contains(player.getWorld().getName().toLowerCase())) {
             return;
         }
 
@@ -624,19 +563,15 @@ public class PlayerData {
 
         long decreased = this.getTimeTillNextLifePart() - amount;
         if (decreased <= 0) {
-            this.gainLifeParts(1);
+            this.gainLifeParts(1, player);
             this.setTimeTillNextLifePart(this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getPlaytimePerLifePart() - Math.abs(decreased));
         } else {
             this.setTimeTillNextLifePart(decreased);
         }
     }
 
-    public void decreaseTimeTillNextMaxHealth(int amount) {
+    public void decreaseTimeTillNextMaxHealth(int amount, Player player) {
         if (this.isSpectatorBanned()) {
-            return;
-        }
-
-        if (this.player.getPlayer() == null) {
             return;
         }
 
@@ -648,22 +583,22 @@ public class PlayerData {
             return;
         }
 
-        if (this.player.getPlayer().hasPermission(Permission.BYPASS_GAINMAXHEALTH_PLAYTIME.getPermissionString())) {
+        if (player.hasPermission(Permission.BYPASS_GAINMAXHEALTH_PLAYTIME.getPermissionString())) {
             return;
         }
 
-        if (this.plugin.getConfigurations().getMaxHealthConfiguration().getDisableGainingMaxHealthInWorlds().contains(this.player.getPlayer().getWorld().getName().toLowerCase())) {
+        if (this.plugin.getConfigurations().getMaxHealthConfiguration().getDisableGainingMaxHealthInWorlds().contains(player.getWorld().getName().toLowerCase())) {
             return;
         }
 
-        double value = PlayerUtils.getMaxHealth(this.player.getPlayer());
+        double value = PlayerUtils.getMaxHealth(player);
         if (value >= this.plugin.getConfigurations().getMaxHealthConfiguration().getMaxHealth()) {
             return;
         }
 
         long decreased = this.getTimeTillNextMaxHealth() - amount;
         if (decreased <= 0) {
-            this.gainMaxHealth(1D);
+            this.gainMaxHealth(1D, player);
             this.setTimeTillNextMaxHealth(this.plugin.getConfigurations().getMaxHealthConfiguration().getPlaytimePerHalfHeart() - Math.abs(decreased));
         } else {
             this.setTimeTillNextMaxHealth(decreased);
@@ -672,10 +607,6 @@ public class PlayerData {
 
     public void decreaseTimeTillNextRevive(int amount) {
         if (this.isSpectatorBanned()) {
-            return;
-        }
-
-        if (this.player.getPlayer() == null) {
             return;
         }
 
@@ -699,11 +630,7 @@ public class PlayerData {
         this.observers.forEach((key, value) -> value.get(MyStatsTimeTillNextMaxHealthObserver.class).update());
     }
 
-    public void onLeave() {
-        if (this.player.getPlayer() == null) {
-            return;
-        }
-
+    public void onLeave(Player player) {
         this.stopPlaytimeRunnables();
 
         if (this.plugin.getConfigurations().getCombatTagConfiguration().isUseCombatTag()) {
@@ -712,7 +639,7 @@ public class PlayerData {
                 this.kicked = false;
             } else if (this.isCombatTagged()) {
                 this.combatLogged = true;
-                this.player.getPlayer().setHealth(0.0D);
+                player.setHealth(0.0D);
             }
         }
 
@@ -727,114 +654,104 @@ public class PlayerData {
         }
     }
 
-    public void onReviving(PlayerData revivingData) {
-        if (this.player.getPlayer() == null) {
+    public void onReviving(PlayerData revivingData, Player reviverPlayer) {
+        if (!this.checkRevivePermissionsReviver(revivingData.getPlayer(), reviverPlayer)) {
             return;
         }
 
-        if (!this.checkRevivePermissionsReviver(revivingData.getPlayer())) {
-            return;
-        }
-
-        if (!this.checkRevivePermissionsReviving(revivingData)) {
+        if (!this.checkRevivePermissionsReviving(revivingData, reviverPlayer)) {
             return;
         }
 
         this.plugin.getServerRepository().getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> {
             if (revivingData.getLives() == 0) {
-                if (!this.player.getPlayer().hasPermission(Permission.GAIN_REVIVE_DEATH.getPermissionString())) {
-                    this.player.getPlayer().sendMessage("§cYou don't have the right permission to give lives to a dead banned player.");
+                if (!reviverPlayer.hasPermission(Permission.GAIN_REVIVE_DEATH.getPermissionString())) {
+                    reviverPlayer.sendMessage("§cYou don't have the right permission to give lives to a dead banned player.");
                     return;
                 }
 
                 if (!serverData.unDeathBan(revivingData.getPlayer().getUniqueId())) {
-                    this.player.getPlayer().sendMessage(String.format("%s is not death banned and cannot be given a life right now.", revivingData.getPlayer().getName()));
+                    reviverPlayer.sendMessage(String.format("%s is not death banned and cannot be given a life right now.", revivingData.getPlayer().getName()));
                     return;
                 }
             } else {
-                if (!this.player.getPlayer().hasPermission(Permission.GAIN_REVIVE_ALIVE.getPermissionString())) {
-                    this.player.getPlayer().sendMessage("§cYou don't have the right permission to give lives to an alive player.");
+                if (!reviverPlayer.hasPermission(Permission.GAIN_REVIVE_ALIVE.getPermissionString())) {
+                    reviverPlayer.sendMessage("§cYou don't have the right permission to give lives to an alive player.");
                     return;
                 }
             }
-            revivingData.onRevive(this.player);
+            revivingData.onRevive(reviverPlayer);
 
             this.setTimeTillNextRevive(this.plugin.getConfigurations().getReviveConfiguration().getTimeBetweenRevives());
 
             if (this.getLives() == 1) {
                 this.reviving = new Killer(revivingData.getPlayer().getName(), revivingData.getPlayer().getPlayer() == null ? null : revivingData.getPlayer().getPlayer().getDisplayName(), EntityType.PLAYER);
-                this.player.getPlayer().setHealth(0.0D);
+                reviverPlayer.setHealth(0.0D);
             } else {
                 int amount = this.plugin.getConfigurations().getReviveConfiguration().getLivesLostOnReviving();
                 this.decreaseLives(amount);
-                this.player.getPlayer().sendMessage(String.format("§aSuccessfully given §e%s§a to §e%s§a, you have §e%s §aleft.", amount + (amount > 1 ? " lives" : " life"), revivingData.getPlayer().getName(), this.getLives() + (this.getLives() > 1 ? " lives" : " life")));
+                reviverPlayer.sendMessage(String.format("§aSuccessfully given §e%s§a to §e%s§a, you have §e%s §aleft.", amount + (amount > 1 ? " lives" : " life"), revivingData.getPlayer().getName(), this.getLives() + (this.getLives() > 1 ? " lives" : " life")));
             }
 
             this.plugin.getPlayerRepository().updatePlayerData(this);
         });
     }
 
-    public boolean checkRevivePermissionsReviving(PlayerData revivingData) {
+    public boolean checkRevivePermissionsReviving(PlayerData revivingData, Player player) {
         //check if player already on max lives
         if (revivingData.getLives() == this.plugin.getConfigurations().getLivesAndLifePartsConfiguration().getMaxLives()) {
-            if (this.player.getPlayer() != null) {
-                this.player.getPlayer().sendMessage(String.format("§c%s already has the maximum amount of lives.", revivingData.getPlayer().getName()));
-            }
+            player.sendMessage(String.format("§c%s already has the maximum amount of lives.", revivingData.getPlayer().getName()));
             return false;
         }
         return true;
     }
 
-    public boolean checkRevivePermissionsReviver(OfflinePlayer reviving) {
-        if (this.player.getPlayer() == null) {
-            return false;
-        }
-
+    public boolean checkRevivePermissionsReviver(OfflinePlayer reviving, Player player) {
         if (this.isSpectatorBanned()) {
-            this.player.getPlayer().sendMessage("§cYou cannot revive while spectator death banned.");
+            player.sendMessage("§cYou cannot revive while spectator death banned.");
             return false;
         }
 
         //check if reviving is enabled
         if (!this.plugin.getConfigurations().getReviveConfiguration().isUseRevive()) {
-            this.player.getPlayer().sendMessage("§cReviving is not enabled on the server.");
+            player.sendMessage("§cReviving is not enabled on the server.");
             return false;
         }
 
         //check if permission
-        if (!this.player.getPlayer().hasPermission(Permission.REVIVE.getPermissionString())) {
+        if (!player.hasPermission(Permission.REVIVE.getPermissionString())) {
             return false;
         }
 
         //check if not same player
-        if (this.player.getPlayer().getUniqueId().equals(reviving.getUniqueId())) {
-            this.player.getPlayer().sendMessage("§cYou cannot revive yourself, that would break the space-time continuum!");
+        if (player.getUniqueId().equals(reviving.getUniqueId())) {
+            player.sendMessage("§cYou cannot revive yourself, that would break the space-time continuum!");
             return false;
         }
 
         //check if in disabled world
-        if (this.plugin.getConfigurations().getReviveConfiguration().getDisableReviveInWorlds().contains(this.player.getPlayer().getWorld().getName().toLowerCase())) {
-            this.player.getPlayer().sendMessage(String.format("§cYou cannot revive %s while in this world (%s).", reviving.getName(), this.player.getPlayer().getWorld().getName()));
+        if (this.plugin.getConfigurations().getReviveConfiguration().getDisableReviveInWorlds().contains(player.getWorld().getName().toLowerCase())) {
+            player.sendMessage(String.format("§cYou cannot revive %s while in this world (%s).", reviving.getName(), player.getWorld().getName()));
             return false;
         }
 
         //check if enough lives left to revive
         int amount = this.plugin.getConfigurations().getReviveConfiguration().getLivesLostOnReviving();
         if (this.getLives() < amount) {
-            this.player.getPlayer().sendMessage(String.format("§cYou'll need %s in order to revive %s, you currently have %s.", amount + (amount > 1 ? " lives" : " life"), reviving.getName(), this.getLives() + (this.getLives() > 1 ? " lives" : " life")));
+            player.sendMessage(String.format("§cYou'll need %s in order to revive %s, you currently have %s.", amount + (amount > 1 ? " lives" : " life"), reviving.getName(), this.getLives() + (this.getLives() > 1 ? " lives" : " life")));
             return false;
         }
 
         //check if revive on cooldown
-        if (this.timeTillNextRevive > 0 && !this.player.getPlayer().hasPermission(Permission.BYPASS_REVIVECOOLDOWN.getPermissionString())) {
-            this.player.getPlayer().sendMessage(String.format("§cYou cannot revive %s for another %s.", reviving.getName(), MessageUtils.getTimeFromTicks(this.getTimeTillNextRevive(), TimePattern.LONG)));
+        if (this.timeTillNextRevive > 0 && !player.hasPermission(Permission.BYPASS_REVIVECOOLDOWN.getPermissionString())) {
+            player.sendMessage(String.format("§cYou cannot revive %s for another %s.", reviving.getName(), MessageUtils.getTimeFromTicks(this.getTimeTillNextRevive(), TimePattern.LONG)));
             return false;
         }
 
         return true;
     }
 
-    public void onRevive(OfflinePlayer reviver) {
+    public void onRevive(Player reviver) {
         if (!this.plugin.getConfigurations().getReviveConfiguration().isUseRevive()) {
             return;
         }
@@ -857,8 +774,8 @@ public class PlayerData {
         this.observers.forEach((key, value) -> value.get(MyStatsTimeTillNextLifePartObserver.class).update());
     }
 
-    public void onReload() {
-        this.onJoin();
+    public void onReload(Player player) {
+        this.onJoin(player);
     }
 
     public Map<String, Object> serialize() {
@@ -874,10 +791,15 @@ public class PlayerData {
         map.put("TimeTillNextRevive", this.timeTillNextRevive);
         map.put("LifeParts", this.lifeParts);
         map.put("Lives", this.lives);
+        map.put("LastDeath", this.lastDeath.toString());
         map.put("LastKnownIp", this.lastKnownIp);
         map.put("LastKnownName", this.player.getName());
 
         return map;
+    }
+
+    public LocalDateTime getLastDeath() {
+        return lastDeath;
     }
 
     public void onKick() {
@@ -924,7 +846,7 @@ public class PlayerData {
     }
 
     public boolean isSpectatorBanned() {
-        return spectatorBanned;
+        return this.spectatorBanned;
     }
 
     public void setSpectatorBanned(boolean spectatorBanned) {

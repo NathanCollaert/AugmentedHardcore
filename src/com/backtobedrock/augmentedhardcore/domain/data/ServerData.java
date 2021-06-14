@@ -84,16 +84,15 @@ public class ServerData {
         return this.ongoingBans.size();
     }
 
-    public void addBan(PlayerData playerData, Pair<Integer, Ban> ban) {
-        Player player = playerData.getPlayer().getPlayer();
-        if (player != null && player.hasPermission(Permission.BYPASS_BAN_SPECTATOR.getPermissionString())) {
+    public void addBan(PlayerData playerData, Player player, Pair<Integer, Ban> ban) {
+        if (player.hasPermission(Permission.BYPASS_BAN_SPECTATOR.getPermissionString())) {
             Bukkit.getScheduler().runTask(plugin, () -> player.setGameMode(GameMode.SPECTATOR));
             playerData.stopPlaytimeRunnables();
             playerData.setSpectatorBanned(true);
-        } else if (player != null) {
+        } else {
             Bukkit.getScheduler().runTask(plugin, () -> player.kickPlayer(ban.getValue1().getBanMessage()));
         }
-        this.startBan(playerData.getPlayer(), ban);
+        this.startBan(player, ban);
         if (this.plugin.getConfigurations().getDeathBanConfiguration().getBanType() == BanList.Type.IP) {
             this.ongoingIPBans.put(playerData.getLastKnownIp(), ban.getValue1());
         }
@@ -128,7 +127,9 @@ public class ServerData {
             unban.getBan().getValue1().setExpirationDate(LocalDateTime.now());
             this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(playerData -> {
                 this.ongoingIPBans.remove(playerData.getLastKnownIp());
-                playerData.resetSpectatorDeathBan();
+                if (player.getPlayer() != null) {
+                    playerData.resetSpectatorDeathBan(player.getPlayer());
+                }
             }).exceptionally(e -> {
                 e.printStackTrace();
                 return null;

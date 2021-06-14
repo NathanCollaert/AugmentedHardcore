@@ -1,6 +1,5 @@
 package com.backtobedrock.augmentedhardcore.eventListeners;
 
-import com.backtobedrock.augmentedhardcore.domain.data.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,7 +12,7 @@ public class ListenerPlayerJoin extends AbstractEventListener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
-        this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(PlayerData::onJoin).exceptionally(ex -> {
+        this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(e -> e.onJoin(player)).exceptionally(ex -> {
             ex.printStackTrace();
             return null;
         });

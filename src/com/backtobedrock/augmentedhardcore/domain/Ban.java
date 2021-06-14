@@ -11,7 +11,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -179,7 +178,7 @@ public class Ban {
         placeholders.put("ban_start_date_medium", this.startDate != null ? MessageUtils.MEDIUM_FORMATTER.format(this.startDate) : "-");
         placeholders.put("ban_start_date_short", this.startDate != null ? MessageUtils.SHORT_FORMATTER.format(this.startDate) : "-");
 
-        long ticksTillExpiration = MessageUtils.timeUnitToTicks(ChronoUnit.SECONDS.between(LocalDateTime.now(), this.expirationDate), TimeUnit.SECONDS);
+        long ticksTillExpiration = MessageUtils.timeBetweenDatesToTicks(LocalDateTime.now(), this.expirationDate);
         placeholders.put("ban_time_left_long", MessageUtils.getTimeFromTicks(ticksTillExpiration, TimePattern.LONG));
         placeholders.put("ban_time_left_short", MessageUtils.getTimeFromTicks(ticksTillExpiration, TimePattern.SHORT));
         placeholders.put("ban_time_left_digital", MessageUtils.getTimeFromTicks(ticksTillExpiration, TimePattern.DIGITAL));

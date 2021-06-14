@@ -18,8 +18,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 public class EventUtils {
@@ -148,9 +146,9 @@ public class EventUtils {
         BanConfiguration banConfiguration = config.getBanTimes().get(damageCause);
         int rawBanTime = banConfiguration == null ? 0 : banConfiguration.getBanTime(),
                 banTime = config.getBanTimeType().getBantime(player, playerData, rawBanTime);
-        long timeSinceLastBan = playerData.getLastDeathBan() == null ? player.getStatistic(Statistic.PLAY_ONE_MINUTE) : MessageUtils.timeUnitToTicks(ChronoUnit.SECONDS.between(playerData.getLastDeathBan().getStartDate(), LocalDateTime.now()), TimeUnit.SECONDS),
-                timeSinceLastDeath = player.getStatistic(Statistic.TIME_SINCE_DEATH);
         LocalDateTime now = LocalDateTime.now();
+        long timeSinceLastBan = playerData.getLastDeathBan() == null ? player.getStatistic(Statistic.PLAY_ONE_MINUTE) : MessageUtils.timeBetweenDatesToTicks(playerData.getLastDeathBan().getStartDate(), now),
+                timeSinceLastDeath = MessageUtils.timeBetweenDatesToTicks(now, playerData.getLastDeath());
 
         return new Ban(
                 now,

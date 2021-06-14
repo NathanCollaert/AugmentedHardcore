@@ -9,6 +9,8 @@ import com.backtobedrock.augmentedhardcore.eventListeners.*;
 import com.backtobedrock.augmentedhardcore.eventListeners.dependencies.ListenerCombatLogX;
 import com.backtobedrock.augmentedhardcore.guis.AbstractGui;
 import com.backtobedrock.augmentedhardcore.guis.GuiMyStats;
+import com.backtobedrock.augmentedhardcore.mappers.Patch;
+import com.backtobedrock.augmentedhardcore.mappers.player.patches.LastDeathAdditionPatch;
 import com.backtobedrock.augmentedhardcore.repositories.PlayerRepository;
 import com.backtobedrock.augmentedhardcore.repositories.ServerRepository;
 import com.backtobedrock.augmentedhardcore.runnables.UpdateChecker;
@@ -179,6 +181,12 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
                 e.printStackTrace();
             }
         }
+
+        //PATCHES
+        Arrays.asList(
+                new LastDeathAdditionPatch()
+        ).forEach(Patch::executePatch);
+
         getLogger().info("Setup complete.");
     }
 

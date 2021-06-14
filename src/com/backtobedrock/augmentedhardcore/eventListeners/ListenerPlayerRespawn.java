@@ -1,6 +1,6 @@
 package com.backtobedrock.augmentedhardcore.eventListeners;
 
-import com.backtobedrock.augmentedhardcore.domain.data.PlayerData;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
@@ -8,7 +8,8 @@ public class ListenerPlayerRespawn extends AbstractEventListener {
 
     @EventHandler
     public void OnPlayerRespawn(PlayerRespawnEvent event) {
-        this.plugin.getPlayerRepository().getByPlayer(event.getPlayer()).thenAcceptAsync(PlayerData::onRespawn).exceptionally(ex -> {
+        Player player = event.getPlayer();
+        this.plugin.getPlayerRepository().getByPlayer(player).thenAcceptAsync(e -> e.onRespawn(player)).exceptionally(ex -> {
             ex.printStackTrace();
             return null;
         });

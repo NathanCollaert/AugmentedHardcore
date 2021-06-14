@@ -33,7 +33,7 @@ public class CommandRevive extends AbstractCommand {
             }
 
             this.plugin.getPlayerRepository().getByPlayer(this.sender).thenAcceptAsync(playerData -> {
-                if (!playerData.checkRevivePermissionsReviver(this.target)) {
+                if (!playerData.checkRevivePermissionsReviver(this.target, this.sender)) {
                     return;
                 }
 
