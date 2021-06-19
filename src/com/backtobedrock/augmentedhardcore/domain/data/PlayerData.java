@@ -366,7 +366,7 @@ public class PlayerData {
 
         if (this.plugin.getConfigurations().getMaxHealthConfiguration().isUseMaxHealth() && this.plugin.getConfigurations().getMaxHealthConfiguration().getMaxHealthAfterBan() != -1) {
             PlayerUtils.setMaxHealth(player, this.plugin.getConfigurations().getMaxHealthConfiguration().getMaxHealthAfterBan());
-            player.setHealth(PlayerUtils.getMaxHealth(player));
+            Bukkit.getScheduler().runTask(this.plugin, () -> player.setHealth(PlayerUtils.getMaxHealth(player)));
         }
 
         this.plugin.getPlayerRepository().updatePlayerData(this);
@@ -492,7 +492,7 @@ public class PlayerData {
 
         if (player.getHealth() != 0D) {
             //fix visual bug from Minecraft when max health is higher than 20
-            player.setHealth(player.getHealth());
+            Bukkit.getScheduler().runTask(this.plugin, () -> player.setHealth(player.getHealth()));
         }
 
         this.startPlaytimeRunnables(player);
@@ -639,7 +639,7 @@ public class PlayerData {
                 this.kicked = false;
             } else if (this.isCombatTagged()) {
                 this.combatLogged = true;
-                player.setHealth(0.0D);
+                Bukkit.getScheduler().runTask(this.plugin, () -> player.setHealth(0.0D));
             }
         }
 
@@ -684,12 +684,12 @@ public class PlayerData {
 
             this.setTimeTillNextRevive(this.plugin.getConfigurations().getReviveConfiguration().getTimeBetweenRevives());
 
-            if (this.getLives() == 1) {
+            int amount = this.plugin.getConfigurations().getReviveConfiguration().getLivesLostOnReviving();
+            this.decreaseLives(amount);
+            if (this.getLives() <= 0) {
                 this.reviving = new Killer(revivingData.getPlayer().getName(), revivingData.getPlayer().getPlayer() == null ? null : revivingData.getPlayer().getPlayer().getDisplayName(), EntityType.PLAYER);
-                reviverPlayer.setHealth(0.0D);
+                Bukkit.getScheduler().runTask(this.plugin, () -> reviverPlayer.setHealth(0D));
             } else {
-                int amount = this.plugin.getConfigurations().getReviveConfiguration().getLivesLostOnReviving();
-                this.decreaseLives(amount);
                 reviverPlayer.sendMessage(String.format("§aSuccessfully given §e%s§a to §e%s§a, you have §e%s §aleft.", amount + (amount > 1 ? " lives" : " life"), revivingData.getPlayer().getName(), this.getLives() + (this.getLives() > 1 ? " lives" : " life")));
             }
 

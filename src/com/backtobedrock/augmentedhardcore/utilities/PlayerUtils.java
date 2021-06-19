@@ -30,7 +30,8 @@ public class PlayerUtils {
             }
             attribute.setBaseValue(rawAmount);
             if (health + amountChanged > 0) {
-                player.setHealth(health + amountChanged);
+                double finalAmountChanged = amountChanged;
+                Bukkit.getScheduler().runTask(plugin, () -> player.setHealth(health + finalAmountChanged));
             }
         }
     }

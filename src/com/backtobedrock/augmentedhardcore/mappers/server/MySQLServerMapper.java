@@ -56,11 +56,9 @@ public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
                 preparedStatement.setInt(2, server.getPort());
                 ResultSet resultSet = preparedStatement.executeQuery();
                 Map<UUID, Pair<Integer, Ban>> deathBans = new HashMap<>();
-                ServerData serverData = null;
+                int totalDeathBans = 0;
                 while (resultSet.next()) {
-                    if (serverData == null) {
-                        serverData = new ServerData(resultSet.getInt("total_death_bans"), deathBans);
-                    }
+                    totalDeathBans = resultSet.getInt("total_death_bans");
                     String uuidString = resultSet.getString("player_uuid");
                     if (uuidString != null && !uuidString.isEmpty()) {
                         Pair<Integer, Ban> banPair = MySQLBanMapper.getInstance().getBanFromResultSetSync(resultSet);
@@ -69,7 +67,7 @@ public class MySQLServerMapper extends AbstractMapper implements IServerMapper {
                         }
                     }
                 }
-                return serverData;
+                return new ServerData(totalDeathBans, deathBans);
             } catch (SQLException | UnknownHostException e) {
                 e.printStackTrace();
             }
