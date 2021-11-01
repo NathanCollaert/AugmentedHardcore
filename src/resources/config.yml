@@ -391,6 +391,15 @@ BanType: name
 # -> static/bancount/playtime/timesincelastdeath
 BanTimeType: static
 
+# IF "BanTimeType" is set to "group":
+# Name of LuckPerms group meta attribute containing the ban time in number of minutes.
+# Example LuckPerms group config lines:
+#
+# meta:
+#   - bantime:
+#       value: '960'
+GroupBanTimeAttributeName: bantime
+
 #At what rate should the ban time by playtime grow?
 #Linear:      a constant increase in bantime the more bancount/playtime/timesincelastdeath(P) you have (constant increase).
 #             Function: [(P+MBT/60) OR MBT]. MBT -> max ban time
