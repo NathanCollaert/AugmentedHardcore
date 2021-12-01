@@ -5,7 +5,6 @@ import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.entity.Player;
 
 public class ClickActionOpenPlayerSelectionAnvilGui extends AbstractClickAction {
-
     @Override
     public void execute(Player player) {
         new AnvilGUI.Builder()

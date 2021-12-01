@@ -2,11 +2,12 @@ package com.backtobedrock.augmentedhardcore.eventListeners;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 public class ListenerPlayerDeath extends AbstractEventListener {
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void PlayerDeathListener(PlayerDeathEvent event) {
         Player player = event.getEntity();
 

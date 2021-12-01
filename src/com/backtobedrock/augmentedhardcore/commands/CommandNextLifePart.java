@@ -57,9 +57,8 @@ public class CommandNextLifePart extends AbstractCommand {
 
     private void sendSuccessMessage(PlayerData playerData) {
         long nextLifePart = playerData.getTimeTillNextLifePart();
-        this.cs.sendMessage(String.format("§a%s will receive a new §elife part %s§a.", this.cs instanceof Player && ((Player) this.cs).getUniqueId().toString().equals(playerData.getPlayer().getUniqueId().toString())
-                        ? "You"
-                        : playerData.getPlayer().getName()
-                , nextLifePart == 0 ? "§6now" : "§ain §6" + MessageUtils.getTimeFromTicks(nextLifePart, TimePattern.LONG)));
+        this.cs.sendMessage(this.plugin.getMessages().getCommandNextLifePart(this.cs instanceof Player && ((Player) this.cs).getUniqueId().toString().equals(playerData.getPlayer().getUniqueId().toString())
+                ? "You"
+                : playerData.getPlayer().getName(), MessageUtils.getTimeFromTicks(nextLifePart, TimePattern.LONG)));
     }
 }

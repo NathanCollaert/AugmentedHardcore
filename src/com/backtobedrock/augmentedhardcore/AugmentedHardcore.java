@@ -15,8 +15,8 @@ import com.backtobedrock.augmentedhardcore.repositories.PlayerRepository;
 import com.backtobedrock.augmentedhardcore.repositories.ServerRepository;
 import com.backtobedrock.augmentedhardcore.runnables.UpdateChecker;
 import com.backtobedrock.augmentedhardcore.utilities.Metrics;
-import com.backtobedrock.augmentedhardcore.utilities.UpdateUtils;
 import com.backtobedrock.augmentedhardcore.utilities.placeholderAPI.PlaceholdersAugmentedHardcore;
+import com.tchristofferson.configupdater.ConfigUpdater;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -32,10 +32,7 @@ import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -104,6 +101,17 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
     }
 
     public void initialize() {
+        //initialize old config directory
+        File dir = new File(this.getDataFolder() + "/old");
+        List<File> configs = new ArrayList<File>() {{
+            add(new File(getDataFolder(), "config.old.yml"));
+            add(new File(getDataFolder(), "messages.old.yml"));
+        }};
+        //noinspection ResultOfMethodCallIgnored
+        dir.mkdir();
+        //noinspection ResultOfMethodCallIgnored
+        configs.stream().filter(File::exists).forEach(File::delete);
+
         //get config.yml and make if none existent
         File configFile = new File(this.getDataFolder(), "config.yml");
         if (!configFile.exists()) {
@@ -118,16 +126,27 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
             this.saveResource("messages.yml", false);
         }
 
-        //initialize configurations
+        //update configurations
         try {
-            File copy = new File(this.getDataFolder(), "config.old.yml");
+            //config.yml
+            File copy = new File(this.getDataFolder() + "/old/", "config.old.yml");
             if (copy.exists()) {
                 //noinspection ResultOfMethodCallIgnored
                 copy.delete();
             }
             Files.copy(configFile.toPath(), copy.toPath());
-            UpdateUtils.update(this, "config.yml", configFile, Arrays.asList("LifePartsPerKill", "MaxHealthIncreasePerKill"));
+            ConfigUpdater.update(this, "config.yml", configFile, Arrays.asList("LifePartsPerKill", "MaxHealthIncreasePerKill"));
             configFile = new File(this.getDataFolder(), "config.yml");
+
+            //messages.yml
+            copy = new File(this.getDataFolder() + "/old/", "messages.old.yml");
+            if (copy.exists()) {
+                //noinspection ResultOfMethodCallIgnored
+                copy.delete();
+            }
+            Files.copy(messagesFile.toPath(), copy.toPath());
+            ConfigUpdater.update(this, "messages.yml", messagesFile, Collections.emptyList());
+            messagesFile = new File(this.getDataFolder(), "messages.yml");
         } catch (IOException e) {
             e.printStackTrace();
         }

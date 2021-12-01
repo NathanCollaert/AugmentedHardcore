@@ -639,7 +639,7 @@ public class PlayerData {
                 this.kicked = false;
             } else if (this.isCombatTagged()) {
                 this.combatLogged = true;
-                Bukkit.getScheduler().runTask(this.plugin, () -> player.setHealth(0.0D));
+                player.setHealth(0.0D);
             }
         }
 

@@ -57,9 +57,8 @@ public class CommandNextMaxHealth extends AbstractCommand {
 
     private void sendSuccessMessage(PlayerData playerData) {
         long nextMaxHealth = playerData.getTimeTillNextMaxHealth();
-        this.cs.sendMessage(String.format("§a%s will receive extra §emax health %s§a", this.cs instanceof Player && ((Player) this.cs).getUniqueId().toString().equals(playerData.getPlayer().getUniqueId().toString())
-                        ? "You"
-                        : playerData.getPlayer().getName()
-                , nextMaxHealth == 0 ? "§6now" : "§ain §6" + MessageUtils.getTimeFromTicks(nextMaxHealth, TimePattern.LONG)));
+        this.cs.sendMessage(this.plugin.getMessages().getCommandNextMaxHealth(this.cs instanceof Player && ((Player) this.cs).getUniqueId().toString().equals(playerData.getPlayer().getUniqueId().toString())
+                ? "You"
+                : playerData.getPlayer().getName(), MessageUtils.getTimeFromTicks(nextMaxHealth, TimePattern.LONG)));
     }
 }

@@ -48,9 +48,9 @@ public class CommandUnDeathBan extends AbstractCommand {
     private void unDeathBan() {
         this.plugin.getServerRepository().getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> {
             if (serverData.unDeathBan(this.target.getUniqueId())) {
-                this.cs.sendMessage(String.format("§a%s has successfully been unbanned from a death ban.", this.target.getName()));
+                this.cs.sendMessage(this.plugin.getMessages().getCommandUndeathBan(this.target.getName()));
             } else {
-                this.cs.sendMessage(String.format("§c%s is not death banned by %s.", this.target.getName(), this.plugin.getDescription().getName()));
+                this.cs.sendMessage(this.plugin.getMessages().getTargetNotBannedByPluginError(this.target.getName(), this.plugin.getDescription().getName()));
             }
         }).exceptionally(e -> {
             e.printStackTrace();

@@ -32,7 +32,7 @@ public abstract class AbstractCommand {
 
     protected boolean hasPermission(Permission permission) {
         if (!this.cs.hasPermission(permission.getPermissionString())) {
-            this.cs.sendMessage("§cYou have no permission to use this command.");
+            this.cs.sendMessage(this.plugin.getMessages().getNoPermissionError());
             return false;
         }
         return true;
@@ -40,7 +40,7 @@ public abstract class AbstractCommand {
 
     protected boolean isPlayer() {
         if (!(this.cs instanceof Player)) {
-            this.cs.sendMessage("§cYou will need to log in to use this command.");
+            this.cs.sendMessage(this.plugin.getMessages().getRequireOnlinePlayerError());
             return false;
         }
         this.sender = (Player) cs;
@@ -61,7 +61,7 @@ public abstract class AbstractCommand {
         }
 
         if (this.target.getPlayer() == null) {
-            this.cs.sendMessage(String.format("%s is currently not online.", this.target.getName()));
+            this.cs.sendMessage(this.plugin.getMessages().getTargetNotOnlineError(this.target.getName()));
         }
 
         return this.target.getPlayer();
@@ -71,7 +71,7 @@ public abstract class AbstractCommand {
         return CompletableFuture.supplyAsync(() -> {
             @SuppressWarnings("deprecation") OfflinePlayer player = this.plugin.getServer().getOfflinePlayer(playerName);
             if (!player.hasPlayedBefore()) {
-                this.cs.sendMessage(String.format("§c%s has not played on the server before.", player.getName()));
+                this.cs.sendMessage(this.plugin.getMessages().getTargetNotPlayedBeforeError(player.getName()));
                 return false;
             }
             this.target = player;
@@ -80,6 +80,6 @@ public abstract class AbstractCommand {
     }
 
     public void sendUsageMessage(Command command) {
-        this.cs.sendMessage(new String[]{"§8§m--------------§6 Command §fUsage §8§m--------------", command.getFancyVersion(), "§8§m------------------------------------------"});
+        this.cs.sendMessage(this.plugin.getMessages().getCommandUsageHeader(), command.getFancyVersion(), this.plugin.getMessages().getCommandUsageFooter());
     }
 }

@@ -5,7 +5,6 @@ import com.backtobedrock.augmentedhardcore.domain.enums.Command;
 import com.backtobedrock.augmentedhardcore.domain.enums.Permission;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 public class CommandLifeParts extends AbstractCommand {
     public CommandLifeParts(CommandSender cs, String[] args) {
@@ -54,10 +53,10 @@ public class CommandLifeParts extends AbstractCommand {
     }
 
     private void sendSuccessMessage(PlayerData playerData) {
-        boolean isSender = this.cs instanceof Player && ((Player) this.cs).getUniqueId() == playerData.getPlayer().getUniqueId();
-        this.cs.sendMessage(String.format("§a%s currently %s §6%s§a.",
-                isSender ? "You" : playerData.getPlayer().getName(),
-                isSender ? "have" : "has",
-                playerData.getLifeParts() + "§e" + (playerData.getLifeParts() == 1 ? " life part" : " life parts")));
+        this.cs.sendMessage(
+                this.plugin.getMessages().getCommandLifePartsLeft(playerData.getPlayer().getName(),
+                        playerData.getLifeParts() + (playerData.getLifeParts() == 1 ? " life part" : " life parts"),
+                        Integer.toString(playerData.getLifeParts()))
+        );
     }
 }

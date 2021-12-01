@@ -52,9 +52,14 @@ public class CommandAugmentedHardcore extends AbstractCommand {
                     this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(playerData -> {
                         playerData.increaseLives(amount);
 
+                        String lives = amount + (amount == 1 ? " life" : " lives"),
+                                livesRaw = Integer.toString(amount),
+                                livesTotal = playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives"),
+                                livesTotalRaw = Integer.toString(playerData.getLives());
+
                         this.sendSuccessMessages(
-                                String.format("§aYou've been given §e%s§a, you now have §e%s§a.", amount + (amount == 1 ? " life" : " lives"), playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives")),
-                                String.format("§aYou successfully gave §e%s§a, §e%s§a now has §e%s§a.", amount + (amount == 1 ? " life" : " lives"), this.args[1], playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives"))
+                                this.plugin.getMessages().getCommandAddLives(lives, livesRaw, livesTotal, livesTotalRaw),
+                                this.plugin.getMessages().getCommandAddLivesSuccess(this.target.getName(), lives, livesRaw, livesTotal, livesTotalRaw)
                         );
 
                         this.plugin.getPlayerRepository().updatePlayerData(playerData);
@@ -81,9 +86,14 @@ public class CommandAugmentedHardcore extends AbstractCommand {
                     this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(playerData -> {
                         playerData.increaseLifeParts(amount);
 
+                        String lifeParts = amount + (amount == 1 ? " life part" : " life parts"),
+                                lifePartsRaw = Integer.toString(amount),
+                                lifePartsTotal = playerData.getLifeParts() + (playerData.getLifeParts() == 1 ? " life part" : " life parts"),
+                                lifePartsTotalRaw = Integer.toString(playerData.getLifeParts());
+
                         this.sendSuccessMessages(
-                                String.format("§aYou've been given §e%s§a, you now have §e%s§a and §e%s§a.", amount + (amount == 1 ? " life part" : " life parts"), playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives"), playerData.getLifeParts() + (playerData.getLifeParts() == 1 ? " life part" : " life parts")),
-                                String.format("§aYou successfully gave §e%s§a, §e%s§a now has §e%s§a and §e%s§a.", amount + (amount == 1 ? " life part" : " life parts"), this.args[1], playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives"), playerData.getLifeParts() + (playerData.getLifeParts() == 1 ? " life part" : " life parts"))
+                                this.plugin.getMessages().getCommandAddLifeParts(lifeParts, lifePartsRaw, lifePartsTotal, lifePartsTotalRaw),
+                                this.plugin.getMessages().getCommandAddLifePartsSuccess(this.target.getName(), lifeParts, lifePartsRaw, lifePartsTotal, lifePartsTotalRaw)
                         );
 
                         this.plugin.getPlayerRepository().updatePlayerData(playerData);
@@ -110,9 +120,14 @@ public class CommandAugmentedHardcore extends AbstractCommand {
                     this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(playerData -> {
                         playerData.setLives(amount);
 
+                        String lives = amount + (amount == 1 ? " life" : " lives"),
+                                livesRaw = Integer.toString(amount),
+                                livesTotal = playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives"),
+                                livesTotalRaw = Integer.toString(playerData.getLives());
+
                         this.sendSuccessMessages(
-                                String.format("§aYour §elives§a have been set to §e%d§a.", playerData.getLives()),
-                                String.format("§aYou successfully set the §elives§a of §e%s§a to §e%d§a.", this.args[1], playerData.getLives())
+                                this.plugin.getMessages().getCommandSetLives(lives, livesRaw, livesTotal, livesTotalRaw),
+                                this.plugin.getMessages().getCommandSetLivesSuccess(this.target.getName(), lives, livesRaw, livesTotal, livesTotalRaw)
                         );
 
                         this.plugin.getPlayerRepository().updatePlayerData(playerData);
@@ -139,9 +154,14 @@ public class CommandAugmentedHardcore extends AbstractCommand {
                     this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(playerData -> {
                         playerData.setLifeParts(amount);
 
+                        String lifeParts = amount + (amount == 1 ? " life part" : " life parts"),
+                                lifePartsRaw = Integer.toString(amount),
+                                lifePartsTotal = playerData.getLifeParts() + (playerData.getLifeParts() == 1 ? " life part" : " life parts"),
+                                lifePartsTotalRaw = Integer.toString(playerData.getLifeParts());
+
                         this.sendSuccessMessages(
-                                String.format("§aYour §elife parts§a have been set to §e%d§a, giving you §e%s§a and §e%s§a.", amount, playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives"), playerData.getLifeParts() + (playerData.getLifeParts() == 1 ? " life part" : " life parts")),
-                                String.format("§aYou successfully set the §elife parts§a of §e%s§a to §e%d§a, §e%s§a now has §e%s§a and §e%s§a.", this.args[1], amount, this.args[1], playerData.getLives() + (playerData.getLives() == 1 ? " life" : " lives"), playerData.getLifeParts() + (playerData.getLifeParts() == 1 ? " life part" : " life parts"))
+                                this.plugin.getMessages().getCommandSetLifeParts(lifeParts, lifePartsRaw, lifePartsTotal, lifePartsTotalRaw),
+                                this.plugin.getMessages().getCommandSetLifePartsSuccess(this.target.getName(), lifeParts, lifePartsRaw, lifePartsTotal, lifePartsTotalRaw)
                         );
 
                         this.plugin.getPlayerRepository().updatePlayerData(playerData);
@@ -172,9 +192,14 @@ public class CommandAugmentedHardcore extends AbstractCommand {
 
                     PlayerUtils.setMaxHealth(target, PlayerUtils.getMaxHealth(target) + amount);
 
+                    String maxHealth = amount + " max health",
+                            maxHealthRaw = Integer.toString(amount),
+                            maxHealthTotal = (int) PlayerUtils.getMaxHealth(target) + " max health",
+                            maxHealthTotalRaw = Integer.toString((int) PlayerUtils.getMaxHealth(target));
+
                     this.sendSuccessMessages(
-                            String.format("§aYou've been given §e%s§a, you now have §e%s§a.", amount + " max health", (int) PlayerUtils.getMaxHealth(target) + " max health"),
-                            String.format("§aYou successfully gave §e%s§a, §e%s§a now has §e%s§a.", amount + " max health", this.args[1], (int) PlayerUtils.getMaxHealth(target) + " max health")
+                            this.plugin.getMessages().getCommandAddMaxHealth(maxHealth, maxHealthRaw, maxHealthTotal, maxHealthTotalRaw),
+                            this.plugin.getMessages().getCommandAddMaxHealthSuccess(this.target.getName(), maxHealth, maxHealthRaw, maxHealthTotal, maxHealthTotalRaw)
                     );
                 }).exceptionally(ex -> {
                     ex.printStackTrace();
@@ -199,9 +224,12 @@ public class CommandAugmentedHardcore extends AbstractCommand {
 
                     PlayerUtils.setMaxHealth(target, amount);
 
+                    String maxHealth = amount + " max health",
+                            maxHealthRaw = Integer.toString(amount);
+
                     this.sendSuccessMessages(
-                            String.format("§aYour §emax health§a has been set to §e%d§a.", (int) PlayerUtils.getMaxHealth(target)),
-                            String.format("§aYou successfully set the §emax health§a of §e%s§a to §e%d§a.", this.args[1], (int) PlayerUtils.getMaxHealth(target))
+                            this.plugin.getMessages().getCommandSetMaxHealth(maxHealth, maxHealthRaw),
+                            this.plugin.getMessages().getCommandSetMaxHealthSuccess(this.target.getName(), maxHealth, maxHealthRaw)
                     );
                 }).exceptionally(ex -> {
                     ex.printStackTrace();
@@ -217,13 +245,13 @@ public class CommandAugmentedHardcore extends AbstractCommand {
                     this.plugin.getPlayerRepository().getByPlayer(this.target).thenAcceptAsync(playerData -> {
                         playerData.reset();
 
-                        this.cs.sendMessage(String.format("§aYou have successfully reset §e%s§a.", this.target.getName()));
+                        this.cs.sendMessage(this.plugin.getMessages().getCommandResetSuccess(this.target.getName()));
                     });
                 });
                 break;
             case RELOAD:
                 this.plugin.initialize();
-                this.cs.sendMessage("§aAugmentedHardcore has successfully been reloaded.");
+                this.cs.sendMessage(this.plugin.getMessages().getCommandReloadSuccess(this.plugin.getName()));
                 break;
             default:
                 this.sendHelpMessage();
@@ -232,7 +260,7 @@ public class CommandAugmentedHardcore extends AbstractCommand {
 
     private void sendHelpMessage() {
         List<String> helpMessage = new ArrayList<>();
-        helpMessage.add("§8§m----------§6 Augmented Hardcore §fHelp §8§m----------");
+        helpMessage.add(this.plugin.getMessages().getCommandHelpHeader());
         Arrays.stream(Command.values()).filter(e -> {
             if (e.getPermission() == null) {
                 return false;
@@ -240,7 +268,7 @@ public class CommandAugmentedHardcore extends AbstractCommand {
 
             return this.cs.hasPermission(e.getPermission().getPermissionString());
         }).forEach(e -> helpMessage.add(e.getFancyVersion()));
-        helpMessage.add("§8§m-------------------------------------------");
+        helpMessage.add(this.plugin.getMessages().getCommandHelpFooter());
         this.cs.sendMessage(helpMessage.toArray(new String[0]));
     }
 

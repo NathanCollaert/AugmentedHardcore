@@ -17,6 +17,7 @@ public abstract class AbstractPlaytime extends BukkitRunnable {
     public AbstractPlaytime(PlayerData playerData, Player player) {
         this.plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
         this.playerData = playerData;
+        this.player = player;
         this.period = 20;
         this.timer = 0;
     }
@@ -32,7 +33,7 @@ public abstract class AbstractPlaytime extends BukkitRunnable {
     @Override
     public void run() {
         this.plugin.getServerRepository().getServerData(this.plugin.getServer()).thenAcceptAsync(serverData -> {
-            if (serverData.isDeathBanned(this.playerData.getPlayer().getUniqueId())) {
+            if (serverData.isDeathBanned(this.player.getUniqueId())) {
                 return;
             }
 

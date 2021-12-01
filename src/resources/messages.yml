@@ -112,3 +112,100 @@ CombatTagNotifications:
       SubtitleStart: "You have been combat tagged by &c&l%combat_tagger%&r."
       TitleEnd: "Combat Tagged"
       SubtitleEnd: "Your combat tag with &c&l%combat_tagger%&r ran out."
+
+
+############################################################
+# +------------------------------------------------------+ #
+# |                       Commands                       | #
+# +------------------------------------------------------+ #
+############################################################
+
+#Error given when no permission for the command.
+NoPermissionError: "&cYou have no permission to use this command."
+
+#Error given when you need to be online to use this command.
+RequireOnlinePlayerError: "&cYou will need to log in to use this command."
+
+#Error given when targeted player is not online.
+#Placeholders: %player%
+TargetNotOnlineError: "&c%player% is currently not online."
+
+#Error given when targeted player has not played on the server before.
+#Placeholders: %player%
+TargetNotPlayedBeforeError: "&c%player% has not played on the server before."
+
+#Error given when targeted player is not death banned by plugin.
+#Placeholders: %player% - %plugin%
+TargetNotBannedByPluginError: "&c%player% is not death banned by %plugin%."
+
+#Header message when displaying a command usage.
+CommandUsageHeader: "&8&m--------------&6 Command &fUsage &8&m--------------"
+
+#Footer message when displaying a command usage.
+CommandUsageFooter: "&8&m------------------------------------------"
+
+#Header message when using the help command.
+CommandHelpHeader: "&8&m----------&6 Augmented Hardcore &fHelp &8&m----------"
+
+#Footer message when using the help command.
+CommandHelpFooter: "&8&m-------------------------------------------"
+
+#Placeholders: %lives% - %livesraw% - %livestotal% - %livestotalraw%
+CommandAddLives: "&aYou've been given &e%lives%&a, you now have &e%livestotal%&a."
+
+#Placeholders: %player% - %lives% - %livesraw% - %livestotal% - %livestotalraw%
+CommandAddLivesSuccess: "&aYou successfully gave &e%lives%&a, &e%player% &anow has §e%livestotal%§a."
+
+#Placeholders: %lifeparts% - %lifepartsraw% - %lifepartstotal% - %lifepartstotalraw%
+CommandAddLifeParts: "&aYou've been given &e%lifeparts%&a, you now have &e%lifepartstotal%&a."
+
+#Placeholders: %player% - %lifeparts% - %lifepartsraw% - %lifepartstotal% - %lifepartstotalraw%
+CommandAddLifePartsSuccess: "&aYou successfully gave &e%lives%&a, &e%player% &anow has §e%livesTotal%§a."
+
+#Placeholders: %lives% - %livesraw% - %livestotal% - %livestotalraw%
+CommandSetLives: "&aYour &elives &ahave been set to &e%livestotalraw%&a."
+
+#Placeholders: %player% - %lives% - %livesraw% - %livestotal% - %livestotalraw%
+CommandSetLivesSuccess: "&aYou successfully set the &elives &aof &e%player% &ato &e%livestotalraw%&a."
+
+#Placeholders: %lifeparts% - %lifepartsraw% - %lifepartstotal% - %lifepartstotalraw%
+CommandSetLifeParts: "&aYour &elife parts &ahave been set to &e%lifeparts%&a, giving you &e%livestotal% &aand &e%lifepartstotal%&a."
+
+#Placeholders: %player% - %lifeparts% - %lifepartsraw% - %lifepartstotal% - %lifepartstotalraw%
+CommandSetLifePartsSuccess: "&aYou successfully set the &elife parts &aof &e%player% &ato &e%lifeparts%&a, &e%player% &anow has &e%livestotal% &aand &e%lifepartstotal%&a."
+
+#Placeholders: %maxhealth% - %maxhealthraw% - %maxhealthtotal% - %maxhealthtotalraw%
+CommandAddMaxHealth: "&aYou've been given &e%maxhealth%&a, you now have &e%maxhealthtotal%&a."
+
+#Placeholders: %player% - %maxhealth% - %maxhealthraw% - %maxhealthtotal% - %maxhealthtotalraw%
+CommandAddMaxHealthSuccess: "&aYou successfully gave &e%maxhealth%&a, &e%player% &anow has &e%maxhealthtotal%&a."
+
+#Placeholders: %maxhealth% - %maxhealthraw%
+CommandSetMaxHealth: "&aYour &emax health &ahas been set to &e%maxhealthraw%&a."
+
+#Placeholders: %player% - %maxhealth% - %maxhealthraw%
+CommandSetMaxHealthSuccess: "&aYou successfully set the &emax health &aof &e%player%&a to &e%maxhealthraw%&a."
+
+#Placeholders: %player%
+CommandResetSuccess: "&aYou have successfully reset &e%player%&a."
+
+#Placeholders: %plugin%
+CommandReloadSuccess: "&a%plugin% has successfully been reloaded."
+
+#Placeholders: %player% - %lifeparts% - %lifepartsraw%
+CommandLifePartsLeft: "&a%player% currently has &6%lifeparts%&a."
+
+#Placeholders: %player% - %lives% - %livesraw%
+CommandLivesLeft: "&a%player% currently has &6%lives%&a."
+
+#Placeholders: %player% - %timeleft%
+CommandNextLifePart: "&a%player% will receive a new &elife part in %timeleft%&a."
+
+#Placeholders: %player% - %timeleft%
+CommandNextMaxHealth: "&a%player% will receive extra &emax health in %timeleft%&a."
+
+#Placeholders: %player% - %timeleft%
+CommandNextRevive: "&a%player% will be able to &erevive in %timeleft%&a."
+
+#Placeholders: %player%
+CommandUndeathBan: "&a%player% has successfully been unbanned from a death ban."

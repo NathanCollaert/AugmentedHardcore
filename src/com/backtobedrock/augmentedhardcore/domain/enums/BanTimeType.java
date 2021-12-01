@@ -21,7 +21,7 @@ public enum BanTimeType {
             case STATIC:
                 return max;
             case BANCOUNT:
-                return growthType.getBanTime(playerData.getBanCount() * 35, max);
+                return growthType.getBanTime(Math.max(playerData.getBanCount(), 1) * 35, max);
             case PLAYTIME:
                 return growthType.getBanTime(player.getStatistic(Statistic.PLAY_ONE_MINUTE) / 1200, max);
             case TIMESINCELASTDEATH:

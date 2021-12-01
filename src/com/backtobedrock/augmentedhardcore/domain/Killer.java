@@ -6,7 +6,6 @@ import org.bukkit.entity.EntityType;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class Killer {
     private final String name;
@@ -71,6 +70,6 @@ public class Killer {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Killer killer = (Killer) o;
-        return Objects.equals(getName(), killer.getName()) && getType() == killer.getType();
+        return getName().equals(killer.getName()) && getType().equals(killer.getType());
     }
 }

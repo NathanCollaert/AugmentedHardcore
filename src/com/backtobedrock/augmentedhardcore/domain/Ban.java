@@ -187,7 +187,8 @@ public class Ban {
         placeholders.put("ban_expiration_date_short", MessageUtils.SHORT_FORMATTER.format(this.expirationDate));
 
         placeholders.put("ban_killer", this.killer != null ? this.killer.getFormattedName() : "-");
-        placeholders.put("ban_combat_tagger", this.killer != null ? this.inCombatWith == null ? this.killer.getFormattedName() : this.inCombatWith.getFormattedName() : "-");
+        placeholders.put("ban_combat_tagger",
+                this.killer != null ? this.inCombatWith == null ? this.killer.getFormattedName() : this.inCombatWith.getFormattedName() : this.inCombatWith != null ? this.inCombatWith.getFormattedName() : "-");
 
         placeholders.put("ban_in_combat_with", this.inCombatWith != null ? this.inCombatWith.getFormattedName() : "-");
 

@@ -57,9 +57,8 @@ public class CommandNextRevive extends AbstractCommand {
 
     private void sendSuccessMessage(PlayerData playerData) {
         long reviveCooldown = playerData.getTimeTillNextRevive();
-        this.cs.sendMessage(String.format("§a%s will be able to §erevive %s§a.", this.cs instanceof Player && ((Player) this.cs).getUniqueId().toString().equals(playerData.getPlayer().getUniqueId().toString())
-                        ? "You"
-                        : playerData.getPlayer().getName()
-                , reviveCooldown == 0 ? "§6now" : "§ain §6" + MessageUtils.getTimeFromTicks(reviveCooldown, TimePattern.LONG)));
+        this.cs.sendMessage(this.plugin.getMessages().getCommandNextRevive(this.cs instanceof Player && ((Player) this.cs).getUniqueId().toString().equals(playerData.getPlayer().getUniqueId().toString())
+                ? "You"
+                : playerData.getPlayer().getName(), MessageUtils.getTimeFromTicks(reviveCooldown, TimePattern.LONG)));
     }
 }
