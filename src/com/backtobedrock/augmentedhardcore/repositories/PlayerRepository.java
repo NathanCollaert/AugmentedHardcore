@@ -8,6 +8,7 @@ import com.backtobedrock.augmentedhardcore.mappers.player.MySQLPlayerMapper;
 import com.backtobedrock.augmentedhardcore.mappers.player.YAMLPlayerMapper;
 import com.backtobedrock.augmentedhardcore.runnables.ClearCache;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
@@ -30,7 +31,12 @@ public class PlayerRepository {
 
     public void onReload() {
         this.initializeMapper();
-        this.playerCache.forEach((key, value) -> value.onReload(this.plugin.getServer().getPlayer(key)));
+        this.playerCache.forEach((key, value) -> {
+            Player player = this.plugin.getServer().getPlayer(key);
+            if (player != null) {
+                value.onReload(player);
+            }
+        });
     }
 
     private void initializeMapper() {

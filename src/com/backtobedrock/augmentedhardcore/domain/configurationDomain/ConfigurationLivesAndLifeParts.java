@@ -91,7 +91,7 @@ public class ConfigurationLivesAndLifeParts {
 
         //life parts
         boolean cUseLifeParts = section.getBoolean("UseLifeParts", true);
-        int cMaxLifeParts = ConfigUtils.checkMinMax("MaxLifeParts", section.getInt("MaxLifeParts", 6), 0, Integer.MAX_VALUE);
+        int cMaxLifeParts = ConfigUtils.checkMinMax("MaxLifeParts", section.getInt("MaxLifeParts", 6), -1, Integer.MAX_VALUE);
         int cLifePartsPerLife = ConfigUtils.checkMinMax("LifePartsPerLife", section.getInt("LifePartsPerLife"), 1, Integer.MAX_VALUE);
         int cLifePartsAtStart = ConfigUtils.checkMinMax("LifePartsAtStart", section.getInt("LifePartsAtStart"), 0, Integer.MAX_VALUE);
         int cLifePartsAfterBan = ConfigUtils.checkMinMax("LifePartsAfterBan", section.getInt("LifePartsAfterBan"), -1, Integer.MAX_VALUE);

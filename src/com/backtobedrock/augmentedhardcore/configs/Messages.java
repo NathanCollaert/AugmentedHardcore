@@ -13,10 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Messages {
 
@@ -98,11 +95,11 @@ public class Messages {
 
     //<editor-fold desc="Commands" defaultstate="collapsed">
     public String getNoPermissionError() {
-        return this.messages.getString("NoPermissionError", "&cYou have no permission to use this command.");
+        return MessageUtils.replacePlaceholders(this.messages.getString("NoPermissionError", "&cYou have no permission to use this command."), Collections.emptyMap());
     }
 
     public String getRequireOnlinePlayerError() {
-        return this.messages.getString("RequireOnlinePlayerError", "&cYou will need to log in to use this command.");
+        return MessageUtils.replacePlaceholders(this.messages.getString("RequireOnlinePlayerError", "&cYou will need to log in to use this command."), Collections.emptyMap());
     }
 
     public String getTargetNotOnlineError(String player) {
@@ -128,19 +125,19 @@ public class Messages {
     }
 
     public String getCommandUsageHeader() {
-        return this.messages.getString("CommandUsageHeader", "&8&m--------------&6 Command &fUsage &8&m--------------");
+        return MessageUtils.replacePlaceholders(this.messages.getString("CommandUsageHeader", "&8&m--------------&6 Command &fUsage &8&m--------------"), Collections.emptyMap());
     }
 
     public String getCommandUsageFooter() {
-        return this.messages.getString("CommandUsageFooter", "&8&m------------------------------------------");
+        return MessageUtils.replacePlaceholders(this.messages.getString("CommandUsageFooter", "&8&m------------------------------------------"), Collections.emptyMap());
     }
 
     public String getCommandHelpHeader() {
-        return this.messages.getString("CommandHelpHeader", "&8&m----------&6 Augmented Hardcore &fHelp &8&m----------");
+        return MessageUtils.replacePlaceholders(this.messages.getString("CommandHelpHeader", "&8&m----------&6 Augmented Hardcore &fHelp &8&m----------"), Collections.emptyMap());
     }
 
     public String getCommandHelpFooter() {
-        return this.messages.getString("CommandHelpFooter", "&8&m-------------------------------------------");
+        return MessageUtils.replacePlaceholders(this.messages.getString("CommandHelpFooter", "&8&m-------------------------------------------"), Collections.emptyMap());
     }
 
     public String getCommandAddLives(String lives, String livesRaw, String livesTotal, String livesTotalRaw) {

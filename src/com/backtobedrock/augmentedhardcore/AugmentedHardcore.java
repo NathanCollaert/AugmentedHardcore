@@ -148,7 +148,7 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
             ConfigUpdater.update(this, "messages.yml", messagesFile, Collections.emptyList());
             messagesFile = new File(this.getDataFolder(), "messages.yml");
         } catch (IOException e) {
-            e.printStackTrace();
+            //ignore
         }
 
         //initialize config and messages
