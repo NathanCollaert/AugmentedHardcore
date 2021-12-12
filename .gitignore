@@ -1,4 +1,5 @@
 target/*
+target/*.tar
 .idea/*
 !target/**.jar
 **.iml
