@@ -25,6 +25,7 @@ public class Database {
     }
 
     public static Database deserialize(ConfigurationSection section) {
+        AugmentedHardcore plugin = JavaPlugin.getPlugin(AugmentedHardcore.class);
         String cHostname = section.getString("Hostname");
         String cPort = section.getString("Port", "3306");
         String cDatabase = section.getString("Database");
@@ -32,22 +33,22 @@ public class Database {
         String cPassword = section.getString("Password");
 
         if (cHostname == null) {
-            JavaPlugin.getPlugin(AugmentedHardcore.class).getLogger().log(Level.SEVERE, "Data Connection: Hostname was empty.");
+            plugin.getLogger().log(Level.SEVERE, "Data Connection: Hostname was empty.");
             return null;
 
         }
         if (cDatabase == null) {
-            JavaPlugin.getPlugin(AugmentedHardcore.class).getLogger().log(Level.SEVERE, "Data Connection: Database was empty.");
+            plugin.getLogger().log(Level.SEVERE, "Data Connection: Database was empty.");
             return null;
 
         }
         if (cUsername == null) {
-            JavaPlugin.getPlugin(AugmentedHardcore.class).getLogger().log(Level.SEVERE, "Data Connection: Username was empty.");
+            plugin.getLogger().log(Level.SEVERE, "Data Connection: Username was empty.");
             return null;
 
         }
         if (cPassword == null) {
-            JavaPlugin.getPlugin(AugmentedHardcore.class).getLogger().log(Level.SEVERE, "Data Connection: Password was empty.");
+            plugin.getLogger().log(Level.SEVERE, "Data Connection: Password was empty.");
             return null;
         }
 
@@ -80,7 +81,7 @@ public class Database {
             this.dataSource.setJdbcUrl(String.format("jdbc:mysql://%s:%s/%s", this.getHostname(), this.getPort(), this.getDatabaseName()));
             this.dataSource.setUsername(this.getUsername());
             this.dataSource.setPassword(this.getPassword());
-//            this.dataSource.addDataSourceProperty("autoReconnect", "true");
+            this.dataSource.addDataSourceProperty("autoReconnect", "true");
             this.dataSource.addDataSourceProperty("useSSL", "false");
             this.dataSource.addDataSourceProperty("cachePrepStmts", "true");
             this.dataSource.addDataSourceProperty("prepStmtCacheSize", "250");
