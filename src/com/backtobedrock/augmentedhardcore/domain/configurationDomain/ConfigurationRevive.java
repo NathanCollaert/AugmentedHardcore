@@ -28,7 +28,7 @@ public class ConfigurationRevive {
         int cLivesGainedOnRevive = ConfigUtils.checkMinMax("LivesGainedOnRevive", section.getInt("LivesGainedOnRevive", 1), 1, Integer.MAX_VALUE);
         int cTimeBetweenRevives = ConfigUtils.checkMinMax("TimeBetweenRevives", section.getInt("TimeBetweenRevives", 1440), 0, Integer.MAX_VALUE);
         boolean cReviveOnFirstJoin = section.getBoolean("ReviveOnFirstJoin", false);
-        List<String> cDisableReviveInWorlds = ConfigUtils.getWorlds("DisableReviveInWorlds", section.getStringList("DisableReviveInWorlds"));
+        List<String> cDisableReviveInWorlds = section.getStringList("DisableReviveInWorlds").stream().map(String::toLowerCase).toList();
 
         if (cTimeBetweenRevives == -10 || cLivesLostOnReviving == -10 || cLivesGainedOnRevive == -10) {
             return null;

@@ -87,7 +87,7 @@ public class ConfigurationLivesAndLifeParts {
         int cLivesAtStart = ConfigUtils.checkMinMax("LivesAtStart", section.getInt("LivesAtStart", 1), 1, Integer.MAX_VALUE);
         int cLivesAfterBan = ConfigUtils.checkMinMax("LivesAfterBan", section.getInt("LivesAfterBan", 1), 1, Integer.MAX_VALUE);
         int cLivesLostPerDeath = ConfigUtils.checkMinMax("LivesLostPerDeath", section.getInt("LivesLostPerDeath", 1), 1, Integer.MAX_VALUE);
-        List<String> cDisableLosingLivesInWorlds = ConfigUtils.getWorlds("DisableLosingLivesInWorlds", section.getStringList("DisableLosingLivesInWorlds"));
+        List<String> cDisableLosingLivesInWorlds = section.getStringList("DisableLosingLivesInWorlds").stream().map(String::toLowerCase).toList();
 
         //life parts
         boolean cUseLifeParts = section.getBoolean("UseLifeParts", true);
@@ -101,8 +101,8 @@ public class ConfigurationLivesAndLifeParts {
         EnumMap<EntityType, Integer> cLifePartsPerKill = new EnumMap<>(EntityType.class);
         boolean cGetLifePartsByPlaytime = section.getBoolean("GetLifePartByPlaytime", false);
         int cPlaytimePerLifePart = ConfigUtils.checkMinMax("PlaytimePerLifePart", section.getInt("PlaytimePerLifePart", 30), 1, Integer.MAX_VALUE);
-        List<String> cDisableGainingLifePartsInWorlds = ConfigUtils.getWorlds("DisableGainingLifePartsInWorlds", section.getStringList("DisableGainingLifePartsInWorlds"));
-        List<String> cDisableLosingLifePartsInWorlds = ConfigUtils.getWorlds("DisableLosingLifePartsInWorlds", section.getStringList("DisableLosingLifePartsInWorlds"));
+        List<String> cDisableGainingLifePartsInWorlds = section.getStringList("DisableGainingLifePartsInWorlds").stream().map(String::toLowerCase).toList();
+        List<String> cDisableLosingLifePartsInWorlds = section.getStringList("DisableLosingLifePartsInWorlds").stream().map(String::toLowerCase).toList();
 
         if (cUseLifeParts && !cUseLives) {
             JavaPlugin.getPlugin(AugmentedHardcore.class).getLogger().log(Level.WARNING, "Life parts are enabled without having lives enabled.");

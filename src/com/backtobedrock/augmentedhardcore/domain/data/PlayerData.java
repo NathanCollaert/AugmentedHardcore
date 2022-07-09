@@ -17,10 +17,7 @@ import com.backtobedrock.augmentedhardcore.runnables.Playtime.PlaytimeRevive;
 import com.backtobedrock.augmentedhardcore.utilities.EventUtils;
 import com.backtobedrock.augmentedhardcore.utilities.MessageUtils;
 import com.backtobedrock.augmentedhardcore.utilities.PlayerUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -528,7 +525,8 @@ public class PlayerData {
         }
 
         Location location = player.getBedSpawnLocation();
-        Bukkit.getScheduler().runTask(this.plugin, () -> player.teleport(location == null ? this.plugin.getConfigurations().getDeathBanConfiguration().getSpectatorBanRespawnWorld().getSpawnLocation() : location));
+        World respawnWorld = Bukkit.getWorld(this.plugin.getConfigurations().getDeathBanConfiguration().getSpectatorBanRespawnWorld());
+        Bukkit.getScheduler().runTask(this.plugin, () -> player.teleport(location != null ? location : respawnWorld != null ? respawnWorld.getSpawnLocation() : Bukkit.getWorlds().get(0).getSpawnLocation()));
 
         //run onRespawn to set player data to as if they just respawned
         this.onRespawn(player);

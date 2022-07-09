@@ -60,26 +60,6 @@ public class ConfigUtils {
         }
     }
 
-    public static List<String> getWorlds(String id, List<String> worlds) {
-        List<String> lowercaseWorlds = worlds.stream().map(String::toLowerCase).collect(Collectors.toList());
-        List<String> lowercaseLoadedWorlds = Bukkit.getWorlds().stream().map(e -> e.getName().toLowerCase()).collect(Collectors.toList());
-        for (String w : lowercaseWorlds) {
-            if (!lowercaseLoadedWorlds.contains(w)) {
-                lowercaseWorlds.remove(w);
-                sendWarningMessage(String.format("Warning: %s in %s is not a currently loaded world.", w, id));
-            }
-        }
-        return lowercaseWorlds;
-    }
-
-    public static World getWorld(String worldName, World defaultWorld) {
-        World world = Bukkit.getWorld(worldName);
-        if (world == null) {
-            world = defaultWorld;
-        }
-        return world;
-    }
-
     public static StorageType getStorageType(String id, String storageType) {
         try {
             if (storageType != null) {

@@ -26,11 +26,11 @@ public class ConfigurationDeathBan {
     private final GrowthType banTimeByPlaytimeGrowthType;
     private final boolean selfHarmBan;
     private final boolean lightningOnDeathBan;
-    private final World spectatorBanRespawnWorld;
+    private final String spectatorBanRespawnWorld;
     private final List<String> commandsOnDeathBan;
     private final List<String> disableBanInWorlds;
 
-    public ConfigurationDeathBan(boolean useDeathBan, EnumMap<DamageCause, BanConfiguration> banTimes, BanList.Type banType, BanTimeType banTimeType, GrowthType banTimeByPlaytimeGrowthType, boolean selfHarmBan, boolean lightningOnDeathBan, World spectatorBanRespawnWorld, List<String> commandsOnDeathBan, List<String> disableBanInWorlds) {
+    public ConfigurationDeathBan(boolean useDeathBan, EnumMap<DamageCause, BanConfiguration> banTimes, BanList.Type banType, BanTimeType banTimeType, GrowthType banTimeByPlaytimeGrowthType, boolean selfHarmBan, boolean lightningOnDeathBan, String spectatorBanRespawnWorld, List<String> commandsOnDeathBan, List<String> disableBanInWorlds) {
         this.useDeathBan = useDeathBan;
         this.banTimes = banTimes;
         this.banType = banType;
@@ -54,9 +54,9 @@ public class ConfigurationDeathBan {
         GrowthType cBanTimeByPlaytimeGrowthType = ConfigUtils.getGrowthType("BanTimeByPlaytimeGrowthType", section.getString("BanTimeByPlaytimeGrowthType", GrowthType.EXPONENTIAL.name()), GrowthType.EXPONENTIAL);
         boolean cSelfHarmBan = section.getBoolean("SelfHarmBan", false);
         boolean cLightningOnDeathBan = section.getBoolean("LightningOnDeathBan", false);
-        World cSpectatorBanRespawnWorld = ConfigUtils.getWorld(section.getString("SpectatorBanRespawnWorld"), Bukkit.getWorlds().get(0));
+        String cSpectatorBanRespawnWorld = section.getString("SpectatorBanRespawnWorld", Bukkit.getWorlds().get(0).getName());
         List<String> cCommandsOnDeathBan = section.getStringList("CommandsOnDeathBan");
-        List<String> cDisableBanInWorlds = ConfigUtils.getWorlds("DisableBanInWorlds", section.getStringList("DisableBanInWorlds"));
+        List<String> cDisableBanInWorlds = section.getStringList("DisableBanInWorlds").stream().map(String::toLowerCase).toList();
 
         //loop over all damage causes
         ConfigurationSection banTimesConfigurations = section.getConfigurationSection("BanTimes");
@@ -123,7 +123,7 @@ public class ConfigurationDeathBan {
         return commandsOnDeathBan;
     }
 
-    public World getSpectatorBanRespawnWorld() {
+    public String getSpectatorBanRespawnWorld() {
         return spectatorBanRespawnWorld;
     }
 }

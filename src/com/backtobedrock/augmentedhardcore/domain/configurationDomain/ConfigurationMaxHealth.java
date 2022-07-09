@@ -44,8 +44,8 @@ public class ConfigurationMaxHealth {
         EnumMap<EntityType, Double> cMaxHealthIncreasePerKill = new EnumMap<>(EntityType.class);
         boolean cGetMaxHealthByPlaytime = section.getBoolean("GetMaxHealthByPlaytime", false);
         int cPlaytimePerHalfHeart = ConfigUtils.checkMinMax("PlaytimePerHalfHeart", section.getInt("PlaytimePerHalfHeart", 30), 1, Integer.MAX_VALUE);
-        List<String> cDisableLosingMaxHealthInWorlds = ConfigUtils.getWorlds("DisableLosingMaxHealthInWorlds", section.getStringList("DisableLosingMaxHealthInWorlds"));
-        List<String> cDisableGainingMaxHealthInWorlds = ConfigUtils.getWorlds("DisableGainingMaxHealthInWorlds", section.getStringList("DisableGainingMaxHealthInWorlds"));
+        List<String> cDisableLosingMaxHealthInWorlds = section.getStringList("DisableLosingMaxHealthInWorlds").stream().map(String::toLowerCase).toList();
+        List<String> cDisableGainingMaxHealthInWorlds = section.getStringList("DisableGainingMaxHealthInWorlds").stream().map(String::toLowerCase).toList();
 
         //cMaxHealthIncreasePerKill
         ConfigurationSection maxHealthIncreasePerKillSection = section.getConfigurationSection("MaxHealthIncreasePerKill");

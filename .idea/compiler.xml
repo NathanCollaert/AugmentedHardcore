@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="AugmentedHardcore" target="16" />
+      <module name="AugmentedHardcore" target="8" />
     </bytecodeTargetLevel>
   </component>
 </project>
