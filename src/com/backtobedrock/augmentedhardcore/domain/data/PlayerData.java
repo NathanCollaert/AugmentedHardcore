@@ -446,6 +446,10 @@ public class PlayerData {
             return;
         }
 
+        if (tagger == null) {
+            return;
+        }
+
         //check if combat tag self enabled and if self harming
         if (!this.plugin.getConfigurations().getCombatTagConfiguration().isCombatTagSelf() && tagger.getName().equals(this.player.getName())) {
             return;
