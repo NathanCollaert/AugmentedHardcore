@@ -29,8 +29,9 @@ public class ConfigurationDeathBan {
     private final String spectatorBanRespawnWorld;
     private final List<String> commandsOnDeathBan;
     private final List<String> disableBanInWorlds;
+    private final String groupBanTimeAttributeName;
 
-    public ConfigurationDeathBan(boolean useDeathBan, EnumMap<DamageCause, BanConfiguration> banTimes, BanList.Type banType, BanTimeType banTimeType, GrowthType banTimeByPlaytimeGrowthType, boolean selfHarmBan, boolean lightningOnDeathBan, String spectatorBanRespawnWorld, List<String> commandsOnDeathBan, List<String> disableBanInWorlds) {
+    public ConfigurationDeathBan(boolean useDeathBan, EnumMap<DamageCause, BanConfiguration> banTimes, BanList.Type banType, BanTimeType banTimeType, GrowthType banTimeByPlaytimeGrowthType, boolean selfHarmBan, boolean lightningOnDeathBan, String spectatorBanRespawnWorld, List<String> commandsOnDeathBan, List<String> disableBanInWorlds, String groupBanTimeAttributeName) {
         this.useDeathBan = useDeathBan;
         this.banTimes = banTimes;
         this.banType = banType;
@@ -41,6 +42,7 @@ public class ConfigurationDeathBan {
         this.spectatorBanRespawnWorld = spectatorBanRespawnWorld;
         this.commandsOnDeathBan = commandsOnDeathBan;
         this.disableBanInWorlds = disableBanInWorlds;
+        this.groupBanTimeAttributeName = groupBanTimeAttributeName;
     }
 
     public static ConfigurationDeathBan deserialize(ConfigurationSection section) {
@@ -57,6 +59,7 @@ public class ConfigurationDeathBan {
         String cSpectatorBanRespawnWorld = section.getString("SpectatorBanRespawnWorld", Bukkit.getWorlds().get(0).getName());
         List<String> cCommandsOnDeathBan = section.getStringList("CommandsOnDeathBan");
         List<String> cDisableBanInWorlds = section.getStringList("DisableBanInWorlds").stream().map(String::toLowerCase).toList();
+        String cGroupBanTimeAttributeName = section.getString("GroupBanTimeAttributeName", null);
 
         //loop over all damage causes
         ConfigurationSection banTimesConfigurations = section.getConfigurationSection("BanTimes");
@@ -83,7 +86,8 @@ public class ConfigurationDeathBan {
                 cLightningOnDeathBan,
                 cSpectatorBanRespawnWorld,
                 cCommandsOnDeathBan,
-                cDisableBanInWorlds
+                cDisableBanInWorlds,
+                cGroupBanTimeAttributeName
         );
     }
 
@@ -93,6 +97,10 @@ public class ConfigurationDeathBan {
 
     public List<String> getDisableBanInWorlds() {
         return disableBanInWorlds;
+    }
+
+    public String getGroupBanTimeAttributeName() {
+        return groupBanTimeAttributeName;
     }
 
     public BanList.Type getBanType() {
