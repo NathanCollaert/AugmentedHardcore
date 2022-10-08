@@ -37,7 +37,8 @@ public class LuckPermsGroupHandler implements GroupHandler {
             User user = luckPerms.getPlayerAdapter(Player.class).getUser(player);
             String groupName = user.getPrimaryGroup();
             Group group = luckPerms.getGroupManager().getGroup(groupName);
-            if(group != null && luckPerms.getGroupManager().getGroup(groupName) != null) {
+            Bukkit.getLogger().info( "Group name: " + groupName + ", group: " + group.getName() + ", attribute name: " + attributeName);
+            if(group != null) {
                 return luckPerms.getGroupManager().getGroup(groupName).getCachedData().getMetaData().getMetaValue(attributeName);
             }
         } else {

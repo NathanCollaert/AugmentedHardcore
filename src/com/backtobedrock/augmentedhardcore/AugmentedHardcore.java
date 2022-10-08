@@ -184,7 +184,8 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
         }
 
         AugmentedHardcore.groupHandler = new DummyGroupHandler();
-        if(Bukkit.getPluginManager().getPlugin("LuckPerms") != null) {
+        Object luckPermsPlugin = Bukkit.getPluginManager().getPlugin("LuckPerms");
+        if(luckPermsPlugin != null) {
             String groupBanTimeAttributeName = this.configurations.getDeathBanConfiguration().getGroupBanTimeAttributeName();
             if(groupBanTimeAttributeName != null) {
                 AugmentedHardcore.groupHandler = new LuckPermsGroupHandler(groupBanTimeAttributeName);
