@@ -7,6 +7,9 @@ import com.backtobedrock.augmentedhardcore.domain.data.ServerData;
 import com.backtobedrock.augmentedhardcore.domain.enums.StorageType;
 import com.backtobedrock.augmentedhardcore.eventListeners.*;
 import com.backtobedrock.augmentedhardcore.eventListeners.dependencies.ListenerCombatLogX;
+import com.backtobedrock.augmentedhardcore.groups.DummyGroupHandler;
+import com.backtobedrock.augmentedhardcore.groups.GroupHandler;
+import com.backtobedrock.augmentedhardcore.groups.LuckPermsGroupHandler;
 import com.backtobedrock.augmentedhardcore.guis.AbstractGui;
 import com.backtobedrock.augmentedhardcore.guis.GuiMyStats;
 import com.backtobedrock.augmentedhardcore.mappers.Patch;
@@ -55,6 +58,8 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
     //runnables
     private UpdateChecker updateChecker;
 
+    private static GroupHandler groupHandler;
+
     @Override
     public void onEnable() {
         this.initialize();
@@ -79,6 +84,13 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
         }
 
         super.onEnable();
+    }
+
+    /**
+     * @return The group handler.
+     */
+    public static GroupHandler getGroupHandler() {
+        return groupHandler;
     }
 
     @Override
@@ -169,6 +181,15 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
         }
         if (this.serverRepository == null) {
             this.serverRepository = new ServerRepository();
+        }
+
+        AugmentedHardcore.groupHandler = new DummyGroupHandler();
+        Object luckPermsPlugin = Bukkit.getPluginManager().getPlugin("LuckPerms");
+        if(luckPermsPlugin != null) {
+            String groupBanTimeAttributeName = this.configurations.getDeathBanConfiguration().getGroupBanTimeAttributeName();
+            if(groupBanTimeAttributeName != null) {
+                AugmentedHardcore.groupHandler = new LuckPermsGroupHandler(groupBanTimeAttributeName);
+            }
         }
 
         //register event listeners

@@ -379,6 +379,10 @@ BanType: name
 
 #What ban time type should be used for calculating the bantime?
 #Static:             Above times will be used for bans.
+#Group:              The ban time will be the number of seconds defined in the metadata of the LuckPerms
+#                    group the player is member of. The metadata of the group must contain an attribute
+#                    that defines the bantime of the players in this group. See config setting 'GroupBanTimeAttributeName'
+#                    below to specify the name of the metadata attribute.
 #BanCount:           The amount of (times death banned * 35) will be used for determining the bantime.
 #                    Bantimes will increase the more death banned the player has been.
 #                    Above times will be used as maximum ban time.
@@ -390,6 +394,15 @@ BanType: name
 #                    Every death will reset the bantime back to 0, above times will be used as maximum ban time.
 # -> static/bancount/playtime/timesincelastdeath
 BanTimeType: static
+
+# IF "BanTimeType" is set to "group":
+# Name of LuckPerms group meta attribute containing the ban time in number of minutes.
+# Example LuckPerms group config lines:
+#
+# meta:
+#   - bantime:
+#       value: '960'
+GroupBanTimeAttributeName: bantime
 
 #At what rate should the ban time by playtime grow?
 #Linear:      a constant increase in bantime the more bancount/playtime/timesincelastdeath(P) you have (constant increase).
