@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.backtobedrock</groupId>
     <artifactId>AugmentedHardcore</artifactId>
-    <version>3.3.7</version>
+    <version>3.3.8</version>
     <packaging>jar</packaging>
     <properties>
         <java.version>8</java.version>
@@ -87,7 +87,7 @@
         <dependency>
             <groupId>net.wesjd</groupId>
             <artifactId>anvilgui</artifactId>
-            <version>1.5.3-SNAPSHOT</version>
+            <version>1.6.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.zaxxer</groupId>
