@@ -261,6 +261,13 @@ BanTimes:
       - "discovered the floor was %killer% and hot"
       - "walked into %killer% and melted"
 
+  #Death caused by /kill command
+  KILL:
+    BanTime: 0
+    DisplayMessages:
+      - "died"
+      - "was killed"
+
   #Death caused by direct exposure to lava
   LAVA:
     BanTime: 4320
@@ -308,6 +315,12 @@ BanTimes:
       - "were shot"
       - "were impaled"
 
+  #Death caused by the Sonic Boom attack from Warden
+  SONIC_BOOM:
+    BanTime: 2880
+    DisplayMessages:
+      - "was obliterated by a sonically-charged shriek"
+
   #Death caused by starving due to having an empty hunger bar
   STARVATION:
     BanTime: 4320
@@ -354,6 +367,12 @@ BanTimes:
     BanTime: 2880
     DisplayMessages:
       - "withered away"
+
+  #Death caused by the World Border
+  WORLD_BORDER:
+    BanTime: 0
+    DisplayMessages:
+      - "left the confines of this world"
 
   #Death caused by combat logging from a monster
   COMBAT_LOG:

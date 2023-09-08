@@ -8,7 +8,6 @@ import com.backtobedrock.augmentedhardcore.domain.enums.GrowthType;
 import com.backtobedrock.augmentedhardcore.utilities.ConfigUtils;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 

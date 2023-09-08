@@ -17,7 +17,6 @@ import com.backtobedrock.augmentedhardcore.runnables.UpdateChecker;
 import com.backtobedrock.augmentedhardcore.utilities.Metrics;
 import com.backtobedrock.augmentedhardcore.utilities.placeholderAPI.PlaceholdersAugmentedHardcore;
 import com.tchristofferson.configupdater.ConfigUpdater;
-import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -58,11 +57,6 @@ public class AugmentedHardcore extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         this.initialize();
-
-        //unban patch
-        BanList banListName = Bukkit.getBanList(BanList.Type.NAME), banListIP = Bukkit.getBanList(BanList.Type.IP);
-        banListName.getBanEntries().stream().filter(e -> e.getSource().equals(this.getDescription().getName())).forEach(e -> banListName.pardon(e.getTarget()));
-        banListIP.getBanEntries().stream().filter(e -> e.getSource().equals(this.getDescription().getName())).forEach(e -> banListIP.pardon(e.getTarget()));
 
         //update checker
         this.updateChecker = new UpdateChecker();

@@ -3,17 +3,13 @@ package com.backtobedrock.augmentedhardcore.utilities;
 import com.backtobedrock.augmentedhardcore.AugmentedHardcore;
 import com.backtobedrock.augmentedhardcore.domain.enums.*;
 import org.bukkit.BanList;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.List;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 public class ConfigUtils {
     public static int checkMin(String id, int value, int min) {
